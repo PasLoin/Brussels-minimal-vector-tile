@@ -1,16 +1,20 @@
 tippecanoe -o brussels_ultimate_v2.pmtiles --force \
-  --maximum-zoom=16 \
+  --maximum-zoom=17 \
   --attribution="OpenStreetMap contributors" \
   --generate-ids \
   --drop-densest-as-needed \
   --extend-zooms-if-still-dropping \
-  landuse.json \
-  pedestrian.json \
-  cycling.json \
-  furniture.json \
-  infra.json \
-  green.json \
-  buildings.json \
-  buildings_parts.json \
-  poi.json \
-  accessibility.json
+  -L landuse:landuse.json \
+  -L pedestrian:pedestrian.json \
+  -L cycling:cycling.json \
+  -L furniture:furniture.json \
+  -L infra:infra.json \
+  -L green:green.json \
+  -L buildings:buildings.json \
+  -L buildings_parts:buildings_parts.json \
+  -L poi:poi.json \
+  -L accessibility:accessibility.json \
+  -L roads:roads.json \
+  -L water:water.json \
+  -L railways:railways.json \
+  -L boundaries:boundaries.json
