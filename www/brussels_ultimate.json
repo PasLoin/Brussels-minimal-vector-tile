@@ -3,7 +3,7 @@
   "name": "Brussels Ultimate",
   "metadata": {
     "maputnik:renderer": "mlgljs",
-    "description": "OSM-Carto × TracesTrack topo — Brussels pedestrian & cycling network"
+    "description": "Brussels Ultimate Vector tiles style"
   },
   "sources": {
     "brussels": {
