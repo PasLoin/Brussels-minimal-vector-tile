@@ -27,3 +27,19 @@ osmium tags-filter brussels_capital_region-latest.osm.pbf nwr/wheelchair=yes,lim
 
 # 10. OCCUPATION DES SOLS (Landuse)
 osmium tags-filter brussels_capital_region-latest.osm.pbf nwr/landuse=* -o landuse.opl --overwrite && osmium export landuse.opl -o landuse.json --overwrite
+
+# 11. RÉSEAU ROUTIER
+osmium tags-filter brussels_capital_region-latest.osm.pbf nwr/highway=motorway,motorway_link,trunk,trunk_link,primary,primary_link,secondary,secondary_link,tertiary,tertiary_link,unclassified,residential,service,living_street -o roads.opl --overwrite && osmium export roads.opl -o roads.json --overwrite
+
+# 12. WATER
+osmium tags-filter brussels_capital_region-latest.osm.pbf nwr/natural=water nwr/waterway=* -o water.opl --overwrite && osmium export water.opl -o water.json --overwrite
+
+# 13.RAIL(way)
+osmium tags-filter brussels_capital_region-latest.osm.pbf nwr/railway=rail,tram,subway,station -o railways.opl --overwrite && osmium export railways.opl -o railways.json --overwrite
+
+# 14.LIMITES ADMIN
+osmium tags-filter brussels_capital_region-latest.osm.pbf nwr/boundary=administrative -o boundaries.opl --overwrite && osmium export boundaries.opl -o boundaries.json --overwrite
+
+
+
+
