@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Brussels Ultimate Network</title>
+
+  <link href="https://unpkg.com/maplibre-gl@3/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@3/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/pmtiles@3/dist/pmtiles.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Inter", system-ui, sans-serif; }
+    #map { position: absolute; inset: 0; }
+
+    #header {
+      position: absolute; top: 12px; left: 12px; z-index: 10;
+      background: rgba(255,253,248,0.97); border-radius: 10px;
+      padding: 12px 16px; box-shadow: 0 1px 6px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.04);
+      max-width: 220px;
+    }
+    #header h1 { font-size: 13px; font-weight: 700; color: #2c2416; letter-spacing: .01em; }
+    #header .subtitle { font-size: 11px; color: #8a7e6a; margin-top: 2px; }
+    #edit-btn {
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 10px; width: 100%; padding: 7px; border-radius: 7px;
+      font-size: 11px; font-weight: 600; cursor: pointer; text-decoration: none;
+      background: #b55a2a; color: #fff; transition: background .15s; border: none;
+    }
+    #edit-btn:hover:not(.disabled) { background: #8f4318; }
+    #edit-btn.disabled { background: #d6cfc5; color: #a09688; cursor: not-allowed; pointer-events: none; }
+
+    #legend {
+      position: absolute; bottom: 28px; left: 12px; z-index: 10;
+      background: rgba(255,253,248,0.97); border-radius: 10px;
+      padding: 10px 14px; box-shadow: 0 1px 6px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.04);
+      width: 200px; max-height: calc(100vh - 160px); overflow-y: auto;
+    }
+    .legend-title {
+      font-size: 10px; font-weight: 800; color: #6b5e4d; margin-bottom: 7px;
+      text-transform: uppercase; letter-spacing: .07em;
+      border-bottom: 1px solid #ded8cc; padding-bottom: 5px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; cursor: pointer; user-select: none; }
+    .legend-label { font-size: 11.5px; color: #3b2e1e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .legend-item.hidden .legend-label { color: #b0a898; }
+    .legend-item.hidden .legend-swatch { opacity: .25; }
+
+    #zoom-badge {
+      position: absolute; top: 12px; right: 50px; z-index: 10;
+      background: rgba(255,253,248,0.9); border-radius: 6px; padding: 3px 8px;
+      font-size: 11px; color: #7a6e5f; box-shadow: 0 0 0 1px rgba(0,0,0,0.07);
+    }
+
+    .maplibregl-popup-content {
+      font-family: "Inter", system-ui, sans-serif; font-size: 12px;
+      padding: 10px 13px; border-radius: 9px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06);
+      min-width: 160px; max-width: 240px; background: #fffdf7; color: #2c2416;
+    }
+    .maplibregl-popup-close-button { font-size: 16px; color: #9a8e7e; right: 6px; top: 3px; }
+    .popup-title {
+      font-size: 12px; font-weight: 700; color: #4a3520; text-transform: capitalize;
+      margin-bottom: 6px; padding-bottom: 5px; border-bottom: 1px solid #e8e0d2;
+    }
+    .popup-row { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 3px; }
+    .popup-key { color: #8a7a68; font-size: 11px; flex-shrink: 0; }
+    .popup-val { color: #2c2416; font-size: 11px; text-align: right; font-weight: 500; word-break: break-word; max-width: 120px; }
+    .popup-val.yes { color: #3d7a3d; }
+    .popup-val.no  { color: #a03030; }
+    .maplibregl-popup-tip { display: none; }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+
+<div id="header">
+  <h1>Brussels Ultimate</h1>
+  <div class="subtitle">Réseau piéton · vélo · mobilier</div>
+  <a id="edit-btn" class="disabled" href="#" target="_blank" rel="noopener">Éditer dans OSM ↗</a>
+</div>
+
+<div id="legend"><div class="legend-title">Couches</div></div>
+<div id="zoom-badge">z<span id="zoom-val">—</span></div>
+
+<script>
+/* ── PMTiles protocol ── */
+const protocol = new pmtiles.Protocol();
+maplibregl.addProtocol("pmtiles", protocol.tile.bind(protocol));
+
+const LEGEND_GROUPS = [
+  { label: "Occupation sol",   color: "#ddd5c5", type: "fill",   layers: ["landuse-residential","landuse-industrial","landuse-transport","landuse-water"] },
+  { label: "Espaces verts",    color: "#b8d898", type: "fill",   layers: ["green-forest","green-scrub","green-grass","green-park","green-outline"] },
+  { label: "Bâtiments",        color: "#cfc8b8", type: "fill",   layers: ["buildings-fill","buildings-outline","buildings-3d"] },
+  { label: "Infrastructure",   color: "#c4a46c", type: "line",   layers: ["infra-casing","infra-major","infra-minor"] },
+  { label: "Réseau cyclable",  color: "#3a86d4", type: "line",   layers: ["cycling-casing","cycling-line"] },
+  { label: "Réseau piéton",    color: "#c08040", type: "line",   layers: ["pedestrian-casing","pedestrian-line","pedestrian-steps"] },
+  { label: "Accessibilité",    color: "#e03020", type: "circle", layers: ["accessibility-halo","accessibility-dot"] },
+  { label: "Mobilier urbain",  color: "#d4820a", type: "circle", layers: ["furniture-halo","furniture-dot"] },
+  { label: "Points d'intérêt", color: "#7c4ec4", type: "circle", layers: ["poi-halo","poi-dot"] }
+];
+
+const STYLE_URL = "./brussels_ultimate_style.json";
+const EDIT_MIN_ZOOM = 16;
+
+const map = new maplibregl.Map({
+  container: "map",
+  style: STYLE_URL,
+  center: [4.3517, 50.8503],
+  zoom: 14,
+  hash: true,
+
+  /*
+   * transformRequest intercepts the source URL from style.json
+   * (plain https://.pmtiles) and prepends "pmtiles://" so the
+   * pmtiles.js protocol handler can parse it — without touching
+   * the style.json itself (which Maputnik reads as plain HTTPS).
+   */
+  transformRequest: (url, resourceType) => {
+    if (url.includes("pmtiles.duckdns.org") && url.endsWith(".pmtiles")) {
+      return { url: "pmtiles://" + url };
+    }
+  }
+});
+
+map.addControl(new maplibregl.NavigationControl(), "top-right");
+map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }), "bottom-right");
+
+/* ── Légende ── */
+map.on("load", () => {
+  const legendEl = document.getElementById("legend");
+  LEGEND_GROUPS.forEach(g => {
+    const item = document.createElement("div");
+    item.className = "legend-item";
+    const s = g.type === "line"
+      ? `<div class="legend-swatch" style="width:20px;height:3px;border-radius:2px;background:${g.color};flex-shrink:0"></div>`
+      : g.type === "circle"
+        ? `<div class="legend-swatch" style="width:10px;height:10px;border-radius:50%;background:${g.color};border:1.5px solid #fffdf7;box-shadow:0 0 0 1px ${g.color}55;flex-shrink:0"></div>`
+        : `<div class="legend-swatch" style="width:14px;height:10px;background:${g.color};border:1px solid rgba(0,0,0,0.1);flex-shrink:0"></div>`;
+    item.innerHTML = `${s}<span class="legend-label">${g.label}</span>`;
+    let visible = true;
+    item.onclick = () => {
+      visible = !visible;
+      g.layers.forEach(lid => { if (map.getLayer(lid)) map.setLayoutProperty(lid, "visibility", visible ? "visible" : "none"); });
+      item.classList.toggle("hidden", !visible);
+    };
+    legendEl.appendChild(item);
+  });
+});
+
+/* ── Zoom + lien OSM ── */
+map.on("moveend", () => {
+  const zoom = map.getZoom();
+  const center = map.getCenter();
+  document.getElementById("zoom-val").textContent = zoom.toFixed(1);
+  const btn = document.getElementById("edit-btn");
+  if (zoom >= EDIT_MIN_ZOOM) {
+    btn.href = `https://www.openstreetmap.org/edit#map=${Math.round(zoom)}/${center.lat.toFixed(5)}/${center.lng.toFixed(5)}`;
+    btn.classList.remove("disabled");
+  } else {
+    btn.classList.add("disabled");
+  }
+});
+
+/* ── Tooltip mobilier urbain ── */
+const PROP_LABELS = {
+  amenity:"Type", name:"Nom", backrest:"Dossier", seats:"Places",
+  material:"Matériau", colour:"Couleur", covered:"Couvert",
+  access:"Accès", direction:"Direction", capacity:"Capacité",
+  fee:"Payant", opening_hours:"Horaires", wheelchair:"PMR",
+  lit:"Éclairé", surface:"Surface", operator:"Opérateur",
+  ref:"Référence", height:"Hauteur", waste:"Type déchets", network:"Réseau"
+};
+const SKIP_KEYS = new Set(["@id","@type","source","source:date","osm_id","osm_type","layer","z_order","way_area","tags"]);
+const PRIORITY_KEYS = ["amenity","name","backrest","seats","material","covered","access","wheelchair","lit","capacity","fee","opening_hours"];
+
+const popup = new maplibregl.Popup({ closeButton: true, closeOnClick: false, maxWidth: "260px", offset: 10 });
+
+function buildPopupHTML(props) {
+  const title = (props.amenity || props.leisure || "mobilier").replace(/_/g," ");
+  const allKeys = Object.keys(props).filter(k => !SKIP_KEYS.has(k) && props[k] !== null && props[k] !== "" && props[k] !== undefined);
+  const keys = [...PRIORITY_KEYS.filter(k => allKeys.includes(k)), ...allKeys.filter(k => !PRIORITY_KEYS.includes(k)).sort()];
+  const rows = keys.map(k => {
+    const val = String(props[k]);
+    const cls = val === "yes" ? "yes" : val === "no" ? "no" : "";
+    return `<div class="popup-row"><span class="popup-key">${PROP_LABELS[k] || k.replace(/_/g," ")}</span><span class="popup-val ${cls}">${val}</span></div>`;
+  }).join("");
+  return `<div class="popup-title">${title}</div>${rows || '<div style="color:#8a7a68;font-size:11px">Aucune propriété</div>'}`;
+}
+
+["furniture-dot","furniture-halo"].forEach(lid => {
+  map.on("mousemove", lid, (e) => {
+    map.getCanvas().style.cursor = "pointer";
+    popup.setLngLat(e.lngLat).setHTML(buildPopupHTML(e.features[0].properties)).addTo(map);
+  });
+  map.on("mouseleave", lid, () => { map.getCanvas().style.cursor = ""; popup.remove(); });
+});
+
+map.on("error", (e) => console.warn("MapLibre:", e.error?.message || e));
+</script>
+</body>
+</html>
