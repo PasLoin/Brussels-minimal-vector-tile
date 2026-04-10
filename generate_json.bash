@@ -23,7 +23,7 @@ osmium tags-filter brussels_capital_region-latest.osm.pbf nwr/building:part=* -o
 osmium tags-filter brussels_capital_region-latest.osm.pbf nwr/shop=* nwr/amenity=restaurant,cafe,bar,pub,museum,theatre -o poi.opl --overwrite && osmium export poi.opl -o poi.json --overwrite
 
 # 9. ACCESSIBILITÉ
-osmium tags-filter brussels_capital_region-latest.osm.pbf nwr/wheelchair=yes,limited,no n/kerb=* -o accessibility.opl --overwrite && osmium export accessibility.opl -o accessibility.json --overwrite
+# osmium tags-filter brussels_capital_region-latest.osm.pbf nwr/wheelchair=yes,limited,no n/kerb=* -o accessibility.opl --overwrite && osmium export accessibility.opl -o accessibility.json --overwrite
 
 # 10. OCCUPATION DES SOLS (Landuse)
 osmium tags-filter brussels_capital_region-latest.osm.pbf nwr/landuse=* -o landuse.opl --overwrite && osmium export landuse.opl -o landuse.json --overwrite
