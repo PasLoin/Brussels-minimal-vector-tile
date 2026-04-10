@@ -13,7 +13,6 @@ tippecanoe -o brussels_ultimate_v2.pmtiles --force \
   -L buildings:buildings.json \
   -L buildings_parts:buildings_parts.json \
   -L poi:poi.json \
-  -L accessibility:accessibility.json \
   -L roads:roads.json \
   -L water:water.json \
   -L railways:railways.json \
