@@ -1,0 +1,65 @@
+name: Build & Deploy PMTiles
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 1 * *'   # rebuild mensuel avec données OSM fraîches
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install osmium & tippecanoe
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq osmium-tool build-essential libsqlite3-dev zlib1g-dev
+          git clone --depth 1 https://github.com/felt/tippecanoe.git /tmp/tippecanoe
+          cd /tmp/tippecanoe && make -j$(nproc) && sudo make install
+
+      - name: Download Brussels OSM extract
+        run: |
+          wget -q https://download.geofabrik.de/europe/belgium/brussels_capital_region-latest.osm.pbf
+
+      - name: Extract GeoJSON layers
+        run: bash generate_json.bash
+
+      - name: Generate PMTiles
+        run: bash generate_pmtiles.bash
+
+      - name: Prepare site
+        run: |
+          mkdir -p _site
+          cp index.html style.json brussels.pmtiles _site/
+          # copier d'éventuels GeoJSON supplémentaires
+          cp -f *.geojson _site/ 2>/dev/null || true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
