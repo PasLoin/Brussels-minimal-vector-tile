@@ -24,4 +24,5 @@ tippecanoe -o brussels.pmtiles --force \
   -L boundaries:boundaries.json
 
 echo "✓ brussels.pmtiles généré"
-ls -lh brussels.pmtiles
+mv brussels.pmtiles brussels.pmtiles.gz
+ls -lh brussels.pmtiles.gz
