@@ -68,7 +68,22 @@
       "type": "fill",
       "source": "water",
       "source-layer": "water",
-      "paint": { "fill-color": "#c4d8e8" }
+      "paint": {
+        "fill-color": "#b8d4e8",
+        "fill-outline-color": "#9ec0d8"
+      }
+    },
+    {
+      "id": "water-casing",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "filter": ["has", "waterway"],
+      "paint": {
+        "line-color": "#9ec0d8",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 3, 14, 10, 18, 16],
+        "line-opacity": 0.3
+      }
     },
     {
       "id": "water-line",
@@ -77,8 +92,8 @@
       "source-layer": "water",
       "filter": ["has", "waterway"],
       "paint": {
-        "line-color": "#b0c8dc",
-        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.5, 15, 2]
+        "line-color": "#b8d4e8",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1.5, 14, 5, 18, 10]
       }
     },
     {
