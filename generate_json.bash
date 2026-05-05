@@ -43,7 +43,7 @@ extract buildings \
   nwr/building=yes,house,apartments,commercial,industrial,church,public
 
 extract water \
-  nwr/natural=water nwr/waterway=river,canal,stream
+  nwr/natural=water nwr/waterway=river,canal,stream,ditch nwr/landuse=basin nwr/natural=wetland
 
 extract green \
   nwr/leisure=park,garden nwr/landuse=forest,meadow,grass nwr/natural=wood
