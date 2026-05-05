@@ -1,45 +1,58 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────
 # Extraction minimaliste — 6 couches essentielles
-# Pré-requis : osmium-tool (apt install osmium-tool)
+# Pré-requis : osmium-tool
 # ─────────────────────────────────────────────────────────
 set -euo pipefail
+
 SRC="brussels_capital_region-latest.osm.pbf"
 
-echo "→ Routes"
-osmium tags-filter "$SRC" \
-  nwr/highway=motorway,trunk,primary,secondary,tertiary,residential,living_street,unclassified,service \
-  -o roads.osm.pbf --overwrite
-osmium export roads.osm.pbf -o roads.json --overwrite
+# Vérifier que le fichier source existe et est un PBF valide
+if [ ! -f "$SRC" ]; then
+  echo "✗ Fichier $SRC introuvable" >&2; exit 1
+fi
 
-echo "→ Bâtiments"
-osmium tags-filter "$SRC" \
-  nwr/building=yes,house,apartments,commercial,industrial,church,public \
-  -o buildings.osm.pbf --overwrite
-osmium export buildings.osm.pbf -o buildings.json --overwrite
+FILESIZE=$(stat -c%s "$SRC" 2>/dev/null || stat -f%z "$SRC")
+if [ "$FILESIZE" -lt 1000000 ]; then
+  echo "✗ $SRC trop petit (${FILESIZE} octets) — téléchargement probablement échoué" >&2; exit 1
+fi
 
-echo "→ Eau"
-osmium tags-filter "$SRC" \
-  nwr/natural=water nwr/waterway=river,canal,stream \
-  -o water.osm.pbf --overwrite
-osmium export water.osm.pbf -o water.json --overwrite
+# Vérifier les magic bytes du format PBF (commence par 0x0000000d)
+MAGIC=$(xxd -l 4 -p "$SRC")
+if [ "$MAGIC" != "0000000d" ]; then
+  echo "✗ $SRC n'est pas un fichier PBF valide (magic: $MAGIC)" >&2
+  echo "  Le téléchargement a peut-être renvoyé une page HTML." >&2
+  head -c 200 "$SRC" >&2
+  exit 1
+fi
 
-echo "→ Espaces verts"
-osmium tags-filter "$SRC" \
-  nwr/leisure=park,garden nwr/landuse=forest,meadow,grass nwr/natural=wood \
-  -o green.osm.pbf --overwrite
-osmium export green.osm.pbf -o green.json --overwrite
+echo "✓ Source valide : $SRC ($(numfmt --to=iec "$FILESIZE"))"
 
-echo "→ Occupation du sol"
-osmium tags-filter "$SRC" \
-  nwr/landuse=residential,industrial,commercial,retail,railway \
-  -o landuse.osm.pbf --overwrite
-osmium export landuse.osm.pbf -o landuse.json --overwrite
+extract() {
+  local name="$1"; shift
+  echo "→ $name"
+  osmium tags-filter "$SRC" "$@" -o "_tmp_${name}.osm.pbf" --overwrite
+  osmium export "_tmp_${name}.osm.pbf" -o "${name}.json" --overwrite
+  rm -f "_tmp_${name}.osm.pbf"
+  echo "  $(wc -l < "${name}.json") lignes"
+}
 
-echo "→ Limites administratives"
-osmium tags-filter "$SRC" \
-  nwr/boundary=administrative \
-  -o boundaries.osm.pbf --overwrite
-osmium export boundaries.osm.pbf -o boundaries.json --overwrite
+extract roads \
+  nwr/highway=motorway,trunk,primary,secondary,tertiary,residential,living_street,unclassified,service
+
+extract buildings \
+  nwr/building=yes,house,apartments,commercial,industrial,church,public
+
+extract water \
+  nwr/natural=water nwr/waterway=river,canal,stream
+
+extract green \
+  nwr/leisure=park,garden nwr/landuse=forest,meadow,grass nwr/natural=wood
+
+extract landuse \
+  nwr/landuse=residential,industrial,commercial,retail,railway
+
+extract boundaries \
+  nwr/boundary=administrative
 
 echo "✓ 6 couches extraites"
