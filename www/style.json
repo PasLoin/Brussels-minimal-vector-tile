@@ -68,6 +68,12 @@
       "type": "fill",
       "source": "water",
       "source-layer": "water",
+      "filter": [
+        "all",
+        ["!=", ["get", "tunnel"], "culvert"],
+        ["!=", ["get", "tunnel"], "yes"],
+        ["!=", ["get", "covered"], "yes"]
+      ],
       "paint": {
         "fill-color": "#b8d4e8",
         "fill-outline-color": "#9ec0d8"
@@ -78,7 +84,13 @@
       "type": "line",
       "source": "water",
       "source-layer": "water",
-      "filter": ["has", "waterway"],
+      "filter": [
+        "all",
+        ["has", "waterway"],
+        ["!=", ["get", "tunnel"], "culvert"],
+        ["!=", ["get", "tunnel"], "yes"],
+        ["!=", ["get", "covered"], "yes"]
+      ],
       "paint": {
         "line-color": "#9ec0d8",
         "line-width": ["interpolate", ["linear"], ["zoom"], 10, 3, 14, 10, 18, 16],
@@ -90,7 +102,13 @@
       "type": "line",
       "source": "water",
       "source-layer": "water",
-      "filter": ["has", "waterway"],
+      "filter": [
+        "all",
+        ["has", "waterway"],
+        ["!=", ["get", "tunnel"], "culvert"],
+        ["!=", ["get", "tunnel"], "yes"],
+        ["!=", ["get", "covered"], "yes"]
+      ],
       "paint": {
         "line-color": "#b8d4e8",
         "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1.5, 14, 5, 18, 10]
