@@ -55,9 +55,26 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p _site
-          cp index.html style.json brussels.pmtiles _site/
-          # copier d'éventuels GeoJSON supplémentaires
+
+          # Chercher index.html et style.json (racine ou www/)
+          for f in index.html style.json; do
+            if [ -f "$f" ]; then
+              cp "$f" _site/
+            elif [ -f "www/$f" ]; then
+              cp "www/$f" _site/
+            else
+              echo "✗ $f introuvable (ni à la racine ni dans www/)" >&2
+              echo "  Contenu du repo :" >&2
+              ls -la >&2
+              exit 1
+            fi
+          done
+
+          cp brussels.pmtiles _site/
           cp -f *.geojson _site/ 2>/dev/null || true
+
+          echo "✓ Site prêt :"
+          ls -lh _site/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
