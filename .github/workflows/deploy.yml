@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths-ignore:
       - 'www/*.pmtiles.gz'
+      - 'sizepmtiles.md'
   workflow_dispatch:
   schedule:
     - cron: '0 3 1 * *'
@@ -58,16 +59,16 @@ jobs:
       - name: Generate PMTiles
         run: bash generate_pmtiles.bash
 
-      - name: Commit PMTiles to www/
+      - name: Commit PMTiles & Report to Repo
         run: |
           cp *.pmtiles.gz www/
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add www/*.pmtiles.gz
+          git add www/*.pmtiles.gz sizepmtiles.md
           if git diff --cached --quiet; then
-            echo "PMTiles inchangés, pas de commit"
+            echo "Pas de changements à commiter"
           else
-            git commit -m "chore: update pmtiles [skip ci]"
+            git commit -m "chore: update pmtiles and report [skip ci]"
             git push
           fi
 
@@ -75,6 +76,7 @@ jobs:
         run: |
           cp -r www/ _site/
           cp -f *.geojson _site/ 2>/dev/null || true
+          cp -f sizepmtiles.md _site/ 2>/dev/null || true
           echo "✓ Site prêt :"
           ls -lh _site/
 
