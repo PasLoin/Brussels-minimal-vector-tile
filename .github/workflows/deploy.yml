@@ -36,7 +36,7 @@ jobs:
           for i in 1 2 3; do
             echo "Tentative $i/3..."
             wget --tries=3 --timeout=60 -nv \
-              https://download.geofabrik.de/europe/belgium/brussels_capital_region-latest.osm.pbf \
+              https://download.openstreetmap.fr/extracts/europe/belgium/brussels_capital_region-latest.osm.pbf \
               && break
             echo "Échec, nouvelle tentative dans 10s..."
             rm -f brussels_capital_region-latest.osm.pbf
