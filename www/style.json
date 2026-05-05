@@ -4,7 +4,7 @@
   "sources": {
     "brussels": {
       "type": "vector",
-      "url": "pmtiles://./brussels.pmtiles",
+      "url": "./brussels.pmtiles.gz",
       "attribution": "© OpenStreetMap contributors"
     }
   },
