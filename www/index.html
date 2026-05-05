@@ -79,6 +79,9 @@
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
 
+/* ── URL absolue du PMTiles (fonctionne avec les sous-chemins GitHub Pages) ── */
+const PMTILES_URL = new URL('./brussels.pmtiles.gz', location.href).href;
+
 /* ── Couches & légende ── */
 const GROUPS = [
   { label: 'Occupation du sol', color: '#eae6e0', type: 'fill', layers: ['landuse-residential','landuse-industrial'] },
@@ -89,38 +92,51 @@ const GROUPS = [
   { label: 'Limites',           color: '#b0a898', type: 'line', layers: ['boundaries'] },
 ];
 
-/* ── Carte ── */
-const map = new maplibregl.Map({
-  container: 'map',
-  style: './style.json',
-  center: [4.3517, 50.8503],
-  zoom: 13,
-  hash: true,
-  maxZoom: 17,
-  minZoom: 10,
-});
-
-map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-map.addControl(new maplibregl.ScaleControl({ maxWidth: 100, unit: 'metric' }), 'bottom-right');
-
-/* ── Légende interactive ── */
-map.on('load', () => {
-  const el = document.getElementById('legend');
-  GROUPS.forEach(g => {
-    const row = document.createElement('div');
-    row.className = 'legend-row';
-    const cls = g.type === 'fill' ? 'swatch fill' : 'swatch';
-    row.innerHTML = `<div class="${cls}" style="background:${g.color}"></div><span>${g.label}</span>`;
-    let on = true;
-    row.onclick = () => {
-      on = !on;
-      row.classList.toggle('off', !on);
-      const v = on ? 'visible' : 'none';
-      g.layers.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v); });
-    };
-    el.appendChild(row);
+/* ── Charger le style et patcher l'URL PMTiles ── */
+fetch('./style.json')
+  .then(r => r.json())
+  .then(style => {
+    style.sources.brussels.url = 'pmtiles://' + PMTILES_URL;
+    initMap(style);
+  })
+  .catch(err => {
+    console.error('Impossible de charger style.json:', err);
+    document.querySelector('.title p').textContent = 'Erreur de chargement du style';
   });
-});
+
+function initMap(style) {
+  const map = new maplibregl.Map({
+    container: 'map',
+    style,
+    center: [4.3517, 50.8503],
+    zoom: 13,
+    hash: true,
+    maxZoom: 17,
+    minZoom: 10,
+  });
+
+  map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+  map.addControl(new maplibregl.ScaleControl({ maxWidth: 100, unit: 'metric' }), 'bottom-right');
+
+  /* ── Légende interactive ── */
+  map.on('load', () => {
+    const el = document.getElementById('legend');
+    GROUPS.forEach(g => {
+      const row = document.createElement('div');
+      row.className = 'legend-row';
+      const cls = g.type === 'fill' ? 'swatch fill' : 'swatch';
+      row.innerHTML = `<div class="${cls}" style="background:${g.color}"></div><span>${g.label}</span>`;
+      let on = true;
+      row.onclick = () => {
+        on = !on;
+        row.classList.toggle('off', !on);
+        const v = on ? 'visible' : 'none';
+        g.layers.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v); });
+      };
+      el.appendChild(row);
+    });
+  });
+}
 </script>
 </body>
 </html>
