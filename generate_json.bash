@@ -39,45 +39,8 @@ extract() {
 extract roads \
   nwr/highway=motorway,trunk,primary,secondary,tertiary,residential,living_street,unclassified,service
 
-# Buildings : extraction spéciale pour les multipolygones
-echo "→ buildings"
-# 1. Ways simples avec building=*
-osmium tags-filter "$SRC" w/building=* -o _tmp_bldg_ways.osm.pbf --overwrite
-osmium export _tmp_bldg_ways.osm.pbf -o _tmp_bldg_ways.json --overwrite
-
-# 2. Relations multipolygones avec building=*
-osmium tags-filter "$SRC" r/building=* -o _tmp_bldg_rels.osm.pbf --overwrite
-osmium cat _tmp_bldg_rels.osm.pbf -f opl 2>/dev/null | awk '/^r/{print $1}' > _tmp_rel_ids.txt || true
-
-RELS_JSON=""
-if [ -s _tmp_rel_ids.txt ]; then
-  REL_COUNT=$(wc -l < _tmp_rel_ids.txt)
-  echo "  ${REL_COUNT} relations multipolygones trouvées"
-  # Récupérer les relations + ways membres depuis le source
-  osmium getid -r "$SRC" -i _tmp_rel_ids.txt -o _tmp_bldg_rels_complete.osm.pbf --overwrite
-  osmium export _tmp_bldg_rels_complete.osm.pbf -o _tmp_bldg_rels.json --overwrite
-  RELS_JSON="_tmp_bldg_rels.json"
-else
-  echo "  0 relations multipolygones"
-fi
-
-# 3. Combiner les GeoJSON
-python3 -c "
-import json
-with open('_tmp_bldg_ways.json') as f:
-    data = json.load(f)
-rels_file = '${RELS_JSON}'
-if rels_file:
-    with open(rels_file) as f:
-        rels = json.load(f)
-    data['features'].extend(rels['features'])
-    print(f'  ways: {len(data[\"features\"]) - len(rels[\"features\"])}, relations: {len(rels[\"features\"])}')
-with open('buildings.json', 'w') as f:
-    json.dump(data, f)
-print(f'  total: {len(data[\"features\"])} features')
-"
-
-rm -f _tmp_bldg_*.osm.pbf _tmp_bldg_*.json _tmp_rel_ids.txt
+# Buildings : nwr/building=* inclut les relations ET leurs ways membres
+extract buildings nwr/building=*
 
 extract water \
   nwr/natural=water nwr/waterway=river,canal,stream,ditch nwr/landuse=basin nwr/natural=wetland
