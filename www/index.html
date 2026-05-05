@@ -79,9 +79,6 @@
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
 
-/* ── URL absolue du PMTiles (fonctionne avec les sous-chemins GitHub Pages) ── */
-const PMTILES_URL = new URL('./brussels.pmtiles.gz', location.href).href;
-
 /* ── Couches & légende ── */
 const GROUPS = [
   { label: 'Occupation du sol', color: '#eae6e0', type: 'fill', layers: ['landuse-residential','landuse-industrial'] },
@@ -92,11 +89,15 @@ const GROUPS = [
   { label: 'Limites',           color: '#b0a898', type: 'line', layers: ['boundaries'] },
 ];
 
-/* ── Charger le style et patcher l'URL PMTiles ── */
+/* ── Charger le style et patcher les URLs PMTiles ── */
 fetch('./style.json')
   .then(r => r.json())
   .then(style => {
-    style.sources.brussels.url = 'pmtiles://' + PMTILES_URL;
+    for (const [name, src] of Object.entries(style.sources)) {
+      if (src.url && src.url.endsWith('.pmtiles.gz')) {
+        src.url = 'pmtiles://' + new URL(src.url, location.href).href;
+      }
+    }
     initMap(style);
   })
   .catch(err => {
@@ -111,7 +112,7 @@ function initMap(style) {
     center: [4.3517, 50.8503],
     zoom: 13,
     hash: true,
-    maxZoom: 17,
+    maxZoom: 18,
     minZoom: 10,
   });
 
