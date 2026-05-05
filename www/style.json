@@ -1,0 +1,187 @@
+{
+  "version": 8,
+  "name": "Brussels Minimal",
+  "sources": {
+    "brussels": {
+      "type": "vector",
+      "url": "pmtiles://./brussels.pmtiles",
+      "attribution": "© OpenStreetMap contributors"
+    }
+  },
+  "glyphs": "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": { "background-color": "#f5f3ef" }
+    },
+    {
+      "id": "landuse-residential",
+      "type": "fill",
+      "source": "brussels",
+      "source-layer": "landuse",
+      "filter": ["==", ["get", "landuse"], "residential"],
+      "paint": { "fill-color": "#efecea", "fill-opacity": 0.7 }
+    },
+    {
+      "id": "landuse-industrial",
+      "type": "fill",
+      "source": "brussels",
+      "source-layer": "landuse",
+      "filter": [
+        "any",
+        ["==", ["get", "landuse"], "industrial"],
+        ["==", ["get", "landuse"], "commercial"],
+        ["==", ["get", "landuse"], "retail"]
+      ],
+      "paint": { "fill-color": "#eae6e0", "fill-opacity": 0.6 }
+    },
+    {
+      "id": "green-fill",
+      "type": "fill",
+      "source": "brussels",
+      "source-layer": "green",
+      "paint": { "fill-color": "#d5e3c8", "fill-opacity": 0.6 }
+    },
+    {
+      "id": "water-fill",
+      "type": "fill",
+      "source": "brussels",
+      "source-layer": "water",
+      "paint": { "fill-color": "#c4d8e8" }
+    },
+    {
+      "id": "water-line",
+      "type": "line",
+      "source": "brussels",
+      "source-layer": "water",
+      "filter": ["has", "waterway"],
+      "paint": {
+        "line-color": "#b0c8dc",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.5, 15, 2]
+      }
+    },
+    {
+      "id": "buildings",
+      "type": "fill",
+      "source": "brussels",
+      "source-layer": "buildings",
+      "minzoom": 13,
+      "paint": { "fill-color": "#e0dbd3", "fill-opacity": 0.8 }
+    },
+    {
+      "id": "buildings-outline",
+      "type": "line",
+      "source": "brussels",
+      "source-layer": "buildings",
+      "minzoom": 14,
+      "paint": { "line-color": "#ccc5ba", "line-width": 0.4 }
+    },
+    {
+      "id": "roads-service",
+      "type": "line",
+      "source": "brussels",
+      "source-layer": "roads",
+      "filter": [
+        "any",
+        ["==", ["get", "highway"], "service"],
+        ["==", ["get", "highway"], "living_street"]
+      ],
+      "minzoom": 14,
+      "paint": {
+        "line-color": "#d8d2c8",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 14, 0.3, 15, 1]
+      }
+    },
+    {
+      "id": "roads-minor",
+      "type": "line",
+      "source": "brussels",
+      "source-layer": "roads",
+      "filter": [
+        "any",
+        ["==", ["get", "highway"], "residential"],
+        ["==", ["get", "highway"], "unclassified"]
+      ],
+      "paint": {
+        "line-color": "#ccc5b8",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.3, 15, 2]
+      }
+    },
+    {
+      "id": "roads-tertiary",
+      "type": "line",
+      "source": "brussels",
+      "source-layer": "roads",
+      "filter": ["==", ["get", "highway"], "tertiary"],
+      "paint": {
+        "line-color": "#bfb8a8",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.5, 15, 3]
+      }
+    },
+    {
+      "id": "roads-secondary",
+      "type": "line",
+      "source": "brussels",
+      "source-layer": "roads",
+      "filter": ["==", ["get", "highway"], "secondary"],
+      "paint": {
+        "line-color": "#b0a898",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.8, 15, 4]
+      }
+    },
+    {
+      "id": "roads-primary",
+      "type": "line",
+      "source": "brussels",
+      "source-layer": "roads",
+      "filter": [
+        "any",
+        ["==", ["get", "highway"], "primary"],
+        ["==", ["get", "highway"], "trunk"],
+        ["==", ["get", "highway"], "motorway"]
+      ],
+      "paint": {
+        "line-color": "#a09888",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1, 15, 5]
+      }
+    },
+    {
+      "id": "boundaries",
+      "type": "line",
+      "source": "brussels",
+      "source-layer": "boundaries",
+      "paint": {
+        "line-color": "#b0a898",
+        "line-width": 1,
+        "line-dasharray": [4, 3],
+        "line-opacity": 0.5
+      }
+    },
+    {
+      "id": "road-labels",
+      "type": "symbol",
+      "source": "brussels",
+      "source-layer": "roads",
+      "minzoom": 14,
+      "filter": [
+        "any",
+        ["==", ["get", "highway"], "primary"],
+        ["==", ["get", "highway"], "secondary"],
+        ["==", ["get", "highway"], "tertiary"]
+      ],
+      "layout": {
+        "text-field": ["get", "name"],
+        "text-font": ["Open Sans Regular"],
+        "text-size": 10,
+        "symbol-placement": "line",
+        "text-max-angle": 30
+      },
+      "paint": {
+        "text-color": "#6b6358",
+        "text-halo-color": "#f5f3ef",
+        "text-halo-width": 1.5
+      }
+    }
+  ]
+}

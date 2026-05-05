@@ -1,19 +1,27 @@
-tippecanoe -o brussels_ultimate_v2.pmtiles --force \
-  --maximum-zoom=17 \
-  --attribution="OpenStreetMap contributors" \
-  --generate-ids \
+#!/usr/bin/env bash
+# ─────────────────────────────────────────────────────────
+# PMTiles — poids minimal
+# Pré-requis : tippecanoe (github.com/felt/tippecanoe)
+# ─────────────────────────────────────────────────────────
+set -euo pipefail
+
+tippecanoe -o brussels.pmtiles --force \
+  --name="Brussels Minimal" \
+  --attribution="© OpenStreetMap contributors" \
+  --minimum-zoom=10 \
+  --maximum-zoom=15 \
+  --simplification=10 \
   --drop-densest-as-needed \
   --extend-zooms-if-still-dropping \
+  --no-tile-size-limit \
+  --coalesce-densest-as-needed \
+  --generate-ids \
   -L landuse:landuse.json \
-  -L pedestrian:pedestrian.json \
-  -L cycling:cycling.json \
-  -L furniture:furniture.json \
-  -L infra:infra.json \
-  -L green:green.json \
-  -L buildings:buildings.json \
-  -L buildings_parts:buildings_parts.json \
-  -L poi:poi.json \
   -L roads:roads.json \
+  -L buildings:buildings.json \
   -L water:water.json \
-  -L railways:railways.json \
+  -L green:green.json \
   -L boundaries:boundaries.json
+
+echo "✓ brussels.pmtiles généré"
+ls -lh brussels.pmtiles
