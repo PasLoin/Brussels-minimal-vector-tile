@@ -9,8 +9,8 @@ tippecanoe -o brussels.pmtiles --force \
   --name="Brussels Minimal" \
   --attribution="© OpenStreetMap contributors" \
   --minimum-zoom=10 \
-  --maximum-zoom=17 \
-  --simplification=30 \
+  --maximum-zoom=18 \
+  --simplification=20 \
   --drop-densest-as-needed \
   --extend-zooms-if-still-dropping \
   --no-tile-size-limit \
