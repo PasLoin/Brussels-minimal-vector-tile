@@ -1,17 +1,28 @@
 #!/usr/bin/env python3
 """
 Fusionne les bâtiments qui se touchent en un seul polygone.
+Les multipolygones (cours intérieures, etc.) sont simplifiés :
+on ne garde que le contour extérieur (outer) de chaque polygone.
 523k features → beaucoup moins après merge.
 """
 import json
-import sys
-from shapely.geometry import shape, mapping
+from shapely.geometry import shape, mapping, Polygon, MultiPolygon
 from shapely.ops import unary_union
 from shapely.strtree import STRtree
-import numpy as np
 
 INPUT = "buildings.json"
 OUTPUT = "buildings.json"
+
+def to_outer_only(geom):
+    """Supprime les trous (inner rings) d'un polygone ou multipolygone.
+    Ne garde que le contour extérieur → polygone simple."""
+    if geom.geom_type == "Polygon":
+        return Polygon(geom.exterior)
+    elif geom.geom_type == "MultiPolygon":
+        # Chaque composante → son outer uniquement
+        outers = [Polygon(p.exterior) for p in geom.geoms]
+        return unary_union(outers)
+    return geom
 
 print("→ Chargement des bâtiments...")
 with open(INPUT) as f:
@@ -20,17 +31,26 @@ with open(INPUT) as f:
 features = geojson["features"]
 print(f"  {len(features)} features en entrée")
 
-# Construire les géométries
+# Construire les géométries : outer only
 geoms = []
+skipped_invalid = 0
 for feat in features:
     try:
         g = shape(feat["geometry"])
+        if not g.is_valid:
+            g = g.buffer(0)
+        if g.is_empty:
+            continue
+        g = to_outer_only(g)
         if g.is_valid and not g.is_empty:
             geoms.append(g)
     except Exception:
+        skipped_invalid += 1
         continue
 
-print(f"  {len(geoms)} géométries valides")
+print(f"  {len(geoms)} géométries valides (outer only)")
+if skipped_invalid:
+    print(f"  {skipped_invalid} ignorées (invalides)")
 
 # Index spatial
 print("→ Construction de l'index spatial...")
@@ -83,7 +103,9 @@ for root, indices in groups.items():
     if merged.is_empty:
         continue
 
-    # Gérer MultiPolygon : garder tel quel
+    # Supprimer les trous du résultat fusionné aussi
+    merged = to_outer_only(merged)
+
     merged_features.append({
         "type": "Feature",
         "properties": {"building": "yes"},
