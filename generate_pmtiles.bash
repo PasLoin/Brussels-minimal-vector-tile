@@ -22,7 +22,7 @@ declare -A MAX_ZOOM=(
   [landuse]=14
   [roads]=18
   [buildings]=18
-  [water]=15
+  [water]=16
   [green]=16
   [boundaries]=14
 )
