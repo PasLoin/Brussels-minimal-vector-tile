@@ -17,12 +17,11 @@ if [ "$FILESIZE" -lt 1000000 ]; then
   echo "✗ $SRC trop petit (${FILESIZE} octets) — téléchargement probablement échoué" >&2; exit 1
 fi
 
-# Vérifier les magic bytes du format PBF (commence par 0x0000000d)
-MAGIC=$(xxd -l 4 -p "$SRC")
-if [ "$MAGIC" != "0000000d" ]; then
-  echo "✗ $SRC n'est pas un fichier PBF valide (magic: $MAGIC)" >&2
-  echo "  Le téléchargement a peut-être renvoyé une page HTML." >&2
-  head -c 200 "$SRC" >&2
+# Vérifier que c'est bien un PBF et pas une page HTML
+FILETYPE=$(file -b "$SRC")
+if [[ "$FILETYPE" != *"OpenStreetMap"* ]]; then
+  echo "✗ $SRC n'est pas un fichier PBF valide" >&2
+  echo "  Détecté : $FILETYPE" >&2
   exit 1
 fi
 
