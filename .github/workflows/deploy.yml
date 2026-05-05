@@ -50,6 +50,11 @@ jobs:
       - name: Extract GeoJSON layers
         run: bash generate_json.bash
 
+      - name: Merge touching buildings
+        run: |
+          pip install shapely --break-system-packages -q
+          python3 merge_buildings.py
+
       - name: Generate PMTiles
         run: bash generate_pmtiles.bash
 
