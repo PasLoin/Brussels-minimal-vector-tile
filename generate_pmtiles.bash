@@ -1,29 +1,44 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────
-# PMTiles — poids minimal
+# PMTiles — un fichier par couche
 # Pré-requis : tippecanoe (github.com/felt/tippecanoe)
 # ─────────────────────────────────────────────────────────
 set -euo pipefail
 
-tippecanoe -o brussels.pmtiles --force \
-  --name="Brussels Minimal" \
-  --attribution="© OpenStreetMap contributors" \
-  --minimum-zoom=10 \
-  --maximum-zoom=17 \
-  --simplification=30 \
-  --simplify-only-low-zooms \
-  --drop-densest-as-needed \
-  --extend-zooms-if-still-dropping \
-  --no-tile-size-limit \
-  --coalesce-densest-as-needed \
-  --generate-ids \
-  -L landuse:landuse.json \
-  -L roads:roads.json \
-  -L buildings:buildings.json \
-  -L water:water.json \
-  -L green:green.json \
-  -L boundaries:boundaries.json
+COMMON_OPTS=(
+  --attribution="© OpenStreetMap contributors"
+  --minimum-zoom=10
+  --simplification=30
+  --simplify-only-low-zooms
+  --drop-densest-as-needed
+  --extend-zooms-if-still-dropping
+  --coalesce-densest-as-needed
+  --generate-ids
+  --force
+)
 
-echo "✓ brussels.pmtiles généré"
-mv brussels.pmtiles brussels.pmtiles.gz
-ls -lh brussels.pmtiles.gz
+# zoom max par couche : détail là où c'est utile
+declare -A MAX_ZOOM=(
+  [landuse]=14
+  [roads]=18
+  [buildings]=18
+  [water]=15
+  [green]=16
+  [boundaries]=14
+)
+
+for layer in landuse roads buildings water green boundaries; do
+  echo "→ ${layer} (z10-${MAX_ZOOM[$layer]})"
+  tippecanoe -o "${layer}.pmtiles" \
+    --name="${layer}" \
+    --maximum-zoom="${MAX_ZOOM[$layer]}" \
+    "${COMMON_OPTS[@]}" \
+    -L "${layer}:${layer}.json"
+  mv "${layer}.pmtiles" "${layer}.pmtiles.gz"
+  echo "  $(ls -lh "${layer}.pmtiles.gz" | awk '{print $5}')"
+done
+
+echo ""
+echo "✓ Tous les PMTiles générés :"
+ls -lh *.pmtiles.gz
+echo "  Total : $(du -ch *.pmtiles.gz | tail -1 | awk '{print $1}')"
