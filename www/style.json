@@ -163,46 +163,6 @@
       }
     },
     {
-      "id": "green-grass",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "any",
-        [
-          "==",
-          [
-            "get",
-            "landuse"
-          ],
-          "grass"
-        ],
-        [
-          "==",
-          [
-            "get",
-            "landuse"
-          ],
-          "meadow"
-        ]
-      ],
-      "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#eaf6df",
-          "#cdebb0"
-        ]
-      }
-    },
-    {
       "id": "green-park",
       "type": "fill",
       "source": "green",
@@ -257,6 +217,46 @@
           ],
           "#f1f8e9",
           "#cfeca8"
+        ]
+      }
+    },
+    {
+      "id": "green-grass",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "any",
+        [
+          "==",
+          [
+            "get",
+            "landuse"
+          ],
+          "grass"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "landuse"
+          ],
+          "meadow"
+        ]
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#eaf6df",
+          "#cdebb0"
         ]
       }
     },
