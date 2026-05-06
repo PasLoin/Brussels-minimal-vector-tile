@@ -130,6 +130,10 @@ function initMap(style) {
       { label: 'Pelouse', pattern: 'green-grass', type: 'fill' },
       { label: 'Eau', pattern: 'water-', type: 'fill' },
       { label: 'Bâtiments', pattern: 'buildings', type: 'fill' },
+      { label: 'Rail', pattern: 'railway-rail', type: 'line', extraPatterns: ['railway-tunnel-rail', 'railway-bridge-rail'] },
+      { label: 'Tram', pattern: 'railway-tram', type: 'line', extraPatterns: ['railway-tunnel-tram', 'railway-bridge-tram'] },
+      { label: 'Métro', pattern: 'railway-subway', type: 'line', extraPatterns: ['railway-tunnel-subway', 'railway-bridge-subway'] },
+      { label: 'Miniature', pattern: 'railway-miniature', type: 'line' },
       { label: 'Routes', pattern: 'roads-', type: 'line' },
       { label: 'Piétons', pattern: 'pedestrian-', type: 'line' },
       { label: 'Cyclable', pattern: 'cycleway', type: 'line' },
@@ -138,7 +142,13 @@ function initMap(style) {
     ];
 
     categories.forEach(cat => {
-      const matchedLayers = layers.filter(l => l.id.startsWith(cat.pattern));
+      // Collect all layers matching main pattern + extra patterns
+      let matchedLayers = layers.filter(l => l.id.startsWith(cat.pattern));
+      if (cat.extraPatterns) {
+        cat.extraPatterns.forEach(ep => {
+          matchedLayers = matchedLayers.concat(layers.filter(l => l.id.startsWith(ep)));
+        });
+      }
       if (matchedLayers.length === 0) return;
 
       let color = '#ccc';
@@ -152,9 +162,16 @@ function initMap(style) {
         }
       }
 
-      const allRelatedLayers = layers
-        .filter(l => l.id.startsWith(cat.pattern) || (cat.pattern === 'roads-' && l.id === 'road-labels'))
-        .map(l => l.id);
+      // Collect all related layer IDs for toggle
+      let allRelatedLayers = matchedLayers.map(l => l.id);
+      if (cat.pattern === 'roads-') {
+        allRelatedLayers.push('road-labels');
+      }
+      // Also include bridge-casing for railway
+      if (cat.pattern === 'railway-rail') {
+        const bridgeCasing = layers.find(l => l.id === 'railway-bridge-casing');
+        if (bridgeCasing) allRelatedLayers.push('railway-bridge-casing');
+      }
 
       const row = document.createElement('div');
       row.className = 'legend-row';
