@@ -46,6 +46,7 @@ extract water \
   nwr/natural=water nwr/waterway=river,canal,stream,ditch nwr/landuse=basin nwr/natural=wetland
 
 extract green \
+  nwr/landuse=flowerbed nwr/natural=shrubbery \
   nwr/leisure=park,garden nwr/landuse=forest,meadow,grass nwr/natural=wood
 
 extract landuse \
