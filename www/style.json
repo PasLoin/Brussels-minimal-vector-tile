@@ -38,6 +38,10 @@
     "cycleway": {
       "type": "vector",
       "url": "./cycleway.pmtiles.gz"
+    },
+    "railway": {
+      "type": "vector",
+      "url": "./railway.pmtiles.gz"
     }
   },
   "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
@@ -434,6 +438,250 @@
       "paint": {
         "line-color": "#b0a297",
         "line-width": 0.5
+      }
+    },
+    {
+      "id": "railway-tunnel-rail-casing",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "rail"
+        ],
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "building_passage"
+          ]
+        ]
+      ],
+      "minzoom": 13,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#c0c0c0",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          3,
+          18,
+          7
+        ],
+        "line-dasharray": [
+          0.2,
+          4
+        ],
+        "line-opacity": 0.4
+      }
+    },
+    {
+      "id": "railway-tunnel-rail-core",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "rail"
+        ],
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "building_passage"
+          ]
+        ]
+      ],
+      "minzoom": 13,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#c0c0c0",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.8,
+          18,
+          2
+        ],
+        "line-dasharray": [
+          5,
+          3
+        ],
+        "line-opacity": 0.5
+      }
+    },
+    {
+      "id": "railway-tunnel-subway",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "subway"
+        ],
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "building_passage"
+          ]
+        ]
+      ],
+      "minzoom": 12,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#b0b0b0",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          0.8,
+          18,
+          2
+        ],
+        "line-dasharray": [
+          5,
+          3
+        ],
+        "line-opacity": 0.5
+      }
+    },
+    {
+      "id": "railway-tunnel-tram",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "tram"
+        ],
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "building_passage"
+          ]
+        ]
+      ],
+      "minzoom": 13,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#b0b0b0",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          1.5
+        ],
+        "line-dasharray": [
+          5,
+          3
+        ],
+        "line-opacity": 0.4
       }
     },
     {
@@ -1109,6 +1357,583 @@
           0.5,
           18,
           18
+        ]
+      }
+    },
+    {
+      "id": "railway-rail-ties",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "rail"
+        ],
+        [
+          "all",
+          [
+            "!=",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "!=",
+            [
+              "get",
+              "tunnel"
+            ],
+            "building_passage"
+          ],
+          [
+            "!=",
+            [
+              "get",
+              "bridge"
+            ],
+            "yes"
+          ]
+        ]
+      ],
+      "minzoom": 10,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#787878",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          2,
+          18,
+          7
+        ],
+        "line-dasharray": [
+          0.2,
+          4
+        ]
+      }
+    },
+    {
+      "id": "railway-rail-core",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "rail"
+        ],
+        [
+          "all",
+          [
+            "!=",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "!=",
+            [
+              "get",
+              "tunnel"
+            ],
+            "building_passage"
+          ],
+          [
+            "!=",
+            [
+              "get",
+              "bridge"
+            ],
+            "yes"
+          ]
+        ]
+      ],
+      "minzoom": 10,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#787878",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          0.8,
+          18,
+          2
+        ]
+      }
+    },
+    {
+      "id": "railway-subway",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "subway"
+        ],
+        [
+          "all",
+          [
+            "!=",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "!=",
+            [
+              "get",
+              "tunnel"
+            ],
+            "building_passage"
+          ],
+          [
+            "!=",
+            [
+              "get",
+              "bridge"
+            ],
+            "yes"
+          ]
+        ]
+      ],
+      "minzoom": 12,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#999999",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          0.8,
+          18,
+          2
+        ]
+      }
+    },
+    {
+      "id": "railway-tram",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "tram"
+        ],
+        [
+          "all",
+          [
+            "!=",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "!=",
+            [
+              "get",
+              "tunnel"
+            ],
+            "building_passage"
+          ],
+          [
+            "!=",
+            [
+              "get",
+              "bridge"
+            ],
+            "yes"
+          ]
+        ]
+      ],
+      "minzoom": 13,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#444444",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          1.5
+        ]
+      }
+    },
+    {
+      "id": "railway-miniature",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "miniature"
+        ],
+        [
+          "all",
+          [
+            "!=",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "!=",
+            [
+              "get",
+              "tunnel"
+            ],
+            "building_passage"
+          ],
+          [
+            "!=",
+            [
+              "get",
+              "bridge"
+            ],
+            "yes"
+          ]
+        ]
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#999999",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          0.3,
+          18,
+          1
+        ],
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "railway-bridge-casing",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "railway"
+            ],
+            "rail"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "railway"
+            ],
+            "tram"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "railway"
+            ],
+            "subway"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "minzoom": 13,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#000000",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          4,
+          18,
+          9
+        ],
+        "line-opacity": 0.15
+      }
+    },
+    {
+      "id": "railway-bridge-rail-ties",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "rail"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "minzoom": 10,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#787878",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          2,
+          18,
+          7
+        ],
+        "line-dasharray": [
+          0.2,
+          4
+        ]
+      }
+    },
+    {
+      "id": "railway-bridge-rail-core",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "rail"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "minzoom": 10,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#787878",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          0.8,
+          18,
+          2
+        ]
+      }
+    },
+    {
+      "id": "railway-bridge-tram",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "tram"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "minzoom": 13,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#444444",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          1.5
+        ]
+      }
+    },
+    {
+      "id": "railway-bridge-subway",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "subway"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "minzoom": 12,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#999999",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          0.8,
+          18,
+          2
         ]
       }
     },
