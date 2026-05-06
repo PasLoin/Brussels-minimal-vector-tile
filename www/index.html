@@ -135,7 +135,6 @@ function initMap(style) {
       const matchedLayers = layers.filter(l => l.id.startsWith(cat.pattern));
       if (matchedLayers.length === 0) return;
 
-      // Chercher une couleur de remplissage ou de ligne
       let color = '#ccc';
       for (const layer of matchedLayers) {
         const c = (layer.paint && (layer.paint['fill-color'] || layer.paint['line-color']));
@@ -145,8 +144,6 @@ function initMap(style) {
         }
       }
 
-      // Collecter tous les IDs de couches pour ce toggle
-      // Pour "Routes", on veut roads-fill, roads-casing, road-labels
       const allRelatedLayers = layers
         .filter(l => l.id.startsWith(cat.pattern) || (cat.pattern === 'roads-' && l.id === 'road-labels'))
         .map(l => l.id);
