@@ -127,7 +127,7 @@ function initMap(style) {
       { label: 'Pelouse', pattern: 'green-grass', type: 'fill' },
       { label: 'Eau', pattern: 'water-', type: 'fill' },
       { label: 'Bâtiments', pattern: 'buildings', type: 'fill' },
-      { label: 'Routes', pattern: 'roads-fill', type: 'line' },
+      { label: 'Routes', pattern: 'roads-', type: 'line' },
       { label: 'Limites', pattern: 'boundaries', type: 'line' },
     ];
 
@@ -138,16 +138,17 @@ function initMap(style) {
       // Chercher une couleur de remplissage ou de ligne
       let color = '#ccc';
       for (const layer of matchedLayers) {
-        const c = layer.paint['fill-color'] || layer.paint['line-color'];
+        const c = (layer.paint && (layer.paint['fill-color'] || layer.paint['line-color']));
         if (c && typeof c === 'string') {
           color = c;
           break;
         }
       }
 
-      // Pour les routes, inclure aussi les couches de casing dans le toggle
+      // Collecter tous les IDs de couches pour ce toggle
+      // Pour "Routes", on veut roads-fill, roads-casing, road-labels
       const allRelatedLayers = layers
-        .filter(l => l.id.includes(cat.pattern.replace('-fill', '')))
+        .filter(l => l.id.startsWith(cat.pattern) || (cat.pattern === 'roads-' && l.id === 'road-labels'))
         .map(l => l.id);
 
       const row = document.createElement('div');
