@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────
-# Extraction minimaliste — 6 couches essentielles
+# Extraction minimaliste — 9 couches essentielles
 # Pré-requis : osmium-tool
 # ─────────────────────────────────────────────────────────
 set -euo pipefail
@@ -55,4 +55,15 @@ extract landuse \
 extract boundaries \
   nwr/boundary=administrative
 
-echo "✓ 6 couches extraites"
+extract poi \
+  nwr/shop=* \
+  nwr/amenity=restaurant,cafe,bar,pub,fast_food,bank,pharmacy,hospital,clinic,school,university,library,theatre,cinema,post_office,police,fire_station \
+  nwr/tourism=hotel,hostel,museum,attraction,information,viewpoint
+
+extract pedestrian \
+  nwr/highway=pedestrian,footway,path,steps
+
+extract cycleway \
+  nwr/highway=cycleway
+
+echo "✓ 9 couches extraites"
