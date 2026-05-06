@@ -327,7 +327,7 @@
       ],
       "layout": {
         "text-field": ["get", "name"],
-        "text-font": ["Noto Sans Regular", "Open Sans Regular", "Arial Unicode MS Regular"],
+        "text-font": ["Open Sans Regular"],
         "text-size": 11,
         "symbol-placement": "line",
         "text-max-angle": 30
