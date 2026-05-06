@@ -57,6 +57,9 @@
     .legend-row .swatch.fill {
       height: 12px; width: 12px; border-radius: 2px;
     }
+    .legend-row .swatch.dot {
+      height: 8px; width: 8px; border-radius: 50%;
+    }
     .legend-row span {
       font-size: 11px; color: #444;
     }
@@ -128,6 +131,9 @@ function initMap(style) {
       { label: 'Eau', pattern: 'water-', type: 'fill' },
       { label: 'Bâtiments', pattern: 'buildings', type: 'fill' },
       { label: 'Routes', pattern: 'roads-', type: 'line' },
+      { label: 'Piétons', pattern: 'pedestrian', type: 'line' },
+      { label: 'Cyclable', pattern: 'cycleway', type: 'line' },
+      { label: 'POI', pattern: 'poi-', type: 'dot' },
       { label: 'Limites', pattern: 'boundaries', type: 'line' },
     ];
 
@@ -137,7 +143,9 @@ function initMap(style) {
 
       let color = '#ccc';
       for (const layer of matchedLayers) {
-        const c = (layer.paint && (layer.paint['fill-color'] || layer.paint['line-color']));
+        const p = layer.paint;
+        if (!p) continue;
+        const c = p['fill-color'] || p['line-color'] || p['circle-color'];
         if (c && typeof c === 'string') {
           color = c;
           break;
@@ -150,7 +158,9 @@ function initMap(style) {
 
       const row = document.createElement('div');
       row.className = 'legend-row';
-      const cls = cat.type === 'fill' ? 'swatch fill' : 'swatch';
+      let cls = 'swatch';
+      if (cat.type === 'fill') cls = 'swatch fill';
+      else if (cat.type === 'dot') cls = 'swatch dot';
       row.innerHTML = `<div class="${cls}" style="background:${color}"></div><span>${cat.label}</span>`;
       
       let on = true;
