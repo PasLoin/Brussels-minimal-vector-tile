@@ -28,7 +28,7 @@
       "url": "./boundaries.pmtiles.gz"
     }
   },
-  "glyphs": "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+  "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
   "layers": [
     {
       "id": "background",
@@ -327,7 +327,7 @@
       ],
       "layout": {
         "text-field": ["get", "name"],
-        "text-font": ["Open Sans Regular"],
+        "text-font": ["Noto Sans Regular"],
         "text-size": 11,
         "symbol-placement": "line",
         "text-max-angle": 30
