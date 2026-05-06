@@ -8,59 +8,62 @@
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
   <script src="https://unpkg.com/pmtiles@3.2.0/dist/pmtiles.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap');
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', system-ui, sans-serif; background: #f5f3ef; }
+    body { 
+      font-family: "DejaVu Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+      background: #f2efe9; 
+    }
     #map { position: absolute; inset: 0; }
 
     /* ── Titre ── */
     .title {
       position: absolute; top: 16px; left: 16px; z-index: 5;
-      background: rgba(245, 243, 239, 0.92);
+      background: rgba(242, 239, 233, 0.92);
       backdrop-filter: blur(8px);
       padding: 10px 14px;
       border-radius: 6px;
-      border: 1px solid rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     .title h1 {
-      font-size: 13px; font-weight: 500; color: #3a352e;
-      letter-spacing: 0.04em;
+      font-size: 14px; font-weight: bold; color: #222;
+      letter-spacing: 0.02em;
     }
     .title p {
-      font-size: 10px; color: #9a9389; margin-top: 2px;
-      letter-spacing: 0.02em;
+      font-size: 11px; color: #666; margin-top: 2px;
     }
 
     /* ── Légende ── */
     .legend {
       position: absolute; bottom: 24px; left: 16px; z-index: 5;
-      background: rgba(245, 243, 239, 0.92);
+      background: rgba(242, 239, 233, 0.92);
       backdrop-filter: blur(8px);
       padding: 10px 14px;
       border-radius: 6px;
-      border: 1px solid rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.1);
+      max-height: 50vh;
+      overflow-y: auto;
     }
     .legend-row {
       display: flex; align-items: center; gap: 8px;
-      padding: 3px 0; cursor: pointer; user-select: none;
+      padding: 4px 0; cursor: pointer; user-select: none;
       transition: opacity 0.15s;
     }
     .legend-row.off { opacity: 0.3; }
     .legend-row .swatch {
-      width: 14px; height: 3px; border-radius: 1px; flex-shrink: 0;
+      width: 16px; height: 4px; border-radius: 1px; flex-shrink: 0;
+      border: 1px solid rgba(0,0,0,0.1);
     }
     .legend-row .swatch.fill {
-      height: 10px; width: 12px; border-radius: 2px;
+      height: 12px; width: 12px; border-radius: 2px;
     }
     .legend-row span {
-      font-size: 10.5px; color: #5a5349; letter-spacing: 0.01em;
+      font-size: 11px; color: #444;
     }
 
     /* ── Contrôles MapLibre ── */
-    .maplibregl-ctrl-group { border-radius: 6px !important; border: 1px solid rgba(0,0,0,0.06) !important; box-shadow: none !important; }
-    .maplibregl-ctrl-group button { width: 30px !important; height: 30px !important; }
-    .maplibregl-ctrl-attrib { font-size: 9px !important; }
+    .maplibregl-ctrl-group { border-radius: 4px !important; border: 1px solid rgba(0,0,0,0.1) !important; box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; }
+    .maplibregl-ctrl-attrib { font-size: 10px !important; background: rgba(255,255,255,0.7) !important; }
   </style>
 </head>
 <body>
@@ -78,16 +81,6 @@
 /* ── PMTiles ── */
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
-
-/* ── Couches & légende ── */
-const GROUPS = [
-  { label: 'Occupation du sol', color: '#eae6e0', type: 'fill', layers: ['landuse-residential','landuse-industrial'] },
-  { label: 'Espaces verts',     color: '#d5e3c8', type: 'fill', layers: ['green-fill'] },
-  { label: 'Eau',               color: '#b8d4e8', type: 'fill', layers: ['water-fill','water-casing','water-line'] },
-  { label: 'Bâtiments',         color: '#e0dbd3', type: 'fill', layers: ['buildings','buildings-outline'] },
-  { label: 'Voirie',            color: '#a09888', type: 'line', layers: ['roads-service','roads-minor','roads-tertiary','roads-secondary','roads-primary','road-labels'] },
-  { label: 'Limites',           color: '#b0a898', type: 'line', layers: ['boundaries'] },
-];
 
 /* ── Charger le style et patcher les URLs PMTiles ── */
 fetch('./style.json')
@@ -119,20 +112,57 @@ function initMap(style) {
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 100, unit: 'metric' }), 'bottom-right');
 
-  /* ── Légende interactive ── */
+  /* ── Légende dynamique ── */
   map.on('load', () => {
+    const layers = map.getStyle().layers;
     const el = document.getElementById('legend');
-    GROUPS.forEach(g => {
+    
+    const categories = [
+      { label: 'Résidentiel', pattern: 'landuse-residential', type: 'fill' },
+      { label: 'Industriel', pattern: 'landuse-industrial', type: 'fill' },
+      { label: 'Commercial', pattern: 'landuse-commercial', type: 'fill' },
+      { label: 'Retail', pattern: 'landuse-retail', type: 'fill' },
+      { label: 'Forêt', pattern: 'green-forest', type: 'fill' },
+      { label: 'Parcs', pattern: 'green-park', type: 'fill' },
+      { label: 'Pelouse', pattern: 'green-grass', type: 'fill' },
+      { label: 'Eau', pattern: 'water-', type: 'fill' },
+      { label: 'Bâtiments', pattern: 'buildings', type: 'fill' },
+      { label: 'Routes', pattern: 'roads-fill', type: 'line' },
+      { label: 'Limites', pattern: 'boundaries', type: 'line' },
+    ];
+
+    categories.forEach(cat => {
+      const matchedLayers = layers.filter(l => l.id.startsWith(cat.pattern));
+      if (matchedLayers.length === 0) return;
+
+      // Chercher une couleur de remplissage ou de ligne
+      let color = '#ccc';
+      for (const layer of matchedLayers) {
+        const c = layer.paint['fill-color'] || layer.paint['line-color'];
+        if (c && typeof c === 'string') {
+          color = c;
+          break;
+        }
+      }
+
+      // Pour les routes, inclure aussi les couches de casing dans le toggle
+      const allRelatedLayers = layers
+        .filter(l => l.id.includes(cat.pattern.replace('-fill', '')))
+        .map(l => l.id);
+
       const row = document.createElement('div');
       row.className = 'legend-row';
-      const cls = g.type === 'fill' ? 'swatch fill' : 'swatch';
-      row.innerHTML = `<div class="${cls}" style="background:${g.color}"></div><span>${g.label}</span>`;
+      const cls = cat.type === 'fill' ? 'swatch fill' : 'swatch';
+      row.innerHTML = `<div class="${cls}" style="background:${color}"></div><span>${cat.label}</span>`;
+      
       let on = true;
       row.onclick = () => {
         on = !on;
         row.classList.toggle('off', !on);
         const v = on ? 'visible' : 'none';
-        g.layers.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v); });
+        allRelatedLayers.forEach(id => {
+          if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v);
+        });
       };
       el.appendChild(row);
     });
