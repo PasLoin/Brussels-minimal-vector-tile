@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────
-# Extraction minimaliste — 9 couches essentielles
+# Extraction minimaliste — 10 couches essentielles
 # Pré-requis : osmium-tool
 # ─────────────────────────────────────────────────────────
 set -euo pipefail
@@ -66,4 +66,7 @@ extract pedestrian \
 extract cycleway \
   nwr/highway=cycleway
 
-echo "✓ 9 couches extraites"
+extract railway \
+  nwr/railway=rail,tram,subway,miniature
+
+echo "✓ 10 couches extraites"
