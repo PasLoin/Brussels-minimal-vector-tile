@@ -6,32 +6,32 @@
       "type": "vector",
       "url": "./landuse.pmtiles.gz",
       "attribution": "© OpenStreetMap contributors",
-      "maxzoom": 14
+      "maxzoom": 22
     },
     "roads": {
       "type": "vector",
       "url": "./roads.pmtiles.gz",
-      "maxzoom": 18
+      "maxzoom": 22
     },
     "buildings": {
       "type": "vector",
       "url": "./buildings.pmtiles.gz",
-      "maxzoom": 18
+      "maxzoom": 22
     },
     "water": {
       "type": "vector",
       "url": "./water.pmtiles.gz",
-      "maxzoom": 16
+      "maxzoom": 22
     },
     "green": {
       "type": "vector",
       "url": "./green.pmtiles.gz",
-      "maxzoom": 16
+      "maxzoom": 22
     },
     "boundaries": {
       "type": "vector",
       "url": "./boundaries.pmtiles.gz",
-      "maxzoom": 14
+      "maxzoom": 22
     }
   },
   "glyphs": "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
@@ -117,6 +117,22 @@
         ["!=", ["get", "covered"], "yes"]
       ],
       "paint": { "fill-color": "#aad3df" }
+    },
+    {
+      "id": "water-line",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "all",
+        ["!=", ["get", "tunnel"], "culvert"],
+        ["!=", ["get", "tunnel"], "yes"],
+        ["!=", ["get", "covered"], "yes"]
+      ],
+      "paint": {
+        "line-color": "#aad3df",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 13, 1, 18, 10]
+      }
     },
     {
       "id": "buildings",
