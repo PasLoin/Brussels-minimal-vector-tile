@@ -1,0 +1,41 @@
+name: Validate PMTiles and style metadata
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-vector-layers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract PMTiles JSON metadata
+        id: metadata
+        run: |
+          python3 scripts/extract_pmtiles_metadata.py \
+            --out-dir _pmtiles_metadata \
+            --github-output "$GITHUB_OUTPUT" \
+            www/*.pmtiles.gz
+
+      - name: Validate TileJSON vector_layers metadata
+        uses: docker://orrosenblatt/validate-json-action:latest
+        env:
+          INPUT_SCHEMA: .github/schemas/pmtiles-vector-metadata.schema.json
+          INPUT_JSONS: ${{ steps.metadata.outputs.jsons }}
+
+      - name: Validate style JSON structure
+        uses: docker://orrosenblatt/validate-json-action:latest
+        env:
+          INPUT_SCHEMA: .github/schemas/maplibre-style-minimal.schema.json
+          INPUT_JSONS: www/style.json
+
+      - name: Validate style PMTiles references
+        run: |
+          python3 scripts/validate_style_pmtiles.py \
+            --style www/style.json \
+            --metadata-dir _pmtiles_metadata
