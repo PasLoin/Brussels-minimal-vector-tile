@@ -93,7 +93,7 @@ const ICON_COLOR = '#734a08';
 const ICON_SIZE = 20;  // rendered pixel size
 
 // CDN bases
-const TEMAKI = 'https://cdn.jsdelivr.net/npm/@rapideditor/temaki/icons/';
+const TEMAKI = 'https://cdn.jsdelivr.net/gh/rapideditor/temaki@main/icons/';
 const MAKI   = 'https://cdn.jsdelivr.net/npm/@mapbox/maki/icons/';
 
 // POI type → [temaki_name, maki_name]  (null = skip that source)
@@ -140,12 +140,9 @@ async function loadPoiIcon(map, poiType, temakiName, makiName) {
       let svg = await res.text();
       if (!svg.includes('<svg')) continue;
 
-      // Recolor all fill attributes to our target color
-      svg = svg.replace(/fill="[^"]*"/g, `fill="${ICON_COLOR}"`);
-      // If no fill attribute, add one on the root <path> elements
-      if (!svg.includes(`fill="${ICON_COLOR}"`)) {
-        svg = svg.replace(/<svg /, `<svg fill="${ICON_COLOR}" `);
-      }
+      // Recolor: remove any existing fill, then set fill on the root <svg>
+      svg = svg.replace(/\s*fill="[^"]*"/g, '');
+      svg = svg.replace(/<svg /, `<svg fill="${ICON_COLOR}" `);
 
       // Render SVG to canvas
       const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
