@@ -5,7 +5,7 @@
     "landuse": {
       "type": "vector",
       "url": "./landuse.pmtiles.gz",
-      "attribution": "© OpenStreetMap contributors"
+      "attribution": "\u00a9 OpenStreetMap contributors"
     },
     "roads": {
       "type": "vector",
@@ -727,7 +727,7 @@
           18,
           32
         ],
-        "text-field": "●",
+        "text-field": "\u25cf",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -801,7 +801,7 @@
           18,
           32
         ],
-        "text-field": "▲",
+        "text-field": "\u25b2",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -884,7 +884,7 @@
           18,
           32
         ],
-        "text-field": "●",
+        "text-field": "\u25cf",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -944,7 +944,7 @@
       ],
       "minzoom": 17,
       "layout": {
-        "text-field": "●",
+        "text-field": "\u25cf",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -1003,7 +1003,7 @@
       ],
       "minzoom": 17,
       "layout": {
-        "text-field": "▲",
+        "text-field": "\u25b2",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -1071,7 +1071,7 @@
       ],
       "minzoom": 17,
       "layout": {
-        "text-field": "●",
+        "text-field": "\u25cf",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -1097,8 +1097,6 @@
         "text-halo-width": 0.9
       }
     },
-    
-    
     {
       "id": "railway-tunnel-rail-casing",
       "type": "line",
@@ -1546,6 +1544,74 @@
       }
     },
     {
+      "id": "man_made-tunnel-fill",
+      "type": "fill",
+      "source": "roads",
+      "source-layer": "roads",
+      "filter": [
+        "==",
+        [
+          "get",
+          "man_made"
+        ],
+        "tunnel"
+      ],
+      "layout": {
+        "fill-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "fill-color": "#adadad",
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "man_made-tunnel-outline",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "filter": [
+        "==",
+        [
+          "get",
+          "man_made"
+        ],
+        "tunnel"
+      ],
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#ffc0cb",
+        "line-width": 2,
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
       "id": "roads-casing-busway",
       "type": "line",
       "source": "roads",
@@ -1561,7 +1627,18 @@
       "minzoom": 12,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#bbb",
@@ -1577,6 +1654,44 @@
           1.2,
           18,
           11
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
+        ],
+        "line-dasharray": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "literal",
+            [
+              2,
+              2
+            ]
+          ],
+          [
+            "literal",
+            [
+              1,
+              0
+            ]
+          ]
         ]
       }
     },
@@ -1623,7 +1738,18 @@
       "minzoom": 13,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#bbb",
@@ -1639,6 +1765,44 @@
           1,
           18,
           10
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
+        ],
+        "line-dasharray": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "literal",
+            [
+              2,
+              2
+            ]
+          ],
+          [
+            "literal",
+            [
+              1,
+              0
+            ]
+          ]
         ]
       }
     },
@@ -1669,7 +1833,18 @@
       "minzoom": 11,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#8f8f8f",
@@ -1685,6 +1860,44 @@
           1,
           18,
           12
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
+        ],
+        "line-dasharray": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "literal",
+            [
+              2,
+              2
+            ]
+          ],
+          [
+            "literal",
+            [
+              1,
+              0
+            ]
+          ]
         ]
       }
     },
@@ -1715,7 +1928,18 @@
       "minzoom": 9,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#707d05",
@@ -1731,6 +1955,44 @@
           1,
           18,
           14
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
+        ],
+        "line-dasharray": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "literal",
+            [
+              2,
+              2
+            ]
+          ],
+          [
+            "literal",
+            [
+              1,
+              0
+            ]
+          ]
         ]
       }
     },
@@ -1761,7 +2023,18 @@
       "minzoom": 7,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#a06b00",
@@ -1777,6 +2050,44 @@
           1,
           18,
           16
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
+        ],
+        "line-dasharray": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "literal",
+            [
+              2,
+              2
+            ]
+          ],
+          [
+            "literal",
+            [
+              1,
+              0
+            ]
+          ]
         ]
       }
     },
@@ -1807,7 +2118,18 @@
       "minzoom": 5,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#c84e2f",
@@ -1823,6 +2145,44 @@
           1,
           18,
           18
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
+        ],
+        "line-dasharray": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "literal",
+            [
+              2,
+              2
+            ]
+          ],
+          [
+            "literal",
+            [
+              1,
+              0
+            ]
+          ]
         ]
       }
     },
@@ -1842,7 +2202,18 @@
       "minzoom": 5,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#dc2a67",
@@ -1858,6 +2229,44 @@
           1,
           18,
           20
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
+        ],
+        "line-dasharray": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "literal",
+            [
+              2,
+              2
+            ]
+          ],
+          [
+            "literal",
+            [
+              1,
+              0
+            ]
+          ]
         ]
       }
     },
@@ -1877,7 +2286,18 @@
       "minzoom": 12,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#ffffff",
@@ -1893,6 +2313,19 @@
           0.8,
           18,
           9
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
         ]
       }
     },
@@ -1939,7 +2372,18 @@
       "minzoom": 13,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#ffffff",
@@ -1955,6 +2399,19 @@
           0.5,
           18,
           8
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
         ]
       }
     },
@@ -1974,7 +2431,18 @@
       "minzoom": 13,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#996633",
@@ -1994,6 +2462,19 @@
         "line-dasharray": [
           2,
           2
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
         ]
       }
     },
@@ -2024,7 +2505,18 @@
       "minzoom": 11,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#ffffff",
@@ -2040,6 +2532,19 @@
           0.5,
           18,
           10
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
         ]
       }
     },
@@ -2070,7 +2575,18 @@
       "minzoom": 9,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#f7fabf",
@@ -2086,6 +2602,19 @@
           0.5,
           18,
           12
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
         ]
       }
     },
@@ -2116,7 +2645,18 @@
       "minzoom": 7,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#fcd6a4",
@@ -2132,6 +2672,19 @@
           0.5,
           18,
           14
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
         ]
       }
     },
@@ -2162,7 +2715,18 @@
       "minzoom": 5,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#f9b29c",
@@ -2178,6 +2742,19 @@
           0.5,
           18,
           16
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
         ]
       }
     },
@@ -2197,7 +2774,18 @@
       "minzoom": 5,
       "layout": {
         "line-cap": "round",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#e892a2",
@@ -2213,6 +2801,19 @@
           0.5,
           18,
           18
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
         ]
       }
     },
@@ -2232,7 +2833,18 @@
       "minzoom": 12,
       "layout": {
         "line-cap": "butt",
-        "line-join": "round"
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
       },
       "paint": {
         "line-color": "#add19e",
@@ -2252,6 +2864,19 @@
         "line-dasharray": [
           2,
           2
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
         ]
       }
     },
@@ -2993,6 +3618,74 @@
         "text-color": "#734a08",
         "text-halo-color": "rgba(255,255,255,0.8)",
         "text-halo-width": 1.2
+      }
+    },
+    {
+      "id": "man_made-bridge-fill",
+      "type": "fill",
+      "source": "roads",
+      "source-layer": "roads",
+      "filter": [
+        "==",
+        [
+          "get",
+          "man_made"
+        ],
+        "bridge"
+      ],
+      "layout": {
+        "fill-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "fill-color": "#ffebee",
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "man_made-bridge-outline",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "filter": [
+        "==",
+        [
+          "get",
+          "man_made"
+        ],
+        "bridge"
+      ],
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#adadad",
+        "line-width": 2,
+        "line-dasharray": [
+          2,
+          2
+        ]
       }
     },
     {
