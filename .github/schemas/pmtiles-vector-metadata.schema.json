@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/pmtiles-vector-metadata.schema.json",
+  "title": "PMTiles vector metadata",
+  "description": "Validates the PMTiles JSON metadata required for vector tiles. PMTiles v3 requires vector_layers for MVT archives, and vector_layers follows TileJSON 3.0.0 section 3.3.",
+  "type": "object",
+  "required": ["vector_layers"],
+  "properties": {
+    "vector_layers": {
+      "type": "array",
+      "description": "TileJSON 3.0.0 vector_layers metadata.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "fields"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string"
+          },
+          "minzoom": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "maxzoom": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "attribution": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["overlay", "baselayer"]
+    },
+    "version": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}
