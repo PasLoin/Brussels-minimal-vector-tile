@@ -14,6 +14,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate style against MapLibre GL Style Spec
+        run: npx --yes @maplibre/maplibre-gl-style-spec gl-style-validate www/style.json
+
       - name: Extract PMTiles JSON metadata
         id: metadata
         run: |
