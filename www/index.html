@@ -86,42 +86,47 @@ const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
 
 /* ══════════════════════════════════════════════════════════
-   POI Icons — Temaki (priority) + Maki (fallback)
+   POI Icons — Maki (main) + Temaki (supplement for unique icons)
    Loaded at runtime from CDN, recolored to #734a08
+   ─────────────────────────────────────────────────────────
+   Temaki is an EXPANSION pack for Maki — it only contains icons
+   that Maki doesn't have. Common POI icons (restaurant, cafe…)
+   are in Maki; specialized ones (stethoscope, bed…) in Temaki.
    ══════════════════════════════════════════════════════════ */
 const ICON_COLOR = '#734a08';
 const ICON_SIZE = 20;  // rendered pixel size
 
 // CDN bases
-const TEMAKI = 'https://cdn.jsdelivr.net/gh/rapideditor/temaki@main/icons/';
+const TEMAKI = 'https://cdn.jsdelivr.net/npm/@ideditor/temaki@5/icons/';
 const MAKI   = 'https://cdn.jsdelivr.net/npm/@mapbox/maki/icons/';
 
 // POI type → [temaki_name, maki_name]  (null = skip that source)
+// Only set temaki for icons that genuinely exist in Temaki but not Maki
 const POI_ICONS = {
-  restaurant:   ['restaurant',      'restaurant'],
-  cafe:         ['cafe',            'cafe'],
-  bar:          ['bar',             'bar'],
-  pub:          ['beer',            'beer'],
-  fast_food:    ['fast_food',       'fast-food'],
+  restaurant:   [null,              'restaurant'],
+  cafe:         [null,              'cafe'],
+  bar:          [null,              'bar'],
+  pub:          [null,              'beer'],
+  fast_food:    [null,              'fast-food'],
   bank:         [null,              'bank'],
-  pharmacy:     ['pharmacy',        'pharmacy'],
-  hospital:     ['hospital',        'hospital'],
-  clinic:       ['stethoscope',     'doctor'],
-  school:       ['school',          'school'],
-  university:   ['university',      'college'],
-  library:      ['library',         'library'],
-  theatre:      ['theatre',         'theatre'],
-  cinema:       ['movie',           'cinema'],
-  post_office:  ['post_box',        'post'],
-  police:       ['police',          'police'],
-  fire_station: ['fire_station',    'fire-station'],
-  hotel:        ['hotel',           'lodging'],
-  hostel:       ['bed',             'lodging'],
-  museum:       ['museum',          'museum'],
+  pharmacy:     [null,              'pharmacy'],
+  hospital:     [null,              'hospital'],
+  clinic:       ['stethoscope',     'doctor'],     // Temaki has stethoscope
+  school:       [null,              'school'],
+  university:   [null,              'college'],
+  library:      [null,              'library'],
+  theatre:      [null,              'theatre'],
+  cinema:       [null,              'cinema'],
+  post_office:  ['post_box',        'post'],       // Temaki has post_box
+  police:       [null,              'police'],
+  fire_station: [null,              'fire-station'],
+  hotel:        [null,              'lodging'],
+  hostel:       ['bed',             'lodging'],     // Temaki has bed
+  museum:       [null,              'museum'],
   attraction:   [null,              'attraction'],
   information:  [null,              'information'],
-  viewpoint:    ['binoculars',      'viewpoint'],
-  shop:         ['shop',            'shop'],
+  viewpoint:    ['binoculars',      'viewpoint'],   // Temaki has binoculars
+  shop:         [null,              'shop'],
 };
 
 /**
@@ -202,6 +207,14 @@ fetch('./style.json')
   });
 
 function initMap(style) {
+  // ── Hide poi-icon layer initially to avoid "image not found" warnings ──
+  // Icons are loaded async; once ready we make the layer visible
+  const poiIconLayer = style.layers.find(l => l.id === 'poi-icon');
+  if (poiIconLayer) {
+    poiIconLayer.layout = poiIconLayer.layout || {};
+    poiIconLayer.layout.visibility = 'none';
+  }
+
   const map = new maplibregl.Map({
     container: 'map',
     style,
@@ -215,9 +228,10 @@ function initMap(style) {
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 100, unit: 'metric' }), 'bottom-right');
 
-  /* ── Load POI icons after map is ready ── */
-  map.on('load', () => {
-    loadAllPoiIcons(map);
+  /* ── Load POI icons, then reveal the icon layer ── */
+  map.on('load', async () => {
+    await loadAllPoiIcons(map);
+    map.setLayoutProperty('poi-icon', 'visibility', 'visible');
   });
 
   /* ── Légende dynamique ── */
