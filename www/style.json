@@ -5,7 +5,7 @@
     "landuse": {
       "type": "vector",
       "url": "./landuse.pmtiles.gz",
-      "attribution": "\u00a9 OpenStreetMap contributors"
+      "attribution": "© OpenStreetMap contributors"
     },
     "roads": {
       "type": "vector",
@@ -42,6 +42,10 @@
     "railway": {
       "type": "vector",
       "url": "./railway.pmtiles.gz"
+    },
+    "public_transport": {
+      "type": "vector",
+      "url": "./public_transport.pmtiles.gz"
     }
   },
   "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
@@ -461,7 +465,6 @@
         ],
         "stream"
       ],
-      "minzoom": 13,
       "paint": {
         "line-color": "#aad3df",
         "line-width": [
@@ -477,7 +480,8 @@
           18,
           3
         ]
-      }
+      },
+      "minzoom": 13
     },
     {
       "id": "waterway-ditch",
@@ -492,7 +496,6 @@
         ],
         "ditch"
       ],
-      "minzoom": 14,
       "paint": {
         "line-color": "#aad3df",
         "line-width": [
@@ -508,7 +511,8 @@
           18,
           2
         ]
-      }
+      },
+      "minzoom": 14
     },
     {
       "id": "water-line",
@@ -2311,6 +2315,100 @@
           18,
           2
         ]
+      }
+    },
+    {
+      "id": "public_transport-casing",
+      "type": "line",
+      "source": "public_transport",
+      "source-layer": "public_transport",
+      "minzoom": 10,
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#ffffff",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          3,
+          18,
+          9
+        ],
+        "line-opacity": 0.6
+      }
+    },
+    {
+      "id": "public_transport-line",
+      "type": "line",
+      "source": "public_transport",
+      "source-layer": "public_transport",
+      "minzoom": 10,
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": [
+          "coalesce",
+          [
+            "get",
+            "colour"
+          ],
+          "#333333"
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          1.5,
+          18,
+          5
+        ],
+        "line-opacity": 0.85
+      }
+    },
+    {
+      "id": "public_transport-label",
+      "type": "symbol",
+      "source": "public_transport",
+      "source-layer": "public_transport",
+      "minzoom": 13,
+      "layout": {
+        "text-field": [
+          "get",
+          "ref"
+        ],
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": 11,
+        "symbol-placement": "line",
+        "text-max-angle": 30
+      },
+      "paint": {
+        "text-color": [
+          "coalesce",
+          [
+            "get",
+            "colour:text"
+          ],
+          "#000000"
+        ],
+        "text-halo-color": "rgba(255,255,255,0.85)",
+        "text-halo-width": 1.5
       }
     },
     {
