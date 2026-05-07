@@ -49,8 +49,11 @@ extract green \
   nwr/landuse=flowerbed nwr/natural=shrubbery \
   nwr/leisure=park,garden nwr/landuse=forest,meadow,grass nwr/natural=wood
 
+extract trees \
+  nwr/natural=tree nwr/natural=tree_row nwr/barrier=hedge  
+
 extract landuse \
-  nwr/landuse=residential,industrial,commercial,retail,railway
+  nwr/landuse=residential,industrial,commercial,retail,railway,education,construction,brownfield,greenfield,landfill
 
 extract boundaries \
   nwr/boundary=administrative
