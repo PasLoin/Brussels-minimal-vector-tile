@@ -37,7 +37,7 @@ extract() {
 }
 
 extract roads \
-  nwr/highway=motorway,trunk,trunk_link,primary,primary_link,secondary,secondary_link,tertiary,tertiary_link,residential,living_street,unclassified,service,track,busway
+  nwr/highway=motorway,trunk,trunk_link,primary,primary_link,secondary,secondary_link,tertiary,tertiary_link,residential,living_street,unclassified,service,track,busway nwr/man_made=bridge,tunnel
 
 # Buildings : nwr/building=* inclut les relations ET leurs ways membres
 extract buildings nwr/building=*
