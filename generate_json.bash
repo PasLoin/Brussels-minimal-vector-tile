@@ -70,14 +70,10 @@ extract railway \
   nwr/railway=rail,tram,subway,miniature
 
 # ── Transport public STIB/MIVB ──────────────────────────
-# Filtre osmium sur route= (sans slash) puis jq filtre l'opérateur
+# osmium export ignore les relations type=route → script Python
 echo "→ public_transport (relations STIB/MIVB)"
-osmium tags-filter "$SRC" r/route=bus,tram,subway -o "_tmp_pt.osm.pbf" --overwrite
-osmium export "_tmp_pt.osm.pbf" -o "_tmp_pt.json" --overwrite
-# Garder uniquement les relations STIB/MIVB type=route, exclure access=no
-jq -c 'select(.properties.type == "route" and .properties.operator == "STIB/MIVB" and .properties.access != "no")' \
-  "_tmp_pt.json" > "public_transport.json"
-rm -f _tmp_pt.osm.pbf _tmp_pt.json
+pip install pyosmium --break-system-packages -q
+python3 extract_stib_routes.py
 echo "  $(wc -l < "public_transport.json") lignes"
 
 echo "✓ 11 couches extraites"
