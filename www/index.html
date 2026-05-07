@@ -85,6 +85,109 @@
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
 
+/* ══════════════════════════════════════════════════════════
+   POI Icons — Temaki (priority) + Maki (fallback)
+   Loaded at runtime from CDN, recolored to #734a08
+   ══════════════════════════════════════════════════════════ */
+const ICON_COLOR = '#734a08';
+const ICON_SIZE = 20;  // rendered pixel size
+
+// CDN bases
+const TEMAKI = 'https://cdn.jsdelivr.net/npm/@rapideditor/temaki/icons/';
+const MAKI   = 'https://cdn.jsdelivr.net/npm/@mapbox/maki/icons/';
+
+// POI type → [temaki_name, maki_name]  (null = skip that source)
+const POI_ICONS = {
+  restaurant:   ['restaurant',      'restaurant'],
+  cafe:         ['cafe',            'cafe'],
+  bar:          ['bar',             'bar'],
+  pub:          ['beer',            'beer'],
+  fast_food:    ['fast_food',       'fast-food'],
+  bank:         [null,              'bank'],
+  pharmacy:     ['pharmacy',        'pharmacy'],
+  hospital:     ['hospital',        'hospital'],
+  clinic:       ['stethoscope',     'doctor'],
+  school:       ['school',          'school'],
+  university:   ['university',      'college'],
+  library:      ['library',         'library'],
+  theatre:      ['theatre',         'theatre'],
+  cinema:       ['movie',           'cinema'],
+  post_office:  ['post_box',        'post'],
+  police:       ['police',          'police'],
+  fire_station: ['fire_station',    'fire-station'],
+  hotel:        ['hotel',           'lodging'],
+  hostel:       ['bed',             'lodging'],
+  museum:       ['museum',          'museum'],
+  attraction:   [null,              'attraction'],
+  information:  [null,              'information'],
+  viewpoint:    ['binoculars',      'viewpoint'],
+  shop:         ['shop',            'shop'],
+};
+
+/**
+ * Fetch SVG, recolor, render to canvas, add to map.
+ * Tries temaki first, then maki.
+ */
+async function loadPoiIcon(map, poiType, temakiName, makiName) {
+  const urls = [];
+  if (temakiName) urls.push(TEMAKI + temakiName + '.svg');
+  if (makiName)   urls.push(MAKI + makiName + '.svg');
+
+  for (const url of urls) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) continue;
+      let svg = await res.text();
+      if (!svg.includes('<svg')) continue;
+
+      // Recolor all fill attributes to our target color
+      svg = svg.replace(/fill="[^"]*"/g, `fill="${ICON_COLOR}"`);
+      // If no fill attribute, add one on the root <path> elements
+      if (!svg.includes(`fill="${ICON_COLOR}"`)) {
+        svg = svg.replace(/<svg /, `<svg fill="${ICON_COLOR}" `);
+      }
+
+      // Render SVG to canvas
+      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      const blobUrl = URL.createObjectURL(blob);
+      const img = new Image();
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = blobUrl;
+      });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = ICON_SIZE;
+      canvas.height = ICON_SIZE;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, ICON_SIZE, ICON_SIZE);
+      URL.revokeObjectURL(blobUrl);
+
+      const imageData = ctx.getImageData(0, 0, ICON_SIZE, ICON_SIZE);
+      map.addImage('poi-' + poiType, imageData, { pixelRatio: 1 });
+      return true;
+
+    } catch (e) {
+      continue;  // try next URL
+    }
+  }
+  return false;  // no icon loaded
+}
+
+async function loadAllPoiIcons(map) {
+  const results = await Promise.allSettled(
+    Object.entries(POI_ICONS).map(([type, [temaki, maki]]) =>
+      loadPoiIcon(map, type, temaki, maki)
+    )
+  );
+  const loaded = results.filter(r => r.status === 'fulfilled' && r.value).length;
+  console.log(`POI icons: ${loaded}/${Object.keys(POI_ICONS).length} loaded`);
+  // Trigger a repaint to show newly loaded icons
+  map.triggerRepaint();
+}
+
 /* ── Charger le style et patcher les URLs PMTiles ── */
 fetch('./style.json')
   .then(r => r.json())
@@ -115,6 +218,11 @@ function initMap(style) {
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 100, unit: 'metric' }), 'bottom-right');
 
+  /* ── Load POI icons after map is ready ── */
+  map.on('load', () => {
+    loadAllPoiIcons(map);
+  });
+
   /* ── Légende dynamique ── */
   map.on('load', () => {
     const layers = map.getStyle().layers;
@@ -125,9 +233,11 @@ function initMap(style) {
       { label: 'Industriel', pattern: 'landuse-industrial', type: 'fill' },
       { label: 'Commercial', pattern: 'landuse-commercial', type: 'fill' },
       { label: 'Retail', pattern: 'landuse-retail', type: 'fill' },
+      { label: 'Éducation', pattern: 'landuse-education', type: 'fill' },
       { label: 'Forêt', pattern: 'green-forest', type: 'fill' },
       { label: 'Parcs', pattern: 'green-park', type: 'fill' },
       { label: 'Pelouse', pattern: 'green-grass', type: 'fill' },
+      { label: 'Broussailles', pattern: 'green-scrub', type: 'fill' },
       { label: 'Eau', pattern: 'water-', type: 'fill' },
       { label: 'Bâtiments', pattern: 'buildings', type: 'fill' },
       { label: 'Arbres et haies', pattern: 'trees-', type: 'dot', color: '#6cae50' },
