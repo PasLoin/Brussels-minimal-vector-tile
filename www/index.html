@@ -130,6 +130,7 @@ function initMap(style) {
       { label: 'Pelouse', pattern: 'green-grass', type: 'fill' },
       { label: 'Eau', pattern: 'water-', type: 'fill' },
       { label: 'Bâtiments', pattern: 'buildings', type: 'fill' },
+      { label: 'Arbres et haies', pattern: 'trees-', type: 'dot', color: '#6cae50' },
       { label: 'Rail', pattern: 'railway-rail', type: 'line', extraPatterns: ['railway-tunnel-rail', 'railway-bridge-rail'] },
       { label: 'Tram', pattern: 'railway-tram', type: 'line', extraPatterns: ['railway-tunnel-tram', 'railway-bridge-tram'] },
       { label: 'Métro', pattern: 'railway-subway', type: 'line', extraPatterns: ['railway-tunnel-subway', 'railway-bridge-subway'] },
@@ -158,7 +159,7 @@ function initMap(style) {
         for (const layer of matchedLayers) {
           const p = layer.paint;
           if (!p) continue;
-          const c = p['fill-color'] || p['line-color'] || p['circle-color'];
+          const c = p['fill-color'] || p['line-color'] || p['circle-color'] || p['text-color'];
           if (c && typeof c === 'string') {
             color = c;
             break;
