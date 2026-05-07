@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────
-# Extraction minimaliste — 10 couches essentielles
-# Pré-requis : osmium-tool
+# Extraction minimaliste — 11 couches essentielles
+# Pré-requis : osmium-tool, jq
 # ─────────────────────────────────────────────────────────
 set -euo pipefail
 
@@ -69,4 +69,15 @@ extract cycleway \
 extract railway \
   nwr/railway=rail,tram,subway,miniature
 
-echo "✓ 10 couches extraites"
+# ── Transport public STIB/MIVB ──────────────────────────
+# Relations type=route + operator=STIB/MIVB, sans access=no
+echo "→ public_transport (relations STIB/MIVB)"
+osmium tags-filter "$SRC" r/type=route -o "_tmp_pt1.osm.pbf" --overwrite
+osmium tags-filter "_tmp_pt1.osm.pbf" "r/operator=STIB/MIVB" -o "_tmp_pt2.osm.pbf" --overwrite
+osmium export "_tmp_pt2.osm.pbf" -o "_tmp_pt.json" --overwrite
+# Exclure les routes de maintenance / retournement (access=no)
+jq -c 'select(.properties.access != "no")' "_tmp_pt.json" > "public_transport.json"
+rm -f _tmp_pt1.osm.pbf _tmp_pt2.osm.pbf _tmp_pt.json
+echo "  $(wc -l < "public_transport.json") lignes"
+
+echo "✓ 11 couches extraites"
