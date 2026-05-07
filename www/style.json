@@ -620,7 +620,7 @@
       "source-layer": "buildings",
       "minzoom": 13,
       "paint": {
-        "fill-color": "#917d69"
+        "fill-color": "#fffcfa"
       }
     },
     {
