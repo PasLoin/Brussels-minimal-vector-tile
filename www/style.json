@@ -620,7 +620,7 @@
       "source-layer": "buildings",
       "minzoom": 13,
       "paint": {
-        "fill-color": "#decfc5"
+        "fill-color": "#fce1c5"
       }
     },
     {
@@ -4489,142 +4489,6 @@
       }
     },
     {
-      "id": "poi-icon",
-      "type": "symbol",
-      "source": "poi",
-      "source-layer": "poi",
-      "minzoom": 15,
-      "layout": {
-        "icon-image": [
-          "case",
-          [
-            "has",
-            "amenity"
-          ],
-          [
-            "match",
-            [
-              "get",
-              "amenity"
-            ],
-            "restaurant",
-            "poi-restaurant",
-            "cafe",
-            "poi-cafe",
-            "bar",
-            "poi-bar",
-            "pub",
-            "poi-pub",
-            "fast_food",
-            "poi-fast_food",
-            "bank",
-            "poi-bank",
-            "pharmacy",
-            "poi-pharmacy",
-            "hospital",
-            "poi-hospital",
-            "clinic",
-            "poi-clinic",
-            "school",
-            "poi-school",
-            "university",
-            "poi-university",
-            "library",
-            "poi-library",
-            "theatre",
-            "poi-theatre",
-            "cinema",
-            "poi-cinema",
-            "post_office",
-            "poi-post_office",
-            "police",
-            "poi-police",
-            "fire_station",
-            "poi-fire_station",
-            ""
-          ],
-          [
-            "has",
-            "tourism"
-          ],
-          [
-            "match",
-            [
-              "get",
-              "tourism"
-            ],
-            "hotel",
-            "poi-hotel",
-            "hostel",
-            "poi-hostel",
-            "museum",
-            "poi-museum",
-            "attraction",
-            "poi-attraction",
-            "information",
-            "poi-information",
-            "viewpoint",
-            "poi-viewpoint",
-            ""
-          ],
-          [
-            "has",
-            "shop"
-          ],
-          "poi-shop",
-          ""
-        ],
-        "icon-size": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          15,
-          0.7,
-          18,
-          1.0
-        ],
-        "icon-allow-overlap": false,
-        "icon-ignore-placement": false,
-        "icon-padding": 4,
-        "icon-anchor": "center"
-      },
-      "paint": {
-        "icon-opacity": 0.9
-      }
-    },
-    {
-      "id": "poi-label",
-      "type": "symbol",
-      "source": "poi",
-      "source-layer": "poi",
-      "minzoom": 16,
-      "layout": {
-        "text-field": [
-          "get",
-          "name"
-        ],
-        "text-font": [
-          "Noto Sans Regular"
-        ],
-        "text-size": 10,
-        "text-offset": [
-          0,
-          1.2
-        ],
-        "text-anchor": "top",
-        "text-optional": true
-      },
-      "paint": {
-        "text-color": "#734a08",
-        "text-halo-color": "rgba(255,255,255,0.8)",
-        "text-halo-width": 1.2
-      }
-    },
-    {
       "id": "man_made-bridge-fill",
       "type": "fill",
       "source": "roads",
@@ -4749,6 +4613,139 @@
         "text-color": "#333",
         "text-halo-color": "rgba(255,255,255,0.6)",
         "text-halo-width": 1.5
+      }
+    },
+    {
+      "id": "poi-icon",
+      "type": "symbol",
+      "source": "poi",
+      "source-layer": "poi",
+      "minzoom": 15,
+      "layout": {
+        "icon-image": [
+          "case",
+          [
+            "has",
+            "amenity"
+          ],
+          [
+            "match",
+            [
+              "get",
+              "amenity"
+            ],
+            "restaurant",
+            "poi-restaurant",
+            "cafe",
+            "poi-cafe",
+            "bar",
+            "poi-bar",
+            "pub",
+            "poi-pub",
+            "fast_food",
+            "poi-fast_food",
+            "bank",
+            "poi-bank",
+            "pharmacy",
+            "poi-pharmacy",
+            "hospital",
+            "poi-hospital",
+            "clinic",
+            "poi-clinic",
+            "school",
+            "poi-school",
+            "university",
+            "poi-university",
+            "library",
+            "poi-library",
+            "theatre",
+            "poi-theatre",
+            "cinema",
+            "poi-cinema",
+            "post_office",
+            "poi-post_office",
+            "police",
+            "poi-police",
+            "fire_station",
+            "poi-fire_station",
+            ""
+          ],
+          [
+            "has",
+            "tourism"
+          ],
+          [
+            "match",
+            [
+              "get",
+              "tourism"
+            ],
+            "hotel",
+            "poi-hotel",
+            "hostel",
+            "poi-hostel",
+            "museum",
+            "poi-museum",
+            "attraction",
+            "poi-attraction",
+            "information",
+            "poi-information",
+            "viewpoint",
+            "poi-viewpoint",
+            ""
+          ],
+          [
+            "has",
+            "shop"
+          ],
+          "poi-shop",
+          ""
+        ],
+        "icon-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          15,
+          0.7,
+          18,
+          1.0
+        ],
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": false,
+        "icon-padding": 2,
+        "icon-anchor": "center",
+        "text-field": [
+          "step",
+          [
+            "zoom"
+          ],
+          "",
+          16,
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": 10,
+        "text-offset": [
+          0,
+          1.2
+        ],
+        "text-anchor": "top",
+        "text-optional": true
+      },
+      "paint": {
+        "icon-opacity": 0.9,
+        "text-color": "#734a08",
+        "text-halo-color": "rgba(255,255,255,0.8)",
+        "text-halo-width": 1.2
       }
     }
   ]
