@@ -20,7 +20,9 @@ jobs:
           node-version: '20'
 
       - name: Validate style against MapLibre GL Style Spec
-        run: npx --yes @maplibre/maplibre-gl-style-spec gl-style-validate www/style.json
+        run: |
+          npm install --no-save @maplibre/maplibre-gl-style-spec
+          npx gl-style-validate www/style.json
 
       - name: Extract PMTiles JSON metadata
         id: metadata
