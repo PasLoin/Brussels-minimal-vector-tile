@@ -23,6 +23,10 @@
       "type": "vector",
       "url": "./green.pmtiles.gz"
     },
+    "trees": {
+      "type": "vector",
+      "url": "./trees.pmtiles.gz"
+    },
     "boundaries": {
       "type": "vector",
       "url": "./boundaries.pmtiles.gz"
@@ -584,6 +588,517 @@
         "line-width": 0.5
       }
     },
+    {
+      "id": "trees-hedge",
+      "type": "line",
+      "source": "trees",
+      "source-layer": "trees",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "barrier"
+          ],
+          "hedge"
+        ]
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#6ba048",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          0.8,
+          18,
+          3.5
+        ],
+        "line-opacity": 0.85
+      }
+    },
+    {
+      "id": "trees-row-line",
+      "type": "line",
+      "source": "trees",
+      "source-layer": "trees",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree_row"
+        ]
+      ],
+      "minzoom": 15,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#8fbc77",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          15,
+          0.5,
+          18,
+          1.5
+        ],
+        "line-opacity": 0.55
+      }
+    },
+    {
+      "id": "trees-row-broadleaved",
+      "type": "symbol",
+      "source": "trees",
+      "source-layer": "trees",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree_row"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "leaf_type"
+          ],
+          "broadleaved"
+        ]
+      ],
+      "minzoom": 16,
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          16,
+          48,
+          18,
+          32
+        ],
+        "text-field": "●",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          16,
+          9,
+          18,
+          13
+        ],
+        "text-rotation-alignment": "map",
+        "text-allow-overlap": false,
+        "text-ignore-placement": false
+      },
+      "paint": {
+        "text-color": "#6cae50",
+        "text-halo-color": "#f2efe9",
+        "text-halo-width": 0.8
+      }
+    },
+    {
+      "id": "trees-row-needleleaved",
+      "type": "symbol",
+      "source": "trees",
+      "source-layer": "trees",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree_row"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "leaf_type"
+          ],
+          "needleleaved"
+        ]
+      ],
+      "minzoom": 16,
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          16,
+          48,
+          18,
+          32
+        ],
+        "text-field": "▲",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          16,
+          9,
+          18,
+          13
+        ],
+        "text-rotation-alignment": "map",
+        "text-allow-overlap": false,
+        "text-ignore-placement": false
+      },
+      "paint": {
+        "text-color": "#5f9f50",
+        "text-halo-color": "#f2efe9",
+        "text-halo-width": 0.8
+      }
+    },
+    {
+      "id": "trees-row-default",
+      "type": "symbol",
+      "source": "trees",
+      "source-layer": "trees",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree_row"
+        ],
+        [
+          "!",
+          [
+            "in",
+            [
+              "get",
+              "leaf_type"
+            ],
+            [
+              "literal",
+              [
+                "broadleaved",
+                "needleleaved"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "minzoom": 16,
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          16,
+          48,
+          18,
+          32
+        ],
+        "text-field": "●",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          16,
+          8,
+          18,
+          12
+        ],
+        "text-rotation-alignment": "map",
+        "text-allow-overlap": false,
+        "text-ignore-placement": false
+      },
+      "paint": {
+        "text-color": "#7eb36a",
+        "text-halo-color": "#f2efe9",
+        "text-halo-width": 0.8
+      }
+    },
+    {
+      "id": "trees-tree-broadleaved",
+      "type": "symbol",
+      "source": "trees",
+      "source-layer": "trees",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Point"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "leaf_type"
+          ],
+          "broadleaved"
+        ]
+      ],
+      "minzoom": 17,
+      "layout": {
+        "text-field": "●",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          10,
+          18,
+          14
+        ],
+        "text-allow-overlap": false,
+        "text-ignore-placement": false
+      },
+      "paint": {
+        "text-color": "#6cae50",
+        "text-halo-color": "#f2efe9",
+        "text-halo-width": 0.9
+      }
+    },
+    {
+      "id": "trees-tree-needleleaved",
+      "type": "symbol",
+      "source": "trees",
+      "source-layer": "trees",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Point"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "leaf_type"
+          ],
+          "needleleaved"
+        ]
+      ],
+      "minzoom": 17,
+      "layout": {
+        "text-field": "▲",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          10,
+          18,
+          14
+        ],
+        "text-allow-overlap": false,
+        "text-ignore-placement": false
+      },
+      "paint": {
+        "text-color": "#5f9f50",
+        "text-halo-color": "#f2efe9",
+        "text-halo-width": 0.9
+      }
+    },
+    {
+      "id": "trees-tree-default",
+      "type": "symbol",
+      "source": "trees",
+      "source-layer": "trees",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Point"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree"
+        ],
+        [
+          "!",
+          [
+            "in",
+            [
+              "get",
+              "leaf_type"
+            ],
+            [
+              "literal",
+              [
+                "broadleaved",
+                "needleleaved"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "minzoom": 17,
+      "layout": {
+        "text-field": "●",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          9,
+          18,
+          13
+        ],
+        "text-allow-overlap": false,
+        "text-ignore-placement": false
+      },
+      "paint": {
+        "text-color": "#7eb36a",
+        "text-halo-color": "#f2efe9",
+        "text-halo-width": 0.9
+      }
+    },
+    
+    
     {
       "id": "railway-tunnel-rail-casing",
       "type": "line",
