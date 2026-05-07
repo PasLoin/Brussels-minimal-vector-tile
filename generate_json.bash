@@ -75,8 +75,9 @@ echo "→ public_transport (relations STIB/MIVB)"
 osmium tags-filter "$SRC" r/type=route -o "_tmp_pt1.osm.pbf" --overwrite
 osmium tags-filter "_tmp_pt1.osm.pbf" "r/operator=STIB/MIVB" -o "_tmp_pt2.osm.pbf" --overwrite
 osmium export "_tmp_pt2.osm.pbf" -o "_tmp_pt.json" --overwrite
-# Exclure les routes de maintenance / retournement (access=no)
-jq -c 'select(.properties.access != "no")' "_tmp_pt.json" > "public_transport.json"
+# Garder uniquement les features issues des relations (type=route)
+# et exclure les routes de maintenance / retournement (access=no)
+jq -c 'select(.properties.type == "route" and .properties.access != "no")' "_tmp_pt.json" > "public_transport.json"
 rm -f _tmp_pt1.osm.pbf _tmp_pt2.osm.pbf _tmp_pt.json
 echo "  $(wc -l < "public_transport.json") lignes"
 
