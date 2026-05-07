@@ -60,7 +60,10 @@
       "source-layer": "landuse",
       "filter": [
         "==",
-        "landuse",
+        [
+          "get",
+          "landuse"
+        ],
         "residential"
       ],
       "paint": {
@@ -74,7 +77,10 @@
       "source-layer": "landuse",
       "filter": [
         "==",
-        "landuse",
+        [
+          "get",
+          "landuse"
+        ],
         "industrial"
       ],
       "paint": {
@@ -88,7 +94,10 @@
       "source-layer": "landuse",
       "filter": [
         "==",
-        "landuse",
+        [
+          "get",
+          "landuse"
+        ],
         "commercial"
       ],
       "paint": {
@@ -102,7 +111,10 @@
       "source-layer": "landuse",
       "filter": [
         "==",
-        "landuse",
+        [
+          "get",
+          "landuse"
+        ],
         "retail"
       ],
       "paint": {
@@ -116,7 +128,10 @@
       "source-layer": "landuse",
       "filter": [
         "==",
-        "landuse",
+        [
+          "get",
+          "landuse"
+        ],
         "railway"
       ],
       "paint": {
@@ -132,12 +147,18 @@
         "any",
         [
           "==",
-          "landuse",
+          [
+            "get",
+            "landuse"
+          ],
           "forest"
         ],
         [
           "==",
-          "natural",
+          [
+            "get",
+            "natural"
+          ],
           "wood"
         ]
       ],
@@ -164,7 +185,10 @@
       "source-layer": "green",
       "filter": [
         "==",
-        "leisure",
+        [
+          "get",
+          "leisure"
+        ],
         "park"
       ],
       "paint": {
@@ -190,7 +214,10 @@
       "source-layer": "green",
       "filter": [
         "==",
-        "leisure",
+        [
+          "get",
+          "leisure"
+        ],
         "garden"
       ],
       "paint": {
@@ -218,12 +245,18 @@
         "any",
         [
           "==",
-          "landuse",
+          [
+            "get",
+            "landuse"
+          ],
           "grass"
         ],
         [
           "==",
-          "landuse",
+          [
+            "get",
+            "landuse"
+          ],
           "meadow"
         ]
       ],
@@ -250,7 +283,10 @@
       "source-layer": "green",
       "filter": [
         "==",
-        "natural",
+        [
+          "get",
+          "natural"
+        ],
         "shrubbery"
       ],
       "paint": {
@@ -276,7 +312,10 @@
       "source-layer": "green",
       "filter": [
         "==",
-        "landuse",
+        [
+          "get",
+          "landuse"
+        ],
         "flowerbed"
       ],
       "paint": {
@@ -304,17 +343,26 @@
         "all",
         [
           "!=",
-          "tunnel",
+          [
+            "get",
+            "tunnel"
+          ],
           "culvert"
         ],
         [
           "!=",
-          "tunnel",
+          [
+            "get",
+            "tunnel"
+          ],
           "yes"
         ],
         [
           "!=",
-          "covered",
+          [
+            "get",
+            "covered"
+          ],
           "yes"
         ]
       ],
@@ -329,7 +377,10 @@
       "source-layer": "water",
       "filter": [
         "==",
-        "natural",
+        [
+          "get",
+          "natural"
+        ],
         "wetland"
       ],
       "paint": {
@@ -344,7 +395,10 @@
       "source-layer": "water",
       "filter": [
         "==",
-        "waterway",
+        [
+          "get",
+          "waterway"
+        ],
         "river"
       ],
       "paint": {
@@ -371,7 +425,10 @@
       "source-layer": "water",
       "filter": [
         "==",
-        "waterway",
+        [
+          "get",
+          "waterway"
+        ],
         "canal"
       ],
       "paint": {
@@ -398,7 +455,10 @@
       "source-layer": "water",
       "filter": [
         "==",
-        "waterway",
+        [
+          "get",
+          "waterway"
+        ],
         "stream"
       ],
       "minzoom": 13,
@@ -426,7 +486,10 @@
       "source-layer": "water",
       "filter": [
         "==",
-        "waterway",
+        [
+          "get",
+          "waterway"
+        ],
         "ditch"
       ],
       "minzoom": 14,
@@ -456,26 +519,27 @@
         "all",
         [
           "!=",
-          "tunnel",
+          [
+            "get",
+            "tunnel"
+          ],
           "culvert"
         ],
         [
           "!=",
-          "tunnel",
+          [
+            "get",
+            "tunnel"
+          ],
           "yes"
         ],
         [
           "!=",
-          "covered",
+          [
+            "get",
+            "covered"
+          ],
           "yes"
-        ],
-        [
-          "!in",
-          "waterway",
-          "river",
-          "canal",
-          "stream",
-          "ditch"
         ]
       ],
       "paint": {
@@ -525,7 +589,10 @@
         "all",
         [
           "==",
-          "railway",
+          [
+            "get",
+            "railway"
+          ],
           "rail"
         ],
         [
@@ -583,7 +650,10 @@
         "all",
         [
           "==",
-          "railway",
+          [
+            "get",
+            "railway"
+          ],
           "rail"
         ],
         [
@@ -641,7 +711,10 @@
         "all",
         [
           "==",
-          "railway",
+          [
+            "get",
+            "railway"
+          ],
           "subway"
         ],
         [
@@ -699,7 +772,10 @@
         "all",
         [
           "==",
-          "railway",
+          [
+            "get",
+            "railway"
+          ],
           "tram"
         ],
         [
@@ -755,7 +831,10 @@
       "source-layer": "pedestrian",
       "filter": [
         "==",
-        "highway",
+        [
+          "get",
+          "highway"
+        ],
         "pedestrian"
       ],
       "minzoom": 13,
@@ -787,7 +866,10 @@
       "source-layer": "pedestrian",
       "filter": [
         "==",
-        "highway",
+        [
+          "get",
+          "highway"
+        ],
         "pedestrian"
       ],
       "minzoom": 13,
@@ -819,7 +901,10 @@
       "source-layer": "pedestrian",
       "filter": [
         "==",
-        "highway",
+        [
+          "get",
+          "highway"
+        ],
         "footway"
       ],
       "minzoom": 14,
@@ -851,7 +936,10 @@
       "source-layer": "pedestrian",
       "filter": [
         "==",
-        "highway",
+        [
+          "get",
+          "highway"
+        ],
         "path"
       ],
       "minzoom": 14,
@@ -883,7 +971,10 @@
       "source-layer": "pedestrian",
       "filter": [
         "==",
-        "highway",
+        [
+          "get",
+          "highway"
+        ],
         "steps"
       ],
       "minzoom": 14,
@@ -942,7 +1033,10 @@
       "source-layer": "roads",
       "filter": [
         "==",
-        "highway",
+        [
+          "get",
+          "highway"
+        ],
         "busway"
       ],
       "minzoom": 12,
@@ -976,22 +1070,34 @@
         "any",
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "residential"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "unclassified"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "service"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "living_street"
         ]
       ],
@@ -1026,12 +1132,18 @@
         "any",
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "tertiary"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "tertiary_link"
         ]
       ],
@@ -1066,12 +1178,18 @@
         "any",
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "secondary"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "secondary_link"
         ]
       ],
@@ -1106,12 +1224,18 @@
         "any",
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "primary"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "primary_link"
         ]
       ],
@@ -1146,12 +1270,18 @@
         "any",
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "trunk"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "trunk_link"
         ]
       ],
@@ -1184,7 +1314,10 @@
       "source-layer": "roads",
       "filter": [
         "==",
-        "highway",
+        [
+          "get",
+          "highway"
+        ],
         "motorway"
       ],
       "minzoom": 5,
@@ -1216,7 +1349,10 @@
       "source-layer": "roads",
       "filter": [
         "==",
-        "highway",
+        [
+          "get",
+          "highway"
+        ],
         "busway"
       ],
       "minzoom": 12,
@@ -1250,22 +1386,34 @@
         "any",
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "residential"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "unclassified"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "service"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "living_street"
         ]
       ],
@@ -1298,7 +1446,10 @@
       "source-layer": "roads",
       "filter": [
         "==",
-        "highway",
+        [
+          "get",
+          "highway"
+        ],
         "track"
       ],
       "minzoom": 13,
@@ -1336,12 +1487,18 @@
         "any",
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "tertiary"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "tertiary_link"
         ]
       ],
@@ -1376,12 +1533,18 @@
         "any",
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "secondary"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "secondary_link"
         ]
       ],
@@ -1416,12 +1579,18 @@
         "any",
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "primary"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "primary_link"
         ]
       ],
@@ -1456,12 +1625,18 @@
         "any",
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "trunk"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "trunk_link"
         ]
       ],
@@ -1494,7 +1669,10 @@
       "source-layer": "roads",
       "filter": [
         "==",
-        "highway",
+        [
+          "get",
+          "highway"
+        ],
         "motorway"
       ],
       "minzoom": 5,
@@ -1526,7 +1704,10 @@
       "source-layer": "roads",
       "filter": [
         "==",
-        "highway",
+        [
+          "get",
+          "highway"
+        ],
         "busway"
       ],
       "minzoom": 12,
@@ -1564,7 +1745,10 @@
         "all",
         [
           "==",
-          "railway",
+          [
+            "get",
+            "railway"
+          ],
           "rail"
         ],
         [
@@ -1629,7 +1813,10 @@
         "all",
         [
           "==",
-          "railway",
+          [
+            "get",
+            "railway"
+          ],
           "rail"
         ],
         [
@@ -1690,7 +1877,10 @@
         "all",
         [
           "==",
-          "railway",
+          [
+            "get",
+            "railway"
+          ],
           "subway"
         ],
         [
@@ -1751,7 +1941,10 @@
         "all",
         [
           "==",
-          "railway",
+          [
+            "get",
+            "railway"
+          ],
           "tram"
         ],
         [
@@ -1812,7 +2005,10 @@
         "all",
         [
           "==",
-          "railway",
+          [
+            "get",
+            "railway"
+          ],
           "miniature"
         ],
         [
@@ -1904,7 +2100,10 @@
         ],
         [
           "==",
-          "bridge",
+          [
+            "get",
+            "bridge"
+          ],
           "yes"
         ]
       ],
@@ -1939,12 +2138,18 @@
         "all",
         [
           "==",
-          "railway",
+          [
+            "get",
+            "railway"
+          ],
           "rail"
         ],
         [
           "==",
-          "bridge",
+          [
+            "get",
+            "bridge"
+          ],
           "yes"
         ]
       ],
@@ -1982,12 +2187,18 @@
         "all",
         [
           "==",
-          "railway",
+          [
+            "get",
+            "railway"
+          ],
           "rail"
         ],
         [
           "==",
-          "bridge",
+          [
+            "get",
+            "bridge"
+          ],
           "yes"
         ]
       ],
@@ -2021,12 +2232,18 @@
         "all",
         [
           "==",
-          "railway",
+          [
+            "get",
+            "railway"
+          ],
           "tram"
         ],
         [
           "==",
-          "bridge",
+          [
+            "get",
+            "bridge"
+          ],
           "yes"
         ]
       ],
@@ -2060,12 +2277,18 @@
         "all",
         [
           "==",
-          "railway",
+          [
+            "get",
+            "railway"
+          ],
           "subway"
         ],
         [
           "==",
-          "bridge",
+          [
+            "get",
+            "bridge"
+          ],
           "yes"
         ]
       ],
@@ -2169,22 +2392,34 @@
         "any",
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "primary"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "secondary"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "tertiary"
         ],
         [
           "==",
-          "highway",
+          [
+            "get",
+            "highway"
+          ],
           "residential"
         ]
       ],
