@@ -24,6 +24,7 @@ declare -A MAX_ZOOM=(
   [buildings]=18
   [water]=16
   [green]=16
+  [trees]=18
   [boundaries]=14
   [poi]=16
   [pedestrian]=18
@@ -40,7 +41,7 @@ TOTAL_SOURCE=0
 TOTAL_OUTPUT=0
 TOTAL_SIZE=0
 
-for layer in landuse roads buildings water green boundaries poi pedestrian cycleway railway public_transport; do
+for layer in landuse roads buildings water green trees boundaries poi pedestrian cycleway railway public_transport; do
   echo "→ ${layer} (z10-${MAX_ZOOM[$layer]})"
   
   # Count source features
