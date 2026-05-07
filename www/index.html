@@ -134,6 +134,7 @@ function initMap(style) {
       { label: 'Tram', pattern: 'railway-tram', type: 'line', extraPatterns: ['railway-tunnel-tram', 'railway-bridge-tram'] },
       { label: 'Métro', pattern: 'railway-subway', type: 'line', extraPatterns: ['railway-tunnel-subway', 'railway-bridge-subway'] },
       { label: 'Miniature', pattern: 'railway-miniature', type: 'line' },
+      { label: 'Transport STIB', pattern: 'public_transport-', type: 'line', color: '#e3004f' },
       { label: 'Routes', pattern: 'roads-', type: 'line' },
       { label: 'Piétons', pattern: 'pedestrian-', type: 'line' },
       { label: 'Cyclable', pattern: 'cycleway', type: 'line' },
@@ -151,14 +152,17 @@ function initMap(style) {
       }
       if (matchedLayers.length === 0) return;
 
-      let color = '#ccc';
-      for (const layer of matchedLayers) {
-        const p = layer.paint;
-        if (!p) continue;
-        const c = p['fill-color'] || p['line-color'] || p['circle-color'];
-        if (c && typeof c === 'string') {
-          color = c;
-          break;
+      // Use category override color or extract from paint
+      let color = cat.color || '#ccc';
+      if (!cat.color) {
+        for (const layer of matchedLayers) {
+          const p = layer.paint;
+          if (!p) continue;
+          const c = p['fill-color'] || p['line-color'] || p['circle-color'];
+          if (c && typeof c === 'string') {
+            color = c;
+            break;
+          }
         }
       }
 
