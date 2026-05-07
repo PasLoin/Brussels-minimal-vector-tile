@@ -371,6 +371,146 @@
       }
     },
     {
+      "id": "water-wetland",
+      "type": "fill",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "==",
+        [
+          "get",
+          "natural"
+        ],
+        "wetland"
+      ],
+      "paint": {
+        "fill-color": "#d4e2c6",
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "waterway-river",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "==",
+        [
+          "get",
+          "waterway"
+        ],
+        "river"
+      ],
+      "paint": {
+        "line-color": "#aad3df",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          1,
+          18,
+          12
+        ]
+      }
+    },
+    {
+      "id": "waterway-canal",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "==",
+        [
+          "get",
+          "waterway"
+        ],
+        "canal"
+      ],
+      "paint": {
+        "line-color": "#aad3df",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          1,
+          18,
+          10
+        ]
+      }
+    },
+    {
+      "id": "waterway-stream",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "==",
+        [
+          "get",
+          "waterway"
+        ],
+        "stream"
+      ],
+      "minzoom": 13,
+      "paint": {
+        "line-color": "#aad3df",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          3
+        ]
+      }
+    },
+    {
+      "id": "waterway-ditch",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "==",
+        [
+          "get",
+          "waterway"
+        ],
+        "ditch"
+      ],
+      "minzoom": 14,
+      "paint": {
+        "line-color": "#aad3df",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          0.3,
+          18,
+          2
+        ]
+      }
+    },
+    {
       "id": "water-line",
       "type": "line",
       "source": "water",
@@ -989,12 +1129,23 @@
       "source": "roads",
       "source-layer": "roads",
       "filter": [
-        "==",
+        "any",
         [
-          "get",
-          "highway"
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "tertiary"
         ],
-        "tertiary"
+        [
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "tertiary_link"
+        ]
       ],
       "minzoom": 11,
       "layout": {
@@ -1024,12 +1175,23 @@
       "source": "roads",
       "source-layer": "roads",
       "filter": [
-        "==",
+        "any",
         [
-          "get",
-          "highway"
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "secondary"
         ],
-        "secondary"
+        [
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "secondary_link"
+        ]
       ],
       "minzoom": 9,
       "layout": {
@@ -1059,12 +1221,23 @@
       "source": "roads",
       "source-layer": "roads",
       "filter": [
-        "==",
+        "any",
         [
-          "get",
-          "highway"
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "primary"
         ],
-        "primary"
+        [
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "primary_link"
+        ]
       ],
       "minzoom": 7,
       "layout": {
@@ -1094,12 +1267,23 @@
       "source": "roads",
       "source-layer": "roads",
       "filter": [
-        "==",
+        "any",
         [
-          "get",
-          "highway"
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "trunk"
         ],
-        "trunk"
+        [
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "trunk_link"
+        ]
       ],
       "minzoom": 5,
       "layout": {
@@ -1256,7 +1440,7 @@
       }
     },
     {
-      "id": "roads-fill-tertiary",
+      "id": "roads-fill-track",
       "type": "line",
       "source": "roads",
       "source-layer": "roads",
@@ -1266,7 +1450,57 @@
           "get",
           "highway"
         ],
-        "tertiary"
+        "track"
+      ],
+      "minzoom": 13,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#996633",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          2
+        ],
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "roads-fill-tertiary",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "filter": [
+        "any",
+        [
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "tertiary"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "tertiary_link"
+        ]
       ],
       "minzoom": 11,
       "layout": {
@@ -1296,12 +1530,23 @@
       "source": "roads",
       "source-layer": "roads",
       "filter": [
-        "==",
+        "any",
         [
-          "get",
-          "highway"
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "secondary"
         ],
-        "secondary"
+        [
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "secondary_link"
+        ]
       ],
       "minzoom": 9,
       "layout": {
@@ -1331,12 +1576,23 @@
       "source": "roads",
       "source-layer": "roads",
       "filter": [
-        "==",
+        "any",
         [
-          "get",
-          "highway"
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "primary"
         ],
-        "primary"
+        [
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "primary_link"
+        ]
       ],
       "minzoom": 7,
       "layout": {
@@ -1366,12 +1622,23 @@
       "source": "roads",
       "source-layer": "roads",
       "filter": [
-        "==",
+        "any",
         [
-          "get",
-          "highway"
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "trunk"
         ],
-        "trunk"
+        [
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "trunk_link"
+        ]
       ],
       "minzoom": 5,
       "layout": {
