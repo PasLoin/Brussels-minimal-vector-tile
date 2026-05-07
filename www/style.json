@@ -540,6 +540,22 @@
             "covered"
           ],
           "yes"
+        ],
+        [
+          "!in",
+          [
+            "get",
+            "waterway"
+          ],
+          [
+            "literal",
+            [
+              "river",
+              "canal",
+              "stream",
+              "ditch"
+            ]
+          ]
         ]
       ],
       "paint": {
