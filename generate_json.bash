@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────
-# Extraction minimaliste — 10 couches essentielles
-# Pré-requis : osmium-tool
+# Extraction minimaliste — 11 couches essentielles
+# Pré-requis : osmium-tool, jq
 # ─────────────────────────────────────────────────────────
 set -euo pipefail
 
@@ -69,4 +69,14 @@ extract cycleway \
 extract railway \
   nwr/railway=rail,tram,subway,miniature
 
-echo "✓ 10 couches extraites"
+# ── Transport public STIB/MIVB ──────────────────────────
+# osmium export ignore les relations type=route
+# → osmium cat en XML + parsing Python (stdlib, zéro dépendance)
+echo "→ public_transport (relations STIB/MIVB)"
+osmium tags-filter "$SRC" r/route=bus,tram,subway,trolleybus -o "_tmp_pt.osm.pbf" --overwrite
+osmium cat "_tmp_pt.osm.pbf" -o "_tmp_pt.osm" --overwrite
+python3 extract_stib_routes.py
+rm -f _tmp_pt.osm.pbf _tmp_pt.osm
+echo "  $(wc -l < "public_transport.json") lignes"
+
+echo "✓ 11 couches extraites"
