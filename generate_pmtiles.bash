@@ -29,6 +29,7 @@ declare -A MAX_ZOOM=(
   [pedestrian]=18
   [cycleway]=18
   [railway]=18
+  [public_transport]=16
 )
 
 REPORT_FILE="sizepmtiles.md"
@@ -39,7 +40,7 @@ TOTAL_SOURCE=0
 TOTAL_OUTPUT=0
 TOTAL_SIZE=0
 
-for layer in landuse roads buildings water green boundaries poi pedestrian cycleway railway; do
+for layer in landuse roads buildings water green boundaries poi pedestrian cycleway railway public_transport; do
   echo "→ ${layer} (z10-${MAX_ZOOM[$layer]})"
   
   # Count source features
