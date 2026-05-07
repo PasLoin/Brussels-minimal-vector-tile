@@ -85,6 +85,111 @@
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
 
+/* ══════════════════════════════════════════════════════════
+   POI Icons — Maki (main) + Temaki (supplement for unique icons)
+   Loaded at runtime from CDN, recolored to #734a08
+   ─────────────────────────────────────────────────────────
+   Temaki is an EXPANSION pack for Maki — it only contains icons
+   that Maki doesn't have. Common POI icons (restaurant, cafe…)
+   are in Maki; specialized ones (stethoscope, bed…) in Temaki.
+   ══════════════════════════════════════════════════════════ */
+const ICON_COLOR = '#734a08';
+const ICON_SIZE = 20;  // rendered pixel size
+
+// CDN bases
+const TEMAKI = 'https://cdn.jsdelivr.net/npm/@ideditor/temaki@5/icons/';
+const MAKI   = 'https://cdn.jsdelivr.net/npm/@mapbox/maki/icons/';
+
+// POI type → [temaki_name, maki_name]  (null = skip that source)
+// Only set temaki for icons that genuinely exist in Temaki but not Maki
+const POI_ICONS = {
+  restaurant:   [null,              'restaurant'],
+  cafe:         [null,              'cafe'],
+  bar:          [null,              'bar'],
+  pub:          [null,              'beer'],
+  fast_food:    [null,              'fast-food'],
+  bank:         [null,              'bank'],
+  pharmacy:     [null,              'pharmacy'],
+  hospital:     [null,              'hospital'],
+  clinic:       ['stethoscope',     'doctor'],     // Temaki has stethoscope
+  school:       [null,              'school'],
+  university:   [null,              'college'],
+  library:      [null,              'library'],
+  theatre:      [null,              'theatre'],
+  cinema:       [null,              'cinema'],
+  post_office:  ['post_box',        'post'],       // Temaki has post_box
+  police:       [null,              'police'],
+  fire_station: [null,              'fire-station'],
+  hotel:        [null,              'lodging'],
+  hostel:       ['bed',             'lodging'],     // Temaki has bed
+  museum:       [null,              'museum'],
+  attraction:   [null,              'attraction'],
+  information:  [null,              'information'],
+  viewpoint:    ['binoculars',      'viewpoint'],   // Temaki has binoculars
+  shop:         [null,              'shop'],
+};
+
+/**
+ * Fetch SVG, recolor, render to canvas, add to map.
+ * Tries temaki first, then maki.
+ */
+async function loadPoiIcon(map, poiType, temakiName, makiName) {
+  const urls = [];
+  if (temakiName) urls.push(TEMAKI + temakiName + '.svg');
+  if (makiName)   urls.push(MAKI + makiName + '.svg');
+
+  for (const url of urls) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) continue;
+      let svg = await res.text();
+      if (!svg.includes('<svg')) continue;
+
+      // Recolor: remove any existing fill, then set fill on the root <svg>
+      svg = svg.replace(/\s*fill="[^"]*"/g, '');
+      svg = svg.replace(/<svg /, `<svg fill="${ICON_COLOR}" `);
+
+      // Render SVG to canvas
+      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      const blobUrl = URL.createObjectURL(blob);
+      const img = new Image();
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = blobUrl;
+      });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = ICON_SIZE;
+      canvas.height = ICON_SIZE;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, ICON_SIZE, ICON_SIZE);
+      URL.revokeObjectURL(blobUrl);
+
+      const imageData = ctx.getImageData(0, 0, ICON_SIZE, ICON_SIZE);
+      map.addImage('poi-' + poiType, imageData, { pixelRatio: 1 });
+      return true;
+
+    } catch (e) {
+      continue;  // try next URL
+    }
+  }
+  return false;  // no icon loaded
+}
+
+async function loadAllPoiIcons(map) {
+  const results = await Promise.allSettled(
+    Object.entries(POI_ICONS).map(([type, [temaki, maki]]) =>
+      loadPoiIcon(map, type, temaki, maki)
+    )
+  );
+  const loaded = results.filter(r => r.status === 'fulfilled' && r.value).length;
+  console.log(`POI icons: ${loaded}/${Object.keys(POI_ICONS).length} loaded`);
+  // Trigger a repaint to show newly loaded icons
+  map.triggerRepaint();
+}
+
 /* ── Charger le style et patcher les URLs PMTiles ── */
 fetch('./style.json')
   .then(r => r.json())
@@ -102,6 +207,14 @@ fetch('./style.json')
   });
 
 function initMap(style) {
+  // ── Hide poi-icon layer initially to avoid "image not found" warnings ──
+  // Icons are loaded async; once ready we make the layer visible
+  const poiIconLayer = style.layers.find(l => l.id === 'poi-icon');
+  if (poiIconLayer) {
+    poiIconLayer.layout = poiIconLayer.layout || {};
+    poiIconLayer.layout.visibility = 'none';
+  }
+
   const map = new maplibregl.Map({
     container: 'map',
     style,
@@ -115,6 +228,12 @@ function initMap(style) {
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 100, unit: 'metric' }), 'bottom-right');
 
+  /* ── Load POI icons, then reveal the icon layer ── */
+  map.on('load', async () => {
+    await loadAllPoiIcons(map);
+    map.setLayoutProperty('poi-icon', 'visibility', 'visible');
+  });
+
   /* ── Légende dynamique ── */
   map.on('load', () => {
     const layers = map.getStyle().layers;
@@ -125,9 +244,11 @@ function initMap(style) {
       { label: 'Industriel', pattern: 'landuse-industrial', type: 'fill' },
       { label: 'Commercial', pattern: 'landuse-commercial', type: 'fill' },
       { label: 'Retail', pattern: 'landuse-retail', type: 'fill' },
+      { label: 'Éducation', pattern: 'landuse-education', type: 'fill' },
       { label: 'Forêt', pattern: 'green-forest', type: 'fill' },
       { label: 'Parcs', pattern: 'green-park', type: 'fill' },
       { label: 'Pelouse', pattern: 'green-grass', type: 'fill' },
+      { label: 'Broussailles', pattern: 'green-scrub', type: 'fill' },
       { label: 'Eau', pattern: 'water-', type: 'fill' },
       { label: 'Bâtiments', pattern: 'buildings', type: 'fill' },
       { label: 'Arbres et haies', pattern: 'trees-', type: 'dot', color: '#6cae50' },
