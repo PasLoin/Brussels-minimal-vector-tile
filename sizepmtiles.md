@@ -1,6 +1,6 @@
 | Layer | Source Features | Output Features | File Size |
 | :--- | :---: | :---: | :--- |
-| landuse | 5304 | 5303 | 839K |
+| landuse | 5304 | 5303 | 5.3M |
 | roads | 73842 | 73841 | 23M |
 | buildings | 1 | 61478 | 20M |
 | water | 2763 | 2762 | 2.2M |
@@ -12,4 +12,4 @@
 | cycleway | 6041 | 6040 | 2.0M |
 | railway | 14813 | 14812 | 3.7M |
 | public_transport | 176 | 176 | 1.6M |
-| **Total** | **313403** | **390314** | **87M** |
+| **Total** | **313403** | **390314** | **91M** |
