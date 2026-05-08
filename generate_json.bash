@@ -64,16 +64,29 @@ extract poi \
   nwr/tourism=hotel,hostel,museum,attraction,information,viewpoint
 
 # ── Dédoublonnage POI ────────────────────────────────────
-# osmium export peut produire des doublons pour les ways :
-# 1. LineString + Polygon du même way (closed way)
-# 2. Polygon du way + MultiPolygon de sa relation parente
-# On filtre les LineString, dédoublonne par @id ET par
-# empreinte géométrique (coordonnées arrondies).
+# osmium export peut produire des doublons :
+# 1. LineString + Polygon du même closed way
+# 2. Même Polygon exporté deux fois (ex: way membre d'un MP)
+# On filtre les LineString, puis dédoublonne par ID OSM
+# et par empreinte géométrique.
+# NB : osmium met l'ID dans feature.id (numérique), PAS
+#      dans properties.@id (sauf option --add-unique-id).
 echo "  → dédoublonnage POI"
 python3 << 'DEDUP'
 import json
 
 prio = {'MultiPolygon': 3, 'Polygon': 3, 'Point': 2}
+
+def get_fid(feat, gt):
+    """Identifiant robuste : @id > type+id > geom hash."""
+    fid = feat.get('properties', {}).get('@id')
+    if fid:
+        return fid
+    raw_id = feat.get('id')
+    if raw_id is not None:
+        prefix = 'node' if gt == 'Point' else 'way'
+        return f'{prefix}/{raw_id}'
+    return None
 
 def geom_hash(geom):
     """Hash stable d'une géométrie (arrondi 6 décimales)."""
@@ -86,13 +99,12 @@ def geom_hash(geom):
         return result
     return (geom['type'],) + flatten(geom.get('coordinates', []))
 
-seen_id = {}    # @id → feature  (même way exporté 2×)
-seen_geo = {}   # geom_hash → @id (way + sa relation parente)
-
 with open('poi.json') as f:
     collection = json.load(f)
 
 before = len(collection.get('features', []))
+seen_id = {}
+seen_geo = set()
 kept = []
 
 for feat in collection.get('features', []):
@@ -100,30 +112,21 @@ for feat in collection.get('features', []):
     if gt not in prio:
         continue                           # skip LineString / MultiLineString
 
-    fid = feat.get('properties', {}).get('@id', '')
+    fid = get_fid(feat, gt)
 
-    # ── Dedup par @id ──
+    # ── Dedup par ID ──
     if fid and fid in seen_id:
-        prev_gt = seen_id[fid]['geometry']['type']
-        if prio[gt] <= prio.get(prev_gt, 0):
+        if prio[gt] <= prio.get(seen_id[fid], 0):
             continue
 
-    # ── Dedup par géométrie (way/X vs relation/Y, même contour) ──
+    # ── Dedup par géométrie (attrape way/X vs relation/Y) ──
     gh = geom_hash(feat['geometry'])
-    if gh in seen_geo and seen_geo[gh] != fid:
-        # Même géométrie, @id différent → garder celui de plus haute priorité
-        existing_fid = seen_geo[gh]
-        if existing_fid in seen_id:
-            existing_prio = prio.get(seen_id[existing_fid]['geometry']['type'], 0)
-            if prio[gt] <= existing_prio:
-                continue
-            # Nouveau est meilleur → retirer l'ancien
-            kept[:] = [f for f in kept if f.get('properties', {}).get('@id', '') != existing_fid]
-            del seen_id[existing_fid]
+    if gh in seen_geo:
+        continue
 
     if fid:
-        seen_id[fid] = feat
-    seen_geo[gh] = fid
+        seen_id[fid] = prio[gt]
+    seen_geo.add(gh)
     kept.append(feat)
 
 collection['features'] = kept
