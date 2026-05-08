@@ -6,6 +6,7 @@ on:
     paths-ignore:
       - 'www/*.pmtiles.gz'
       - 'sizepmtiles.md'
+      - 'brussels_capital_region-latest.osm.pbf'
   workflow_dispatch:
   schedule:
     - cron: '0 3 1 * *'
@@ -64,11 +65,11 @@ jobs:
           cp *.pmtiles.gz www/
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add www/*.pmtiles.gz sizepmtiles.md
+          git add www/*.pmtiles.gz sizepmtiles.md brussels_capital_region-latest.osm.pbf
           if git diff --cached --quiet; then
             echo "Pas de changements à commiter"
           else
-            git commit -m "chore: update pmtiles and report [skip ci]"
+            git commit -m "chore: update pmtiles, pbf and report [skip ci]"
             git push
           fi
 
