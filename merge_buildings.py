@@ -3,7 +3,9 @@
 Fusionne les bâtiments qui se touchent en un seul polygone.
 Les multipolygones (cours intérieures, etc.) sont simplifiés :
 on ne garde que le contour extérieur (outer) de chaque polygone.
-523k features → beaucoup moins après merge.
+
+Sortie : buildings_merged.json (zoom bas z10-14)
+Le fichier buildings_detail.json (zoom haut z15-18) est préservé tel quel.
 """
 import json
 from shapely.geometry import shape, mapping, Polygon, MultiPolygon
@@ -11,7 +13,7 @@ from shapely.ops import unary_union
 from shapely.strtree import STRtree
 
 INPUT = "buildings.json"
-OUTPUT = "buildings.json"
+OUTPUT = "buildings_merged.json"
 
 def to_outer_only(geom):
     """Supprime les trous (inner rings) d'un polygone ou multipolygone.
@@ -19,7 +21,6 @@ def to_outer_only(geom):
     if geom.geom_type == "Polygon":
         return Polygon(geom.exterior)
     elif geom.geom_type == "MultiPolygon":
-        # Chaque composante → son outer uniquement
         outers = [Polygon(p.exterior) for p in geom.geoms]
         return unary_union(outers)
     return geom
@@ -74,7 +75,6 @@ def union(a, b):
 
 # Pour chaque bâtiment, trouver ceux qui le touchent
 for i, geom in enumerate(geoms):
-    # Chercher les candidats dans la bbox élargie
     candidates = tree.query(geom)
     for j in candidates:
         if j != i and find(i) != find(j):
