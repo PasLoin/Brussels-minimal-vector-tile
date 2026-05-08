@@ -62,6 +62,77 @@
       }
     },
     {
+      "id": "water-fill",
+      "type": "fill",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "all",
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "culvert"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "covered"
+          ],
+          "yes"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Polygon"
+        ]
+      ],
+      "paint": {
+        "fill-color": "#aad3df"
+      }
+    },
+    {
+      "id": "water-wetland",
+      "type": "fill",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "wetland"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Polygon"
+        ]
+      ],
+      "paint": {
+        "fill-color": "#d4e2c6",
+        "fill-opacity": 0.5
+      }
+    },
+    {
       "id": "landuse-residential",
       "type": "fill",
       "source": "landuse",
@@ -389,60 +460,6 @@
       }
     },
     {
-      "id": "water-fill",
-      "type": "fill",
-      "source": "water",
-      "source-layer": "water",
-      "filter": [
-        "all",
-        [
-          "!=",
-          [
-            "get",
-            "tunnel"
-          ],
-          "culvert"
-        ],
-        [
-          "!=",
-          [
-            "get",
-            "tunnel"
-          ],
-          "yes"
-        ],
-        [
-          "!=",
-          [
-            "get",
-            "covered"
-          ],
-          "yes"
-        ]
-      ],
-      "paint": {
-        "fill-color": "#aad3df"
-      }
-    },
-    {
-      "id": "water-wetland",
-      "type": "fill",
-      "source": "water",
-      "source-layer": "water",
-      "filter": [
-        "==",
-        [
-          "get",
-          "natural"
-        ],
-        "wetland"
-      ],
-      "paint": {
-        "fill-color": "#d4e2c6",
-        "fill-opacity": 0.5
-      }
-    },
-    {
       "id": "waterway-river",
       "type": "line",
       "source": "water",
@@ -472,6 +489,13 @@
             "tunnel"
           ],
           "culvert"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
         ]
       ],
       "paint": {
@@ -521,6 +545,13 @@
             "tunnel"
           ],
           "culvert"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
         ]
       ],
       "paint": {
@@ -570,6 +601,13 @@
             "tunnel"
           ],
           "culvert"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
         ]
       ],
       "paint": {
@@ -620,6 +658,13 @@
             "tunnel"
           ],
           "culvert"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
         ]
       ],
       "paint": {
@@ -670,6 +715,20 @@
             "covered"
           ],
           "yes"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Polygon"
+        ],
+        [
+          "!",
+          [
+            "has",
+            "waterway"
+          ]
         ]
       ],
       "paint": {
@@ -695,22 +754,32 @@
       "source": "water",
       "source-layer": "water",
       "filter": [
-        "any",
+        "all",
         [
-          "==",
+          "any",
           [
-            "get",
-            "tunnel"
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
           ],
-          "yes"
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "culvert"
+          ]
         ],
         [
           "==",
           [
-            "get",
-            "tunnel"
+            "geometry-type"
           ],
-          "culvert"
+          "LineString"
         ]
       ],
       "paint": {
@@ -740,22 +809,32 @@
       "source": "water",
       "source-layer": "water",
       "filter": [
-        "any",
+        "all",
         [
-          "==",
+          "any",
           [
-            "get",
-            "tunnel"
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
           ],
-          "yes"
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "culvert"
+          ]
         ],
         [
           "==",
           [
-            "get",
-            "tunnel"
+            "geometry-type"
           ],
-          "culvert"
+          "LineString"
         ]
       ],
       "paint": {
