@@ -63,6 +63,38 @@ extract poi \
   nwr/amenity=restaurant,cafe,bar,pub,fast_food,bank,pharmacy,hospital,clinic,school,university,library,theatre,cinema,post_office,police,fire_station \
   nwr/tourism=hotel,hostel,museum,attraction,information,viewpoint
 
+# ── Dédoublonnage POI ────────────────────────────────────
+# osmium export produit à la fois un Polygon ET un LineString
+# pour les closed ways (même @id). On ne garde que Point +
+# Polygon + MultiPolygon, puis on dédoublonne par @id
+# (priorité : Polygon > Point, pour garder le contour).
+echo "  → dédoublonnage POI"
+python3 -c "
+import json, sys
+prio = {'MultiPolygon': 3, 'Polygon': 3, 'Point': 2}
+seen = {}
+with open('poi.json') as f:
+    for line in f:
+        line = line.strip()
+        if not line:
+            continue
+        feat = json.loads(line)
+        gt = feat['geometry']['type']
+        if gt not in prio:
+            continue                       # skip LineString / MultiLineString
+        fid = feat.get('properties', {}).get('@id')
+        if fid is None:
+            fid = id(feat)                 # pas d'id → garder tel quel
+        if fid in seen:
+            if prio[gt] <= prio.get(seen[fid]['geometry']['type'], 0):
+                continue                   # déjà un meilleur géom
+        seen[fid] = feat
+with open('poi.json', 'w') as out:
+    for feat in seen.values():
+        out.write(json.dumps(feat, ensure_ascii=False) + '\n')
+print(f'  {len(seen)} features uniques')
+"
+
 extract pedestrian \
   nwr/highway=pedestrian,footway,path,steps
 
