@@ -1013,26 +1013,46 @@
       }
     },
     {
-      "id": "buildings",
-      "type": "fill",
-      "source": "buildings",
-      "source-layer": "buildings",
-      "minzoom": 13,
-      "paint": {
-        "fill-color": "#fce1c5"
-      }
-    },
-    {
-      "id": "buildings-outline",
-      "type": "line",
-      "source": "buildings",
-      "source-layer": "buildings",
-      "minzoom": 14,
-      "paint": {
-        "line-color": "#d4a574",
-        "line-width": 0.5
-      }
-    },
+  "id": "buildings",
+  "type": "fill",
+  "source": "buildings",
+  "source-layer": "buildings",
+  "minzoom": 13,
+  "maxzoom": 15,
+  "paint": {
+    "fill-color": "#fce1c5"
+  }
+},
+{
+  "id": "buildings-3d",
+  "type": "fill-extrusion",
+  "source": "buildings",
+  "source-layer": "buildings",
+  "minzoom": 15,
+  "paint": {
+    "fill-extrusion-color": "#fce1c5",
+    "fill-extrusion-height": [
+      "case",
+      ["has", "height"], ["to-number", ["get", "height"], 6],
+      ["has", "building:levels"], ["*", ["to-number", ["get", "building:levels"], 2], 3],
+      6
+    ],
+    "fill-extrusion-base": 0,
+    "fill-extrusion-opacity": 0.75
+  }
+},
+{
+  "id": "buildings-outline",
+  "type": "line",
+  "source": "buildings",
+  "source-layer": "buildings",
+  "minzoom": 14,
+  "maxzoom": 15,
+  "paint": {
+    "line-color": "#d4a574",
+    "line-width": 0.5
+  }
+}
     {
       "id": "trees-hedge",
       "type": "line",
