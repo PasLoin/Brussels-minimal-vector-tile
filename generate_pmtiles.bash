@@ -34,10 +34,10 @@ declare -A MAX_ZOOM=(
 
 # simplification par couche
 declare -A SIMPLIFICATION=(
-  [landuse]=0
-  [roads]=0
+  [landuse]=2
+  [roads]=2
   [buildings]=2
-  [water]=0
+  [water]=2
   [green]=2
   [trees]=2
   [boundaries]=10
@@ -73,6 +73,8 @@ for layer in landuse roads buildings water green trees boundaries poi pedestrian
     --simplification="${SIMPLIFICATION[$layer]:-30}" \
     "${COMMON_OPTS[@]}" \
     -L "${layer}:${layer}.json" 2>&1 || true)
+
+  echo "$TIPPE_LOG"
   
   # Extract output feature count from tippecanoe output
   OUT_COUNT=$(echo "$TIPPE_LOG" | grep -oE '[0-9]+ features' | tail -n 1 | awk '{print $1}' || echo "0")
