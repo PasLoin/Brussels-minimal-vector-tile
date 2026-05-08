@@ -69,31 +69,37 @@ extract poi \
 # Polygon + MultiPolygon, puis on dédoublonne par @id
 # (priorité : Polygon > Point, pour garder le contour).
 echo "  → dédoublonnage POI"
-python3 -c "
-import json, sys
+python3 << 'DEDUP'
+import json
+
 prio = {'MultiPolygon': 3, 'Polygon': 3, 'Point': 2}
 seen = {}
+
 with open('poi.json') as f:
-    for line in f:
-        line = line.strip()
-        if not line:
-            continue
-        feat = json.loads(line)
-        gt = feat['geometry']['type']
-        if gt not in prio:
-            continue                       # skip LineString / MultiLineString
-        fid = feat.get('properties', {}).get('@id')
-        if fid is None:
-            fid = id(feat)                 # pas d'id → garder tel quel
-        if fid in seen:
-            if prio[gt] <= prio.get(seen[fid]['geometry']['type'], 0):
-                continue                   # déjà un meilleur géom
-        seen[fid] = feat
+    collection = json.load(f)
+
+for feat in collection.get('features', []):
+    gt = feat['geometry']['type']
+    if gt not in prio:
+        continue                           # skip LineString / MultiLineString
+    fid = feat.get('properties', {}).get('@id')
+    if fid is None:
+        fid = feat.get('id', id(feat))
+    if fid in seen:
+        prev_gt = seen[fid]['geometry']['type']
+        if prio[gt] <= prio.get(prev_gt, 0):
+            continue                       # déjà un meilleur géom
+    seen[fid] = feat
+
+before = len(collection.get('features', []))
+collection['features'] = list(seen.values())
+after = len(collection['features'])
+
 with open('poi.json', 'w') as out:
-    for feat in seen.values():
-        out.write(json.dumps(feat, ensure_ascii=False) + '\n')
-print(f'  {len(seen)} features uniques')
-"
+    json.dump(collection, out, ensure_ascii=False)
+
+print(f'  {before} → {after} features ({before - after} doublons supprimés)')
+DEDUP
 
 extract pedestrian \
   nwr/highway=pedestrian,footway,path,steps
