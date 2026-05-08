@@ -18,7 +18,7 @@ COMMON_OPTS=(
 
 # zoom max par couche : détail là où c'est utile
 declare -A MAX_ZOOM=(
-  [landuse]=14
+  [landuse]=18
   [roads]=18
   [buildings]=18
   [water]=18
@@ -34,7 +34,7 @@ declare -A MAX_ZOOM=(
 
 # simplification par couche
 declare -A SIMPLIFICATION=(
-  [landuse]=30
+  [landuse]=2
   [roads]=10
   [buildings]=2
   [water]=2
