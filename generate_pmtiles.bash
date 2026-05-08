@@ -34,10 +34,10 @@ declare -A MAX_ZOOM=(
 
 # simplification par couche
 declare -A SIMPLIFICATION=(
-  [landuse]=2
-  [roads]=10
+  [landuse]=0
+  [roads]=0
   [buildings]=2
-  [water]=2
+  [water]=0
   [green]=2
   [trees]=2
   [boundaries]=10
