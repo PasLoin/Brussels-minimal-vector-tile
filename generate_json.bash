@@ -64,36 +64,70 @@ extract poi \
   nwr/tourism=hotel,hostel,museum,attraction,information,viewpoint
 
 # ── Dédoublonnage POI ────────────────────────────────────
-# osmium export produit à la fois un Polygon ET un LineString
-# pour les closed ways (même @id). On ne garde que Point +
-# Polygon + MultiPolygon, puis on dédoublonne par @id
-# (priorité : Polygon > Point, pour garder le contour).
+# osmium export peut produire des doublons pour les ways :
+# 1. LineString + Polygon du même way (closed way)
+# 2. Polygon du way + MultiPolygon de sa relation parente
+# On filtre les LineString, dédoublonne par @id ET par
+# empreinte géométrique (coordonnées arrondies).
 echo "  → dédoublonnage POI"
 python3 << 'DEDUP'
 import json
 
 prio = {'MultiPolygon': 3, 'Polygon': 3, 'Point': 2}
-seen = {}
+
+def geom_hash(geom):
+    """Hash stable d'une géométrie (arrondi 6 décimales)."""
+    def flatten(c):
+        if isinstance(c, (int, float)):
+            return (round(c, 6),)
+        result = ()
+        for item in c:
+            result += flatten(item)
+        return result
+    return (geom['type'],) + flatten(geom.get('coordinates', []))
+
+seen_id = {}    # @id → feature  (même way exporté 2×)
+seen_geo = {}   # geom_hash → @id (way + sa relation parente)
 
 with open('poi.json') as f:
     collection = json.load(f)
+
+before = len(collection.get('features', []))
+kept = []
 
 for feat in collection.get('features', []):
     gt = feat['geometry']['type']
     if gt not in prio:
         continue                           # skip LineString / MultiLineString
-    fid = feat.get('properties', {}).get('@id')
-    if fid is None:
-        fid = feat.get('id', id(feat))
-    if fid in seen:
-        prev_gt = seen[fid]['geometry']['type']
-        if prio[gt] <= prio.get(prev_gt, 0):
-            continue                       # déjà un meilleur géom
-    seen[fid] = feat
 
-before = len(collection.get('features', []))
-collection['features'] = list(seen.values())
-after = len(collection['features'])
+    fid = feat.get('properties', {}).get('@id', '')
+
+    # ── Dedup par @id ──
+    if fid and fid in seen_id:
+        prev_gt = seen_id[fid]['geometry']['type']
+        if prio[gt] <= prio.get(prev_gt, 0):
+            continue
+
+    # ── Dedup par géométrie (way/X vs relation/Y, même contour) ──
+    gh = geom_hash(feat['geometry'])
+    if gh in seen_geo and seen_geo[gh] != fid:
+        # Même géométrie, @id différent → garder celui de plus haute priorité
+        existing_fid = seen_geo[gh]
+        if existing_fid in seen_id:
+            existing_prio = prio.get(seen_id[existing_fid]['geometry']['type'], 0)
+            if prio[gt] <= existing_prio:
+                continue
+            # Nouveau est meilleur → retirer l'ancien
+            kept[:] = [f for f in kept if f.get('properties', {}).get('@id', '') != existing_fid]
+            del seen_id[existing_fid]
+
+    if fid:
+        seen_id[fid] = feat
+    seen_geo[gh] = fid
+    kept.append(feat)
+
+collection['features'] = kept
+after = len(kept)
 
 with open('poi.json', 'w') as out:
     json.dump(collection, out, ensure_ascii=False)
