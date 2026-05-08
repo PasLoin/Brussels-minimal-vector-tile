@@ -16,15 +16,41 @@
     #map { position: absolute; inset: 0; }
 
     /* ── Titre ── */
-    .title {
-      position: absolute; top: 16px; left: 16px; z-index: 5;
+    .panel {
+      position: absolute; left: 16px; z-index: 5;
       background: rgba(242, 239, 233, 0.92);
       backdrop-filter: blur(8px);
-      padding: 10px 14px;
       border-radius: 6px;
       border: 1px solid rgba(0,0,0,0.1);
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      width: 220px;
     }
+    .panel-header {
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .panel-content {
+      padding: 0 14px 10px 14px;
+      overflow-y: auto;
+    }
+    .collapsed .panel-content {
+      display: none;
+    }
+    .toggle-icon {
+      font-size: 10px;
+      transition: transform 0.2s;
+    }
+    .collapsed .toggle-icon {
+      transform: rotate(-90deg);
+    }
+
+    .title { top: 16px; }
     .title h1 {
       font-size: 14px; font-weight: bold; color: #222;
       letter-spacing: 0.02em;
@@ -32,17 +58,25 @@
     .title p {
       font-size: 11px; color: #666; margin-top: 2px;
     }
+    .osm-edit {
+      display: block;
+      font-size: 11px;
+      margin-top: 8px;
+      color: #0078ff;
+      text-decoration: none;
+    }
+    .osm-edit.disabled {
+      color: #999;
+      pointer-events: none;
+      cursor: default;
+    }
 
-    /* ── Légende ── */
     .legend {
-      position: absolute; bottom: 24px; left: 16px; z-index: 5;
-      background: rgba(242, 239, 233, 0.92);
-      backdrop-filter: blur(8px);
-      padding: 10px 14px;
-      border-radius: 6px;
-      border: 1px solid rgba(0,0,0,0.1);
+      bottom: 24px;
       max-height: 50vh;
-      overflow-y: auto;
+    }
+    .legend h2 {
+      font-size: 13px; font-weight: bold; color: #222;
     }
     .legend-row {
       display: flex; align-items: center; gap: 8px;
@@ -73,14 +107,45 @@
 
 <div id="map"></div>
 
-<div class="title">
-  <h1>Bruxelles</h1>
-  <p>Tuiles vectorielles · OpenStreetMap</p>
+<div class="title panel" id="title-panel">
+  <div class="panel-header" onclick="togglePanel('title-panel')">
+    <h1>Bruxelles</h1>
+    <span class="toggle-icon">v</span>
+  </div>
+  <div class="panel-content">
+    <p>Tuiles vectorielles · OpenStreetMap</p>
+    <a id="osm-edit" class="osm-edit disabled" target="_blank" href="#">éditer dans OpenStreetMap</a>
+  </div>
 </div>
 
-<div class="legend" id="legend"></div>
+<div class="legend panel" id="legend-panel">
+  <div class="panel-header" onclick="togglePanel('legend-panel')">
+    <h2>Légende</h2>
+    <span class="toggle-icon">v</span>
+  </div>
+  <div class="panel-content" id="legend-content"></div>
+</div>
 
 <script>
+
+function togglePanel(id) {
+  document.getElementById(id).classList.toggle('collapsed');
+}
+
+function updateOsmLink(map) {
+  const link = document.getElementById('osm-edit');
+  const zoom = map.getZoom();
+  const center = map.getCenter();
+  
+  if (zoom >= 16) {
+    link.classList.remove('disabled');
+    link.href = `https://www.openstreetmap.org/edit#map=${Math.round(zoom)}/${center.lat.toFixed(5)}/${center.lng.toFixed(5)}`;
+  } else {
+    link.classList.add('disabled');
+    link.href = '#';
+  }
+}
+
 /* ── PMTiles ── */
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
@@ -237,7 +302,7 @@ function initMap(style) {
   /* ── Légende dynamique ── */
   map.on('load', () => {
     const layers = map.getStyle().layers;
-    const el = document.getElementById('legend');
+    const el = document.getElementById('legend-content');
     
     const categories = [
       { label: 'Résidentiel', pattern: 'landuse-residential', type: 'fill' },
@@ -318,6 +383,11 @@ function initMap(style) {
       el.appendChild(row);
     });
   });
+
+  map.on('moveend', () => updateOsmLink(map));
+  map.on('zoomend', () => updateOsmLink(map));
+  updateOsmLink(map);
+
 }
 </script>
 </body>
