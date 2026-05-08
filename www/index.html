@@ -162,46 +162,99 @@ const ICON_COLOR = '#734a08';
 const ICON_SIZE = 20;  // rendered pixel size
 
 // CDN bases
-const TEMAKI = 'https://cdn.jsdelivr.net/npm/@ideditor/temaki@5/icons/';
+const LOCAL   = './assets/icons/';
+const TEMAKI  = 'https://cdn.jsdelivr.net/npm/@ideditor/temaki@5/icons/';
+const LIBERTY = 'https://raw.githubusercontent.com/maputnik/osm-liberty/gh-pages/icons/';
 const MAKI   = 'https://cdn.jsdelivr.net/npm/@mapbox/maki/icons/';
 
 // POI type → [temaki_name, maki_name]  (null = skip that source)
 // Only set temaki for icons that genuinely exist in Temaki but not Maki
 const POI_ICONS = {
-  restaurant:   [null,              'restaurant'],
-  cafe:         [null,              'cafe'],
-  bar:          [null,              'bar'],
-  pub:          [null,              'beer'],
-  fast_food:    [null,              'fast-food'],
-  bank:         [null,              'bank'],
-  pharmacy:     [null,              'pharmacy'],
-  hospital:     [null,              'hospital'],
-  clinic:       ['stethoscope',     'doctor'],     // Temaki has stethoscope
-  school:       [null,              'school'],
-  university:   [null,              'college'],
-  library:      [null,              'library'],
-  theatre:      [null,              'theatre'],
-  cinema:       [null,              'cinema'],
-  post_office:  ['post_box',        'post'],       // Temaki has post_box
-  police:       [null,              'police'],
-  fire_station: [null,              'fire-station'],
-  hotel:        [null,              'lodging'],
-  hostel:       ['bed',             'lodging'],     // Temaki has bed
-  museum:       [null,              'museum'],
-  attraction:   [null,              'attraction'],
-  information:  [null,              'information'],
-  viewpoint:    ['binoculars',      'viewpoint'],   // Temaki has binoculars
-  shop:         [null,              'shop'],
+  // format: [local, temaki, maki, liberty]
+  'cuisine-friture': ['cuisine_friture', null, null, null],
+  
+  // Amenities
+  restaurant:   [null, null, 'restaurant', 'restaurant'],
+  cafe:         [null, null, 'cafe', 'cafe'],
+  bar:          [null, null, 'bar', 'bar'],
+  pub:          [null, null, 'beer', 'pub'],
+  fast_food:    [null, null, 'fast-food', 'fast-food'],
+  bank:         [null, null, 'bank', 'bank'],
+  pharmacy:     [null, null, 'pharmacy', 'pharmacy'],
+  hospital:     [null, null, 'hospital', 'hospital'],
+  clinic:       [null, 'stethoscope', 'doctor', 'hospital'],
+  doctor:       [null, 'stethoscope', 'doctor', 'health'],
+  dentist:      [null, 'tooth', null, 'dentist'],
+  school:       [null, null, 'school', 'school'],
+  university:   [null, null, 'college', 'university'],
+  library:      [null, null, 'library', 'library'],
+  theatre:      [null, null, 'theatre', 'theatre'],
+  cinema:       [null, null, 'cinema', 'cinema'],
+  post_office:  [null, 'post_box', 'post', 'post'],
+  police:       [null, null, 'police', 'police'],
+  fire_station: [null, null, 'fire-station', 'fire-station'],
+  place_of_worship: [null, 'place_of_worship', 'religious-christian', 'place-of-worship'],
+  townhall:     [null, 'town_hall', 'town-hall', 'town-hall'],
+  courthouse:   [null, 'court', null, 'courthouse'],
+  community_centre: [null, 'community', null, 'community-centre'],
+  kindergarten: [null, 'kindergarten', null, 'kindergarten'],
+  veterinary:   [null, 'veterinary', null, 'veterinary'],
+  
+  // Tourism
+  hotel:        [null, null, 'lodging', 'hotel'],
+  hostel:       [null, 'bed', 'lodging', 'hostel'],
+  museum:       [null, null, 'museum', 'museum'],
+  attraction:   [null, null, 'attraction', 'attraction'],
+  information:  [null, null, 'information', 'information'],
+  viewpoint:    [null, 'binoculars', 'viewpoint', 'viewpoint'],
+  
+  // Shops
+  shop:         [null, null, 'shop', 'shop'],
+  butcher:      [null, 'butcher', null, 'butcher'],
+  bakery:       [null, 'bakery', null, 'bakery'],
+  supermarket:  [null, null, 'grocery', 'supermarket'],
+  convenience:  [null, 'convenience', 'grocery', 'convenience'],
+  clothes:      [null, 'clothes', 'clothing-store', 'clothing-store'],
+  hairdresser:  [null, 'hairdresser', null, 'hairdresser'],
+  florist:      [null, 'florist', null, 'florist'],
+  confectionery:[null, 'confectionery', null, 'pastry_shop'],
+  newsagent:    [null, 'newsagent', null, 'newsagent'],
+  books:        [null, 'books', null, 'library'],
+  optician:     [null, 'optician', null, 'optician'],
+  jewelry:      [null, 'jewelry', 'jewelry-store', 'jewelry-store'],
+  gift:         [null, 'gift', 'gift', 'gift'],
+  shoes:        [null, 'shoes', null, 'shoes'],
+  mobile_phone: [null, 'mobile_phone', null, 'mobile-phone'],
+  bicycle:      [null, 'bicycle', 'bicycle', 'bicycle'],
+  dry_cleaning: [null, 'dry_cleaning', null, 'laundry'],
+  laundry:      [null, 'laundry', 'laundry', 'laundry'],
+  hardware:     [null, 'hardware', null, 'hardware'],
+  alcohol:      [null, 'alcohol', 'alcohol-shop', 'alcohol-shop'],
+  department_store: [null, 'department_store', 'department-store', 'department-store'],
+  beauty:       [null, 'beauty', null, 'beauty'],
+  doityourself: [null, 'doityourself', null, 'hardware'],
+  furniture:    [null, 'furniture', null, 'furniture'],
+  electronics:  [null, 'electronics', null, 'electronics'],
+  chemist:      [null, 'chemist', null, 'chemist'],
+  toys:         [null, 'toys', null, 'toys'],
+  pet:          [null, 'pet', null, 'pet-shop'],
+  stationery:   [null, 'stationery', null, 'stationery'],
+  greengrocer:  [null, 'greengrocer', null, 'greengrocer'],
+  travel_agency:[null, 'travel_agency', null, 'travel-agency'],
+  car_repair:   [null, 'car_repair', 'car', 'car-repair'],
+  car:          [null, 'car', 'car', 'car'],
 };
 
 /**
  * Fetch SVG, recolor, render to canvas, add to map.
  * Tries temaki first, then maki.
  */
-async function loadPoiIcon(map, poiType, temakiName, makiName) {
+async function loadPoiIcon(map, poiType, localName, temakiName, makiName, libertyName) {
   const urls = [];
-  if (temakiName) urls.push(TEMAKI + temakiName + '.svg');
-  if (makiName)   urls.push(MAKI + makiName + '.svg');
+  if (localName)   urls.push(LOCAL + localName + '.svg');
+  if (temakiName)  urls.push(TEMAKI + temakiName + '.svg');
+  if (makiName)    urls.push(MAKI + makiName + '.svg');
+  if (libertyName) urls.push(LIBERTY + libertyName + '.svg');
 
   for (const url of urls) {
     try {
@@ -245,8 +298,8 @@ async function loadPoiIcon(map, poiType, temakiName, makiName) {
 
 async function loadAllPoiIcons(map) {
   const results = await Promise.allSettled(
-    Object.entries(POI_ICONS).map(([type, [temaki, maki]]) =>
-      loadPoiIcon(map, type, temaki, maki)
+    Object.entries(POI_ICONS).map(([type, sources]) =>
+      loadPoiIcon(map, type, ...sources)
     )
   );
   const loaded = results.filter(r => r.status === 'fulfilled' && r.value).length;
