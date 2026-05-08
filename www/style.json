@@ -489,7 +489,7 @@
       }
     },
     {
-      "id": "buildings",
+      "id": "s",
       "type": "fill",
       "source": "buildings",
       "source-layer": "buildings",
@@ -511,7 +511,7 @@
           "case",
           ["has", "height"], ["to-number", ["get", "height"], 6],
           ["has", "building:levels"], ["*", ["to-number", ["get", "building:levels"], 2], 3],
-          6
+          ["+", 5, ["*", 3, ["%", ["id"], 4]]]
         ],
         "fill-extrusion-base": 0,
         "fill-extrusion-opacity": 0.75
