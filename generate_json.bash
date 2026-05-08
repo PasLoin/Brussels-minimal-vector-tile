@@ -58,18 +58,24 @@ extract landuse \
 extract boundaries \
   nwr/boundary=administrative
 
-extract poi \
+# POI : extraction séparée avec --add-unique-id pour le dédoublonnage
+echo "→ poi"
+osmium tags-filter "$SRC" \
   nwr/shop=* \
   nwr/amenity=restaurant,cafe,bar,pub,fast_food,bank,pharmacy,hospital,clinic,school,university,library,theatre,cinema,post_office,police,fire_station \
-  nwr/tourism=hotel,hostel,museum,attraction,information,viewpoint
+  nwr/tourism=hotel,hostel,museum,attraction,information,viewpoint \
+  -o "_tmp_poi.osm.pbf" --overwrite
+osmium export "_tmp_poi.osm.pbf" -o "poi.json" --overwrite --add-unique-id=type_id
+rm -f "_tmp_poi.osm.pbf"
+echo "  $(wc -l < "poi.json") lignes"
 
 # ── Normalisation POI → points + dédoublonnage ───────────
-# Deux problèmes résolus ici :
 # 1. Un POI polygone chevauche plusieurs tuiles → Tippecanoe le
 #    découpe → MapLibre place un symbole par fragment.
 #    Fix : convertir les surfaces en point centroïde AVANT tippecanoe.
-# 2. osmium export peut dupliquer un même way en 2 features
-#    (même ID numérique). Fix : dédoublonner par feature.id.
+# 2. osmium export peut dupliquer un même way en 2 features.
+#    --add-unique-id=type_id met un id unique (ex: "w15248") dans
+#    feature.id → dedup fiable.
 echo "  → normalisation POI en points + dédoublonnage"
 python3 << 'POI_POINTS'
 import json
