@@ -8,7 +8,6 @@ set -euo pipefail
 COMMON_OPTS=(
   --attribution="© OpenStreetMap contributors"
   --minimum-zoom=10
-  --simplification=30
   --simplify-only-low-zooms
   --drop-densest-as-needed
   --extend-zooms-if-still-dropping
@@ -19,11 +18,11 @@ COMMON_OPTS=(
 
 # zoom max par couche : détail là où c'est utile
 declare -A MAX_ZOOM=(
-  [landuse]=14
+  [landuse]=18
   [roads]=18
   [buildings]=18
-  [water]=16
-  [green]=16
+  [water]=18
+  [green]=18
   [trees]=18
   [boundaries]=14
   [poi]=16
@@ -31,6 +30,22 @@ declare -A MAX_ZOOM=(
   [cycleway]=18
   [railway]=18
   [public_transport]=16
+)
+
+# simplification par couche
+declare -A SIMPLIFICATION=(
+  [landuse]=0
+  [roads]=0
+  [buildings]=2
+  [water]=0
+  [green]=2
+  [trees]=2
+  [boundaries]=10
+  [poi]=10
+  [pedestrian]=10
+  [cycleway]=10
+  [railway]=10
+  [public_transport]=10
 )
 
 REPORT_FILE="sizepmtiles.md"
@@ -52,10 +67,10 @@ for layer in landuse roads buildings water green trees boundaries poi pedestrian
   fi
 
   # Run tippecanoe and capture stderr to get feature count
-  # Tippecanoe typically outputs "X features, Y bytes of geometry..." to stderr
   TIPPE_LOG=$(tippecanoe -o "${layer}.pmtiles" \
     --name="${layer}" \
     --maximum-zoom="${MAX_ZOOM[$layer]}" \
+    --simplification="${SIMPLIFICATION[$layer]:-30}" \
     "${COMMON_OPTS[@]}" \
     -L "${layer}:${layer}.json" 2>&1 || true)
   
@@ -64,7 +79,6 @@ for layer in landuse roads buildings water green trees boundaries poi pedestrian
   [ -z "$OUT_COUNT" ] && OUT_COUNT=0
 
   if [ -f "${layer}.pmtiles" ]; then
-    # In the original script, they just rename to .gz (likely for GitHub Pages auto-compression or just a naming convention)
     mv "${layer}.pmtiles" "${layer}.pmtiles.gz"
   fi
   
