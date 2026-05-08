@@ -5,7 +5,7 @@
     "landuse": {
       "type": "vector",
       "url": "./landuse.pmtiles.gz",
-      "attribution": "© OpenStreetMap contributors"
+      "attribution": "\u00a9 OpenStreetMap contributors"
     },
     "roads": {
       "type": "vector",
@@ -448,12 +448,31 @@
       "source": "water",
       "source-layer": "water",
       "filter": [
-        "==",
+        "all",
         [
-          "get",
-          "waterway"
+          "==",
+          [
+            "get",
+            "waterway"
+          ],
+          "river"
         ],
-        "river"
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "culvert"
+        ]
       ],
       "paint": {
         "line-color": "#aad3df",
@@ -478,12 +497,31 @@
       "source": "water",
       "source-layer": "water",
       "filter": [
-        "==",
+        "all",
         [
-          "get",
-          "waterway"
+          "==",
+          [
+            "get",
+            "waterway"
+          ],
+          "canal"
         ],
-        "canal"
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "culvert"
+        ]
       ],
       "paint": {
         "line-color": "#aad3df",
@@ -508,12 +546,31 @@
       "source": "water",
       "source-layer": "water",
       "filter": [
-        "==",
+        "all",
         [
-          "get",
-          "waterway"
+          "==",
+          [
+            "get",
+            "waterway"
+          ],
+          "stream"
         ],
-        "stream"
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "culvert"
+        ]
       ],
       "paint": {
         "line-color": "#aad3df",
@@ -539,12 +596,31 @@
       "source": "water",
       "source-layer": "water",
       "filter": [
-        "==",
+        "all",
         [
-          "get",
-          "waterway"
+          "==",
+          [
+            "get",
+            "waterway"
+          ],
+          "ditch"
         ],
-        "ditch"
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "culvert"
+        ]
       ],
       "paint": {
         "line-color": "#aad3df",
@@ -610,6 +686,93 @@
           1,
           18,
           10
+        ]
+      }
+    },
+    {
+      "id": "water-tunnel-casing",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "any",
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "culvert"
+        ]
+      ],
+      "paint": {
+        "line-color": "#aad3df",
+        "line-dasharray": [
+          2,
+          2
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          1.5,
+          18,
+          5
+        ]
+      }
+    },
+    {
+      "id": "water-tunnel-core",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "any",
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "culvert"
+        ]
+      ],
+      "paint": {
+        "line-color": "#e6faf9",
+        "line-opacity": 0.4,
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          1,
+          18,
+          4
         ]
       }
     },
@@ -773,7 +936,7 @@
           18,
           32
         ],
-        "text-field": "●",
+        "text-field": "\u25cf",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -847,7 +1010,7 @@
           18,
           32
         ],
-        "text-field": "▲",
+        "text-field": "\u25b2",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -930,7 +1093,7 @@
           18,
           32
         ],
-        "text-field": "●",
+        "text-field": "\u25cf",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -990,7 +1153,7 @@
       ],
       "minzoom": 17,
       "layout": {
-        "text-field": "●",
+        "text-field": "\u25cf",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -1049,7 +1212,7 @@
       ],
       "minzoom": 17,
       "layout": {
-        "text-field": "▲",
+        "text-field": "\u25b2",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -1117,7 +1280,7 @@
       ],
       "minzoom": 17,
       "layout": {
-        "text-field": "●",
+        "text-field": "\u25cf",
         "text-font": [
           "Noto Sans Regular"
         ],
