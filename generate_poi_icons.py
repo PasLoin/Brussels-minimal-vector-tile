@@ -49,15 +49,15 @@ OSM_TYPE_KEYS = {
 }
 
 # ═══════════════════════════════════════════════════════════
-# Cas spéciaux : sous-types avec une icône dédiée.
-# Chaque entrée crée un type POI synthétique « {key}-{value} »
-# et une règle case dans le style MapLibre.
+# Sous-types : clés OSM dont les valeurs méritent une icône
+# spécifique.  Le script scanne automatiquement toutes les
+# valeurs présentes dans les données et génère un type
+# synthétique « {key}-{value} » (ex: cuisine-friture,
+# religion-muslim).  Il suffit de déposer l'icône SVG dans
+# www/assets/icons/ avec le nom {key}_{value}.svg
+# (ex: cuisine_friture.svg, religion_muslim.svg).
 # ═══════════════════════════════════════════════════════════
-SPECIAL_CASES = [
-    {'key': 'cuisine', 'value': 'friture', 'icon_key': 'cuisine-friture'},
-    # Ajouter ici d'autres sous-types si nécessaire, par ex. :
-    # {'key': 'religion', 'value': 'muslim', 'icon_key': 'religion-muslim'},
-]
+SUB_TYPE_KEYS = {'cuisine', 'religion', 'denomination'}
 
 # ═══════════════════════════════════════════════════════════
 # Mapping OSM tag value → CDN icon name quand ils diffèrent
@@ -110,8 +110,14 @@ def check_url(url, timeout=8):
 
 
 def check_local(name):
-    """Vérifie si www/assets/icons/{name}.svg existe."""
-    return os.path.isfile(os.path.join(LOCAL_DIR, f'{name}.svg'))
+    """Vérifie si www/assets/icons/{name}.svg existe.
+    Essaie aussi avec underscores (cuisine-friture → cuisine_friture)."""
+    if os.path.isfile(os.path.join(LOCAL_DIR, f'{name}.svg')):
+        return name
+    alt = name.replace('-', '_')
+    if alt != name and os.path.isfile(os.path.join(LOCAL_DIR, f'{alt}.svg')):
+        return alt
+    return None
 
 
 def resolve_icon(poi_type):
@@ -122,7 +128,7 @@ def resolve_icon(poi_type):
     overrides = CDN_NAME_OVERRIDES.get(poi_type, {})
 
     local_name = overrides.get('local', poi_type)
-    local = local_name if check_local(local_name) else None
+    local = check_local(local_name)
 
     temaki_name = overrides.get('temaki', poi_type)
     if temaki_name is None:
@@ -156,10 +162,12 @@ def extract_poi_types(poi_json_path):
     Lit poi.json et retourne :
       - types : Counter { type_name: count }
       - detected_keys : set des tag-keys OSM effectivement trouvés
-    Auto-détecte les keys depuis OSM_TYPE_KEYS.
+      - sub_types : dict { icon_key: {key, value} } pour les sous-types détectés
+    Auto-détecte les keys depuis OSM_TYPE_KEYS et SUB_TYPE_KEYS.
     """
     types = Counter()
     detected_keys = set()
+    sub_types = {}  # 'cuisine-friture' → {'key': 'cuisine', 'value': 'friture'}
 
     with open(poi_json_path) as f:
         data = json.load(f)
@@ -168,19 +176,23 @@ def extract_poi_types(poi_json_path):
     for feat in features:
         props = feat.get('properties', {})
 
-        # Cas spéciaux (sous-types)
-        for sc in SPECIAL_CASES:
-            if props.get(sc['key']) == sc['value']:
-                types[sc['icon_key']] += 1
+        # Sous-types auto-détectés (cuisine, religion, denomination…)
+        for key in SUB_TYPE_KEYS:
+            val = props.get(key)
+            if val and isinstance(val, str) and val.strip():
+                val = val.strip()
+                icon_key = f'{key}-{val}'
+                types[icon_key] += 1
+                sub_types[icon_key] = {'key': key, 'value': val}
 
-        # Type keys auto-détectés
+        # Type keys principaux
         for key in OSM_TYPE_KEYS:
             val = props.get(key)
             if val and isinstance(val, str) and val.strip():
                 types[val.strip()] += 1
                 detected_keys.add(key)
 
-    return types, detected_keys
+    return types, detected_keys, sub_types
 
 
 def main():
@@ -201,9 +213,11 @@ def main():
 
     # ── 1. Extraire les types POI ──────────────────────────
     print(f'→ Lecture de {args.poi_json}...')
-    poi_types, detected_keys = extract_poi_types(args.poi_json)
+    poi_types, detected_keys, sub_types = extract_poi_types(args.poi_json)
     print(f'  {len(poi_types)} types POI trouvés ({sum(poi_types.values())} features)')
     print(f'  Tag-keys détectés : {", ".join(sorted(detected_keys))}')
+    if sub_types:
+        print(f'  Sous-types détectés : {len(sub_types)} ({", ".join(sorted(SUB_TYPE_KEYS & {st["key"] for st in sub_types.values()}))})')
 
     # Toujours inclure le fallback "shop" (icône générique pour les shops inconnus)
     if 'shop' not in poi_types:
@@ -223,10 +237,20 @@ def main():
             print(f'  {status} {poi_type} ({count}x) → {sources}')
 
     # ── 3. Générer poi-icons.json ──────────────────────────
+    # special_cases : seulement les sous-types qui ont au moins une icône
+    special_cases = []
+    for icon_key, info in sorted(sub_types.items()):
+        if icon_key in icons and any(s is not None for s in icons[icon_key]):
+            special_cases.append({
+                'key': info['key'],
+                'value': info['value'],
+                'icon_key': icon_key,
+            })
+
     output = {
         '_meta': {
             'type_keys': sorted(detected_keys),
-            'special_cases': SPECIAL_CASES,
+            'special_cases': special_cases,
         },
     }
     for t in sorted(icons):
