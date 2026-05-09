@@ -24,11 +24,6 @@
         "icon_key": "cuisine-friture"
       },
       {
-        "key": "cuisine",
-        "value": "sandwich",
-        "icon_key": "cuisine-sandwich"
-      },
-      {
         "key": "religion",
         "value": "muslim",
         "icon_key": "religion-muslim"
@@ -2436,7 +2431,7 @@
     null
   ],
   "cuisine-sandwich": [
-    "cuisine_sandwich",
+    null,
     null,
     null,
     null
@@ -4344,7 +4339,7 @@
     null
   ],
   "vacant": [
-    "vacant",
+    null,
     null,
     null,
     null
