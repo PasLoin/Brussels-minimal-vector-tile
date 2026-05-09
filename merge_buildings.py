@@ -1,38 +1,31 @@
 #!/usr/bin/env python3
 """
 Fusionne les bâtiments qui se touchent en un seul polygone.
-Les multipolygones (cours intérieures, etc.) sont simplifiés :
-on ne garde que le contour extérieur (outer) de chaque polygone.
+On garde les trous (cours intérieures, etc.).
 
-Sortie : buildings_merged.json (zoom bas z10-14)
-Le fichier buildings_detail.json (zoom haut z15-18) est préservé tel quel.
+Sortie : buildings_merged.json (zoom bas z10-12)
+Le fichier buildings_detail.json (zoom haut z13-18) est préservé tel quel.
 """
 import json
-from shapely.geometry import shape, mapping, Polygon, MultiPolygon
+from shapely.geometry import shape, mapping
 from shapely.ops import unary_union
 from shapely.strtree import STRtree
 
 INPUT = "buildings.json"
 OUTPUT = "buildings_merged.json"
 
-def to_outer_only(geom):
-    """Supprime les trous (inner rings) d'un polygone ou multipolygone.
-    Ne garde que le contour extérieur → polygone simple."""
-    if geom.geom_type == "Polygon":
-        return Polygon(geom.exterior)
-    elif geom.geom_type == "MultiPolygon":
-        outers = [Polygon(p.exterior) for p in geom.geoms]
-        return unary_union(outers)
-    return geom
-
 print("→ Chargement des bâtiments...")
-with open(INPUT) as f:
-    geojson = json.load(f)
+try:
+    with open(INPUT) as f:
+        geojson = json.load(f)
+except FileNotFoundError:
+    print(f"✗ {INPUT} introuvable, skip merge.")
+    exit(0)
 
 features = geojson["features"]
 print(f"  {len(features)} features en entrée")
 
-# Construire les géométries : outer only
+# Construire les géométries
 geoms = []
 skipped_invalid = 0
 for feat in features:
@@ -42,14 +35,13 @@ for feat in features:
             g = g.buffer(0)
         if g.is_empty:
             continue
-        g = to_outer_only(g)
         if g.is_valid and not g.is_empty:
             geoms.append(g)
     except Exception:
         skipped_invalid += 1
         continue
 
-print(f"  {len(geoms)} géométries valides (outer only)")
+print(f"  {len(geoms)} géométries valides")
 if skipped_invalid:
     print(f"  {skipped_invalid} ignorées (invalides)")
 
@@ -102,9 +94,6 @@ for root, indices in groups.items():
 
     if merged.is_empty:
         continue
-
-    # Supprimer les trous du résultat fusionné aussi
-    merged = to_outer_only(merged)
 
     merged_features.append({
         "type": "Feature",
