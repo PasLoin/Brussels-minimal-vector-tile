@@ -176,7 +176,10 @@ maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
 
 /* ══════════════════════════════════════════════════════════
    POI Icons — chargés depuis poi-icons.json (généré par
-   generate_poi_icons.py) puis récupérés depuis les CDN
+   generate_poi_icons.py).  Le JSON contient _meta.type_keys
+   et _meta.special_cases → on construit l'expression
+   icon-image dynamiquement.  Plus rien à changer ici ni
+   dans style.json quand on ajoute un type dans le pipeline.
    ══════════════════════════════════════════════════════════ */
 const ICON_COLOR = '#734a08';
 const ICON_SIZE = 20;
@@ -237,19 +240,76 @@ async function loadPoiIcon(map, poiType, localName, temakiName, makiName, libert
 }
 
 /**
- * Charge poi-icons.json puis résout toutes les icônes.
+ * Construit l'expression MapLibre icon-image à partir de _meta.
+ * Génère dynamiquement les branches du coalesce pour chaque
+ * type_key détecté + les special_cases.
+ *
+ * Résultat équivalent à :
+ *   ["coalesce",
+ *     // special cases
+ *     ["case", ["==", ["get","cuisine"], "friture"], ["image","poi-cuisine-friture"], ["image",""]],
+ *     // pour chaque type_key : shop, amenity, tourism, craft, …
+ *     ["image", ["concat", "poi-", ["get", "shop"]]],
+ *     ["image", ["concat", "poi-", ["get", "amenity"]]],
+ *     ...
+ *     // fallback générique shop
+ *     ["case", ["has","shop"], ["image","poi-shop"], ["image",""]]
+ *   ]
+ */
+function buildIconImageExpression(meta) {
+  const expr = ['coalesce'];
+
+  // 1. Special cases (cuisine=friture, etc.)
+  for (const sc of (meta.special_cases || [])) {
+    expr.push([
+      'case',
+      ['==', ['get', sc.key], sc.value],
+      ['image', 'poi-' + sc.icon_key],
+      ['image', '']
+    ]);
+  }
+
+  // 2. Chaque type_key détecté dans les données
+  for (const key of (meta.type_keys || [])) {
+    expr.push(['image', ['concat', 'poi-', ['get', key]]]);
+  }
+
+  // 3. Fallback : icône générique "shop" si le feature a un tag shop
+  expr.push([
+    'case',
+    ['has', 'shop'],
+    ['image', 'poi-shop'],
+    ['image', '']
+  ]);
+
+  return expr;
+}
+
+/**
+ * Charge poi-icons.json, construit l'expression icon-image,
+ * puis charge toutes les icônes SVG.
  */
 async function loadAllPoiIcons(map) {
-  let poiIcons;
+  let data;
   try {
     const resp = await fetch('./poi-icons.json');
-    poiIcons = await resp.json();
+    data = await resp.json();
   } catch (err) {
     console.error('Impossible de charger poi-icons.json:', err);
     return;
   }
 
-  const entries = Object.entries(poiIcons);
+  // Extraire les métadonnées et le mapping d'icônes
+  const meta = data._meta || { type_keys: [], special_cases: [] };
+  delete data._meta;
+
+  // Patcher l'expression icon-image du layer poi-icon
+  const iconImageExpr = buildIconImageExpression(meta);
+  map.setLayoutProperty('poi-icon', 'icon-image', iconImageExpr);
+  console.log('POI icon-image expression built from _meta.type_keys:', meta.type_keys);
+
+  // Charger les icônes SVG
+  const entries = Object.entries(data);
   const results = await Promise.allSettled(
     entries.map(([type, sources]) =>
       loadPoiIcon(map, type, ...sources)
@@ -282,6 +342,8 @@ function initMap(style) {
   if (poiIconLayer) {
     poiIconLayer.layout = poiIconLayer.layout || {};
     poiIconLayer.layout.visibility = 'none';
+    // Remove hardcoded icon-image — will be set dynamically from poi-icons.json
+    delete poiIconLayer.layout['icon-image'];
   }
 
   const map = new maplibregl.Map({
