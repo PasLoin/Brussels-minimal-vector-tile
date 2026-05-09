@@ -1,8 +1,46 @@
 {
+  "_meta": {
+    "type_keys": [
+      "advertising",
+      "aeroway",
+      "amenity",
+      "club",
+      "craft",
+      "emergency",
+      "healthcare",
+      "historic",
+      "industrial",
+      "leisure",
+      "man_made",
+      "natural",
+      "office",
+      "shop",
+      "tourism"
+    ],
+    "special_cases": [
+      {
+        "key": "cuisine",
+        "value": "friture",
+        "icon_key": "cuisine-friture"
+      }
+    ]
+  },
+  "advertising": [
+    null,
+    null,
+    null,
+    null
+  ],
   "alcohol": [
     "alcohol",
     null,
     "alcohol-shop",
+    null
+  ],
+  "alternative;counselling;laboratory;psychotherapist;speech_therapist": [
+    null,
+    null,
+    null,
     null
   ],
   "anime": [
@@ -23,6 +61,12 @@
     null,
     null
   ],
+  "archive": [
+    null,
+    null,
+    null,
+    null
+  ],
   "art": [
     null,
     null,
@@ -35,6 +79,12 @@
     null,
     null
   ],
+  "artist": [
+    null,
+    null,
+    null,
+    null
+  ],
   "arts_centre": [
     null,
     null,
@@ -42,6 +92,18 @@
     null
   ],
   "artwork": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "association": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "atelier": [
     null,
     null,
     null,
@@ -113,6 +175,12 @@
     null,
     null
   ],
+  "beekeeper": [
+    null,
+    null,
+    null,
+    null
+  ],
   "bell": [
     null,
     null,
@@ -149,6 +217,24 @@
     null,
     null
   ],
+  "billboard": [
+    null,
+    "billboard",
+    null,
+    null
+  ],
+  "board": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "board_games": [
+    null,
+    null,
+    null,
+    null
+  ],
   "bonsai": [
     null,
     null,
@@ -173,6 +259,24 @@
     null,
     null
   ],
+  "brewery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "builder": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "building": [
+    null,
+    null,
+    "building",
+    null
+  ],
   "building_materials": [
     null,
     null,
@@ -181,6 +285,12 @@
   ],
   "butcher": [
     "butcher",
+    null,
+    null,
+    null
+  ],
+  "cabinet_maker": [
+    null,
     null,
     null,
     null
@@ -227,7 +337,37 @@
     "car",
     null
   ],
+  "carpenter": [
+    null,
+    null,
+    null,
+    null
+  ],
   "carpet": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "castle": [
+    null,
+    null,
+    "castle",
+    null
+  ],
+  "caterer": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "centre": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "chapel": [
     null,
     null,
     null,
@@ -263,6 +403,12 @@
     "cinema",
     null
   ],
+  "cleaning": [
+    null,
+    null,
+    null,
+    null
+  ],
   "clinic": [
     null,
     null,
@@ -272,6 +418,12 @@
   "clock": [
     null,
     "clock",
+    null,
+    null
+  ],
+  "clockmaker": [
+    null,
+    null,
     null,
     null
   ],
@@ -287,6 +439,12 @@
     null,
     null
   ],
+  "coffee_roaster": [
+    null,
+    null,
+    null,
+    null
+  ],
   "collector": [
     null,
     null,
@@ -294,6 +452,12 @@
     null
   ],
   "community_centre": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "company": [
     null,
     null,
     null,
@@ -341,6 +505,18 @@
     null,
     null
   ],
+  "courtyard": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "coworking": [
+    null,
+    null,
+    null,
+    null
+  ],
   "craft": [
     null,
     null,
@@ -353,10 +529,28 @@
     null,
     null
   ],
+  "culture": [
+    null,
+    null,
+    null,
+    null
+  ],
   "curtain": [
     null,
     null,
     null,
+    null
+  ],
+  "dance": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "defibrillator": [
+    null,
+    null,
+    "defibrillator",
     null
   ],
   "deli": [
@@ -377,13 +571,43 @@
     null,
     null
   ],
+  "distillery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "distillery;brewery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "doctor": [
+    null,
+    null,
+    "doctor",
+    null
+  ],
   "doityourself": [
     null,
     null,
     null,
     null
   ],
+  "door_construction": [
+    null,
+    null,
+    null,
+    null
+  ],
   "doors": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "dressmaker": [
     null,
     null,
     null,
@@ -419,6 +643,12 @@
     null,
     null
   ],
+  "electrician": [
+    null,
+    null,
+    null,
+    null
+  ],
   "electro": [
     null,
     null,
@@ -426,6 +656,18 @@
     null
   ],
   "electronics": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "electronics_repair": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "emergency_ward_entrance": [
     null,
     null,
     null,
@@ -491,6 +733,12 @@
     null,
     null
   ],
+  "flagpole": [
+    null,
+    null,
+    null,
+    null
+  ],
   "flooring": [
     null,
     null,
@@ -503,9 +751,27 @@
     "florist",
     null
   ],
+  "folly": [
+    null,
+    null,
+    null,
+    null
+  ],
   "food": [
     null,
     "food",
+    null,
+    null
+  ],
+  "fort": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "foundation": [
+    null,
+    null,
     null,
     null
   ],
@@ -516,6 +782,12 @@
     null
   ],
   "frame": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "freemasonry": [
     null,
     null,
     null,
@@ -557,6 +829,12 @@
     null,
     null
   ],
+  "garden": [
+    null,
+    null,
+    "garden",
+    null
+  ],
   "garden_centre": [
     null,
     null,
@@ -564,6 +842,12 @@
     null
   ],
   "garden_furniture": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "gardener": [
     null,
     null,
     null,
@@ -581,6 +865,12 @@
     "gift",
     null
   ],
+  "glassblower": [
+    null,
+    null,
+    null,
+    null
+  ],
   "glaziery": [
     null,
     null,
@@ -588,6 +878,12 @@
     null
   ],
   "gold_buyer": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "government": [
     null,
     null,
     null,
@@ -617,6 +913,12 @@
     null,
     null
   ],
+  "handicraft": [
+    null,
+    null,
+    null,
+    null
+  ],
   "hardware": [
     null,
     null,
@@ -630,6 +932,12 @@
     null
   ],
   "hearing_aids": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "helipad": [
     null,
     null,
     null,
@@ -683,6 +991,12 @@
     "lodging",
     null
   ],
+  "house": [
+    null,
+    null,
+    null,
+    null
+  ],
   "household_linen": [
     null,
     null,
@@ -690,6 +1004,12 @@
     null
   ],
   "houseware": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "hvac": [
     null,
     null,
     null,
@@ -707,6 +1027,18 @@
     "information",
     null
   ],
+  "insect_hotel": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "insurance": [
+    null,
+    null,
+    null,
+    null
+  ],
   "interior_decoration": [
     null,
     null,
@@ -719,10 +1051,28 @@
     null,
     null
   ],
+  "jeweller": [
+    null,
+    null,
+    null,
+    null
+  ],
   "jewelry": [
     null,
     null,
     "jewelry-store",
+    null
+  ],
+  "joiner": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "key_cutter": [
+    null,
+    null,
+    null,
     null
   ],
   "kindergarten": [
@@ -738,6 +1088,12 @@
     null
   ],
   "kitchen": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "laboratory": [
     null,
     null,
     null,
@@ -785,6 +1141,24 @@
     null,
     null
   ],
+  "locomotive": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "logistics": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "luthier": [
+    null,
+    null,
+    null,
+    null
+  ],
   "machine_parts": [
     null,
     null,
@@ -797,7 +1171,19 @@
     null,
     null
   ],
+  "manor": [
+    null,
+    null,
+    null,
+    null
+  ],
   "massage": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "medical_imaging": [
     null,
     null,
     null,
@@ -806,6 +1192,36 @@
   "medical_supply": [
     null,
     null,
+    null,
+    null
+  ],
+  "memorial": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "metal_construction": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "metal_painter": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "metal_works": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "milestone": [
+    null,
+    "milestone",
     null,
     null
   ],
@@ -845,6 +1261,12 @@
     null,
     null
   ],
+  "monument": [
+    null,
+    null,
+    "monument",
+    null
+  ],
   "motorcycle": [
     null,
     "motorcycle",
@@ -876,6 +1298,12 @@
     null
   ],
   "newsagent": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "ngo": [
     null,
     null,
     null,
@@ -929,6 +1357,18 @@
     "paint",
     null
   ],
+  "painter": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "park": [
+    null,
+    null,
+    "park",
+    null
+  ],
   "parking": [
     null,
     null,
@@ -936,6 +1376,12 @@
     null
   ],
   "parking_entrance": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "parquet_layer": [
     null,
     null,
     null,
@@ -995,6 +1441,18 @@
     null,
     null
   ],
+  "photographer": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "photographic_laboratory": [
+    null,
+    null,
+    null,
+    null
+  ],
   "piercing": [
     null,
     null,
@@ -1010,6 +1468,12 @@
   "planetarium": [
     null,
     null,
+    null,
+    null
+  ],
+  "plumber": [
+    null,
+    "plumber",
     null,
     null
   ],
@@ -1031,7 +1495,19 @@
     "post",
     null
   ],
+  "poster_box": [
+    null,
+    "poster_box",
+    null,
+    null
+  ],
   "pottery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "printer": [
     null,
     null,
     null,
@@ -1044,6 +1520,12 @@
     null
   ],
   "printing": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "printmaker": [
     null,
     null,
     null,
@@ -1067,7 +1549,19 @@
     null,
     null
   ],
+  "publisher": [
+    null,
+    null,
+    null,
+    null
+  ],
   "radiotechnics": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "railway_car": [
     null,
     null,
     null,
@@ -1077,6 +1571,12 @@
     null,
     null,
     "recycling",
+    null
+  ],
+  "rehabilitation": [
+    null,
+    null,
+    null,
     null
   ],
   "rental": [
@@ -1091,15 +1591,39 @@
     null,
     null
   ],
+  "research": [
+    null,
+    null,
+    null,
+    null
+  ],
   "restaurant": [
     null,
     null,
     "restaurant",
     null
   ],
+  "restoration": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "roofer": [
+    null,
+    null,
+    null,
+    null
+  ],
   "rope": [
     null,
     null,
+    null,
+    null
+  ],
+  "ruins": [
+    null,
+    "ruins",
     null,
     null
   ],
@@ -1109,9 +1633,27 @@
     "school",
     null
   ],
+  "scout": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "screen": [
+    null,
+    null,
+    null,
+    null
+  ],
   "scuba_diving": [
     null,
     "scuba_diving",
+    null,
+    null
+  ],
+  "sculptor": [
+    null,
+    null,
     null,
     null
   ],
@@ -1145,6 +1687,12 @@
     null,
     null
   ],
+  "shoemaker": [
+    null,
+    null,
+    null,
+    null
+  ],
   "shoes": [
     null,
     null,
@@ -1157,7 +1705,19 @@
     "shop",
     null
   ],
+  "shrub": [
+    null,
+    "shrub",
+    null,
+    null
+  ],
   "signage": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "signmaker": [
     null,
     null,
     null,
@@ -1169,13 +1729,31 @@
     null,
     null
   ],
+  "social": [
+    null,
+    null,
+    null,
+    null
+  ],
   "social_facility": [
     null,
     "social_facility",
     null,
     null
   ],
+  "spa": [
+    null,
+    "spa",
+    null,
+    null
+  ],
   "spices": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "sport": [
     null,
     null,
     null,
@@ -1187,7 +1765,25 @@
     null,
     null
   ],
+  "sports_centre": [
+    null,
+    null,
+    null,
+    null
+  ],
   "stationery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "statue": [
+    null,
+    "statue",
+    null,
+    null
+  ],
+  "stonemason": [
     null,
     null,
     null,
@@ -1199,10 +1795,22 @@
     null,
     null
   ],
+  "sun_protection": [
+    null,
+    null,
+    null,
+    null
+  ],
   "supermarket": [
     null,
     null,
     "grocery",
+    null
+  ],
+  "surveillance": [
+    null,
+    null,
+    null,
     null
   ],
   "swimming_pool": [
@@ -1212,6 +1820,12 @@
     null
   ],
   "tailor": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "tanning_salon": [
     null,
     null,
     null,
@@ -1230,6 +1844,12 @@
     null
   ],
   "telecommunication": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "textile": [
     null,
     null,
     null,
@@ -1271,6 +1891,12 @@
     null,
     null
   ],
+  "tower": [
+    null,
+    "tower",
+    null,
+    null
+  ],
   "townhall": [
     null,
     "town_hall",
@@ -1284,6 +1910,12 @@
     null
   ],
   "trade": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "trampoline_park": [
     null,
     null,
     null,
@@ -1313,6 +1945,12 @@
     "college",
     null
   ],
+  "upholsterer": [
+    null,
+    null,
+    null,
+    null
+  ],
   "vacant": [
     "vacant",
     null,
@@ -1332,6 +1970,12 @@
     null
   ],
   "venue_centre": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "veterans": [
     null,
     null,
     null,
@@ -1367,6 +2011,18 @@
     null,
     null
   ],
+  "watchmaker": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "wayside_shrine": [
+    null,
+    null,
+    null,
+    null
+  ],
   "weapons": [
     null,
     null,
@@ -1391,6 +2047,12 @@
     null,
     null
   ],
+  "window_construction": [
+    null,
+    null,
+    null,
+    null
+  ],
   "window_frames": [
     null,
     null,
@@ -1403,6 +2065,12 @@
     null,
     null
   ],
+  "winery": [
+    null,
+    null,
+    null,
+    null
+  ],
   "wood": [
     null,
     null,
@@ -1410,6 +2078,12 @@
     null
   ],
   "wool": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "works": [
     null,
     null,
     null,
