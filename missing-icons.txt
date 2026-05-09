@@ -213,7 +213,6 @@ travel_agency.svg
 trophy.svg
 tyres.svg
 university.svg
-vacant.svg
 variety_store.svg
 vending_machine.svg
 venue_centre.svg
