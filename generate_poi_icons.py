@@ -206,15 +206,20 @@ def main():
     print(f'✓ {args.output} : {has_icon}/{len(icons)} types avec icône')
 
     # ── 4. Générer missing-icons.txt ───────────────────────
+    # Trié par nombre d'occurrences décroissant pour prioriser
     missing = []
-    for poi_type, sources in sorted(icons.items()):
-        local_name = sources[0]
-        if local_name is None:
-            # Pas d'icône locale
-            missing.append(f'{poi_type}.svg')
+    for poi_type, sources in icons.items():
+        if sources[0] is None:
+            count = poi_types.get(poi_type, 0)
+            has_cdn = any(s is not None for s in sources[1:])
+            missing.append((poi_type, count, has_cdn))
+
+    missing.sort(key=lambda x: -x[1])
 
     with open(args.missing, 'w') as f:
-        f.write('\n'.join(missing) + '\n' if missing else '')
+        for poi_type, count, has_cdn in missing:
+            cdn_note = '' if has_cdn else '  # aucun CDN non plus'
+            f.write(f'{poi_type}.svg ({count}x){cdn_note}\n')
 
     print(f'✓ {args.missing} : {len(missing)} icônes locales manquantes')
 
