@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Brussels — carte minimale</title>
+  <link rel="icon" href="assets/icons/cuisine_friture.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
   <script src="https://unpkg.com/pmtiles@3.2.0/dist/pmtiles.js"></script>
@@ -188,7 +189,7 @@ const ICON_SIZE = 20;  // rendered pixel size
 // CDN bases
 const LOCAL   = './assets/icons/';
 const TEMAKI  = 'https://cdn.jsdelivr.net/npm/@ideditor/temaki@5/icons/';
-const LIBERTY = 'https://raw.githubusercontent.com/maputnik/osm-liberty/gh-pages/icons/';
+// const LIBERTY = 'https://raw.githubusercontent.com/maputnik/osm-liberty/gh-pages/icons/';
 const MAKI   = 'https://cdn.jsdelivr.net/npm/@mapbox/maki/icons/';
 
 // POI type → [temaki_name, maki_name]  (null = skip that source)
@@ -206,9 +207,9 @@ const POI_ICONS = {
   bank:         [null, null, 'bank', 'bank'],
   pharmacy:     [null, null, 'pharmacy', 'pharmacy'],
   hospital:     [null, null, 'hospital', 'hospital'],
-  clinic:       [null, 'stethoscope', 'doctor', 'hospital'],
-  doctor:       [null, 'stethoscope', 'doctor', 'health'],
-  dentist:      [null, 'tooth', null, 'dentist'],
+  clinic:        ['clinic', 'stethoscope', 'doctor', 'hospital'],
+  doctor:        ['doctor', 'stethoscope', 'doctor', 'health'],
+  dentist:       ['dentist', 'tooth', null, 'dentist'],
   school:       [null, null, 'school', 'school'],
   university:   [null, null, 'college', 'university'],
   library:      [null, null, 'library', 'library'],
@@ -217,16 +218,16 @@ const POI_ICONS = {
   post_office:  [null, 'post_box', 'post', 'post'],
   police:       [null, null, 'police', 'police'],
   fire_station: [null, null, 'fire-station', 'fire-station'],
-  place_of_worship: [null, 'place_of_worship', 'religious-christian', 'place-of-worship'],
+  place_of_worship: ['place_of_worship', 'place_of_worship', 'religious-christian', 'place-of-worship'],
   townhall:     [null, 'town_hall', 'town-hall', 'town-hall'],
-  courthouse:   [null, 'court', null, 'courthouse'],
-  community_centre: [null, 'community', null, 'community-centre'],
-  kindergarten: [null, 'kindergarten', null, 'kindergarten'],
-  veterinary:   [null, 'veterinary', null, 'veterinary'],
+  courthouse:    ['courthouse', 'court', null, 'courthouse'],
+  community_centre: ['community_centre', 'community', null, 'community-centre'],
+  kindergarten:  ['kindergarten', 'kindergarten', null, 'kindergarten'],
+  veterinary:    ['veterinary', 'veterinary', null, 'veterinary'],
   
   // Tourism
   hotel:        [null, null, 'lodging', 'hotel'],
-  hostel:       [null, 'bed', 'lodging', 'hostel'],
+  hostel:        ['hostel', 'bed', 'lodging', 'hostel'],
   museum:       [null, null, 'museum', 'museum'],
   attraction:   [null, null, 'attraction', 'attraction'],
   information:  [null, null, 'information', 'information'],
@@ -234,39 +235,39 @@ const POI_ICONS = {
   
   // Shops
   shop:         [null, null, 'shop', 'shop'],
-  butcher:      [null, 'butcher', null, 'butcher'],
-  bakery:       [null, 'bakery', null, 'bakery'],
+  butcher:       ['butcher', 'butcher', null, 'butcher'],
+  bakery:        ['bakery', 'bakery', null, 'bakery'],
   supermarket:  [null, null, 'grocery', 'supermarket'],
-  convenience:  [null, 'convenience', 'grocery', 'convenience'],
-  clothes:      [null, 'clothes', 'clothing-store', 'clothing-store'],
-  hairdresser:  [null, 'hairdresser', null, 'hairdresser'],
+  convenience:   ['convenience', 'convenience', 'grocery', 'convenience'],
+  clothes:       ['clothes', 'clothes', 'clothing-store', 'clothing-store'],
+  hairdresser:   ['hairdresser', 'hairdresser', null, 'hairdresser'],
   florist:      [null, 'florist', null, 'florist'],
-  confectionery:[null, 'confectionery', null, 'pastry_shop'],
-  newsagent:    [null, 'newsagent', null, 'newsagent'],
-  books:        [null, 'books', null, 'library'],
-  optician:     [null, 'optician', null, 'optician'],
-  jewelry:      [null, 'jewelry', 'jewelry-store', 'jewelry-store'],
-  gift:         [null, 'gift', 'gift', 'gift'],
-  shoes:        [null, 'shoes', null, 'shoes'],
-  mobile_phone: [null, 'mobile_phone', null, 'mobile-phone'],
-  bicycle:      [null, 'bicycle', 'bicycle', 'bicycle'],
-  dry_cleaning: [null, 'dry_cleaning', null, 'laundry'],
+  confectionery: ['confectionery', 'confectionery', null, 'pastry_shop'],
+  newsagent:     ['newsagent', 'newsagent', null, 'newsagent'],
+  books:         ['books', 'books', null, 'library'],
+  optician:      ['optician', 'optician', null, 'optician'],
+  jewelry:       ['jewelry', 'jewelry', 'jewelry-store', 'jewelry-store'],
+  gift:          ['gift', 'gift', 'gift', 'gift'],
+  shoes:         ['shoes', 'shoes', null, 'shoes'],
+  mobile_phone:  ['mobile_phone', 'mobile_phone', null, 'mobile-phone'],
+  bicycle:       ['bicycle', 'bicycle', 'bicycle', 'bicycle'],
+  dry_cleaning:  ['dry_cleaning', 'dry_cleaning', null, 'laundry'],
   laundry:      [null, 'laundry', 'laundry', 'laundry'],
-  hardware:     [null, 'hardware', null, 'hardware'],
-  alcohol:      [null, 'alcohol', 'alcohol-shop', 'alcohol-shop'],
-  department_store: [null, 'department_store', 'department-store', 'department-store'],
-  beauty:       [null, 'beauty', null, 'beauty'],
-  doityourself: [null, 'doityourself', null, 'hardware'],
+  hardware:      ['hardware', 'hardware', null, 'hardware'],
+  alcohol:       ['alcohol', 'alcohol', 'alcohol-shop', 'alcohol-shop'],
+  department_store: ['department_store', 'department_store', 'department-store', 'department-store'],
+  beauty:        ['beauty', 'beauty', null, 'beauty'],
+  doityourself:  ['doityourself', 'doityourself', null, 'hardware'],
   furniture:    [null, 'furniture', null, 'furniture'],
-  electronics:  [null, 'electronics', null, 'electronics'],
-  chemist:      [null, 'chemist', null, 'chemist'],
-  toys:         [null, 'toys', null, 'toys'],
-  pet:          [null, 'pet', null, 'pet-shop'],
-  stationery:   [null, 'stationery', null, 'stationery'],
-  greengrocer:  [null, 'greengrocer', null, 'greengrocer'],
-  travel_agency:[null, 'travel_agency', null, 'travel-agency'],
-  car_repair:   [null, 'car_repair', 'car', 'car-repair'],
-  car:          [null, 'car', 'car', 'car'],
+  electronics:   ['electronics', 'electronics', null, 'electronics'],
+  chemist:       ['chemist', 'chemist', null, 'chemist'],
+  toys:          ['toys', 'toys', null, 'toys'],
+  pet:           ['pet', 'pet', null, 'pet-shop'],
+  stationery:    ['stationery', 'stationery', null, 'stationery'],
+  greengrocer:   ['greengrocer', 'greengrocer', null, 'greengrocer'],
+  travel_agency: ['travel_agency', 'travel_agency', null, 'travel-agency'],
+  car_repair:    ['car_repair', 'car_repair', 'car', 'car-repair'],
+  car:           ['car', 'car', 'car', 'car'],
 };
 
 /**
@@ -278,7 +279,7 @@ async function loadPoiIcon(map, poiType, localName, temakiName, makiName, libert
   if (localName)   urls.push(LOCAL + localName + '.svg');
   if (temakiName)  urls.push(TEMAKI + temakiName + '.svg');
   if (makiName)    urls.push(MAKI + makiName + '.svg');
-  if (libertyName) urls.push(LIBERTY + libertyName + '.svg');
+// if (libertyName) urls.push(LIBERTY + libertyName + '.svg');
 
   for (const url of urls) {
     try {
@@ -310,7 +311,7 @@ async function loadPoiIcon(map, poiType, localName, temakiName, makiName, libert
       URL.revokeObjectURL(blobUrl);
 
       const imageData = ctx.getImageData(0, 0, ICON_SIZE, ICON_SIZE);
-      map.addImage('poi-' + poiType, imageData, { pixelRatio: 1 });
+      map.addImage('poi-' + poiType, canvas, { pixelRatio: 1 });
       return true;
 
     } catch (e) {
