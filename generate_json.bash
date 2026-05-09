@@ -64,8 +64,9 @@ extract boundaries \
 echo "→ poi"
 osmium tags-filter "$SRC" \
   nwr/shop=* \
-  nwr/amenity=restaurant,cafe,bar,pub,fast_food,bank,pharmacy,hospital,clinic,school,university,library,theatre,cinema,post_office,police,fire_station \
+  nwr/amenity=restaurant,cafe,bar,pub,fast_food,bank,pharmacy,hospital,clinic,school,university,library,theatre,cinema,post_office,police,fire_station,doctor,dentist,place_of_worship,townhall,courthouse,community_centre,kindergarten,veterinary \
   nwr/tourism=hotel,hostel,museum,attraction,information,viewpoint \
+  nwr/craft=* \
   -o "_tmp_poi.osm.pbf" --overwrite
 osmium export "_tmp_poi.osm.pbf" -o "poi.json" --overwrite --add-unique-id=type_id
 rm -f "_tmp_poi.osm.pbf"
