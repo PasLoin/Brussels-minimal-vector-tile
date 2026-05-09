@@ -101,11 +101,35 @@
     /* ── Contrôles MapLibre ── */
     .maplibregl-ctrl-group { border-radius: 4px !important; border: 1px solid rgba(0,0,0,0.1) !important; box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; }
     .maplibregl-ctrl-attrib { font-size: 10px !important; background: rgba(255,255,255,0.7) !important; }
+    .view-toggle { 
+      position: absolute; 
+      top: 10px; 
+      right: 50px; 
+      z-index: 10; 
+    } 
+    .view-toggle button { 
+      background: rgba(242, 239, 233, 0.92); 
+      backdrop-filter: blur(8px); 
+      border: 1px solid rgba(0,0,0,0.1); 
+      border-radius: 4px; 
+      padding: 6px 10px; 
+      font-size: 12px; 
+      font-weight: bold; 
+      cursor: pointer; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+      color: #444; 
+    } 
+    .view-toggle button:hover { 
+      background: #fff; 
+    }
   </style>
 </head>
 <body>
 
 <div id="map"></div>
+<div class="view-toggle"> 
+  <button id="toggle-3d">MODE 3D</button> 
+</div>
 
 <div class="title panel" id="title-panel">
   <div class="panel-header" onclick="togglePanel('title-panel')">
@@ -439,6 +463,27 @@ function initMap(style) {
 
   map.on('moveend', () => updateOsmLink(map));
   map.on('zoomend', () => updateOsmLink(map));
+  
+  /* ── Toggle 2D/3D ── */
+  const toggleBtn = document.getElementById('toggle-3d');
+  let is3d = false;
+  toggleBtn.onclick = () => {
+    is3d = !is3d;
+    toggleBtn.textContent = is3d ? 'MODE 2D' : 'MODE 3D';
+    
+    if (is3d) {
+      if (map.getLayer('buildings-fill')) map.setLayoutProperty('buildings-fill', 'visibility', 'none');
+      if (map.getLayer('buildings-outline')) map.setLayoutProperty('buildings-outline', 'visibility', 'none');
+      if (map.getLayer('buildings-3d')) map.setLayoutProperty('buildings-3d', 'visibility', 'visible');
+      map.easeTo({ pitch: 45, duration: 800 });
+    } else {
+      if (map.getLayer('buildings-fill')) map.setLayoutProperty('buildings-fill', 'visibility', 'visible');
+      if (map.getLayer('buildings-outline')) map.setLayoutProperty('buildings-outline', 'visibility', 'visible');
+      if (map.getLayer('buildings-3d')) map.setLayoutProperty('buildings-3d', 'visibility', 'none');
+      map.easeTo({ pitch: 0, duration: 800 });
+    }
+  };
+
   updateOsmLink(map);
 
 }
