@@ -1,232 +1,232 @@
-anime.svg
-antiques.svg
-appliance.svg
-art.svg
-art_supplies.svg
-arts_centre.svg
-artwork.svg
-attraction.svg
-auction_house.svg
-audio_video_professional_supplies.svg
-baby_goods.svg
-bag.svg
-bakery.svg
-bank.svg
-bar.svg
-bathroom_furnishing.svg
-beauty.svg
-bed.svg
-bell.svg
-beverages.svg
-bicycle.svg
-bicycle_rental.svg
-bicycle_repair.svg
-bicycle_wash.svg
-bonsai.svg
-bookmaker.svg
-books.svg
-boutique.svg
-building_materials.svg
-cafe.svg
-camera.svg
-cannabis.svg
-car.svg
-car_parts.svg
-car_pound.svg
-car_repair.svg
-carpet.svg
-charity.svg
-cheese.svg
-chemist.svg
-chocolate.svg
-cinema.svg
-clinic.svg
-clock.svg
-clothes.svg
-coffee.svg
-collector.svg
-community_centre.svg
-computer.svg
-confectionery.svg
-conference_centre.svg
-convenience.svg
-copyshop.svg
-cosmetics.svg
-craft.svg
-curtain.svg
-deli.svg
-dentist.svg
-department_store.svg
-doityourself.svg
-doors.svg
-dry_cleaning.svg
-duty_free.svg
-e-cigarette.svg
-ebikes;micro_mobility;scooters.svg
-electrical.svg
-electro.svg
-electronics.svg
-erotic.svg
-estate_agent.svg
-events_centre.svg
-fabric.svg
-farm.svg
-fashion_accessories.svg
-fast_food.svg
-fire_station.svg
-fireplace.svg
-fishing.svg
-flooring.svg
-florist.svg
-food.svg
-fountain.svg
-frame.svg
-frozen_food.svg
-fuel.svg
-funeral_directors.svg
-furniture.svg
-gallery.svg
-games.svg
-garden_centre.svg
-garden_furniture.svg
-general.svg
-gift.svg
-glaziery.svg
-gold_buyer.svg
-greengrocer.svg
-grocery.svg
-hairdresser.svg
-hairdresser_supply.svg
-hardware.svg
-health_food.svg
-hearing_aids.svg
-herbalist.svg
-hifi.svg
-honey.svg
-hookah.svg
-hookah_lounge.svg
-hospital.svg
-hostel.svg
-hotel.svg
-household_linen.svg
-houseware.svg
-ice_cream.svg
-information.svg
-interior_decoration.svg
-ironingshop.svg
-jewelry.svg
-kindergarten.svg
-kiosk.svg
-kitchen.svg
-lace.svg
-laundry.svg
-leather.svg
-library.svg
-lighting.svg
-loading_dock.svg
-locksmith.svg
-machine_parts.svg
-mall.svg
-massage.svg
-medical_supply.svg
-minerals.svg
-mobile_phone.svg
-mobile_phone_accessories.svg
-mobility_hub.svg
-model.svg
-money_lender.svg
-motorcycle.svg
-motorcycle_repair.svg
-museum.svg
-music.svg
-musical_instrument.svg
-newsagent.svg
-no.svg
-nutrition_supplements.svg
-optician.svg
-orthopedics.svg
-outdoor.svg
-outpost.svg
-packaging.svg
-paint.svg
-parking.svg
-parking_entrance.svg
-party.svg
-pasta.svg
-pastry.svg
-pawnbroker.svg
-perfumery.svg
-pet.svg
-pet_grooming.svg
-pharmacy.svg
-photo.svg
-piercing.svg
-place_of_worship.svg
-planetarium.svg
-police.svg
-popup.svg
-post_office.svg
-pottery.svg
-printer_ink.svg
-printing.svg
-psychic.svg
-pub.svg
-public_bookcase.svg
-radiotechnics.svg
-recycling.svg
-rental.svg
-repair.svg
-restaurant.svg
-rope.svg
-school.svg
-scuba_diving.svg
-seafood.svg
-second_hand.svg
-security.svg
-sewing.svg
-shoe_repair.svg
-shoes.svg
-shop.svg
-signage.svg
-small_electric_vehicle.svg
-social_facility.svg
-spices.svg
-sports.svg
-stationery.svg
-storage_rental.svg
-supermarket.svg
-swimming_pool.svg
-tailor.svg
-tattoo.svg
-tea.svg
-telecommunication.svg
-theatre.svg
-ticket.svg
-tiles.svg
-tobacco.svg
-toilets.svg
-tool_hire.svg
-townhall.svg
-toys.svg
-trade.svg
-travel_agency.svg
-trophy.svg
-tyres.svg
-university.svg
-variety_store.svg
-vending_machine.svg
-venue_centre.svg
-veterinary.svg
-video.svg
-video_games.svg
-viewpoint.svg
-watches.svg
-weapons.svg
-wellness.svg
-wholesale.svg
-window_blind.svg
-window_frames.svg
-wine.svg
-wood.svg
-wool.svg
-yes.svg
+restaurant.svg (1956x)
+fast_food.svg (922x)
+convenience.svg (878x)
+clothes.svg (726x)
+school.svg (669x)
+cafe.svg (613x)
+hairdresser.svg (560x)
+information.svg (475x)
+pharmacy.svg (425x)
+pub.svg (390x)
+bar.svg (347x)
+bakery.svg (324x)
+place_of_worship.svg (304x)
+supermarket.svg (273x)
+community_centre.svg (266x)  # aucun CDN non plus
+beauty.svg (252x)  # aucun CDN non plus
+hotel.svg (222x)
+laundry.svg (165x)
+bank.svg (148x)
+clinic.svg (147x)
+chocolate.svg (141x)
+jewelry.svg (139x)
+optician.svg (136x)
+dentist.svg (130x)  # aucun CDN non plus
+books.svg (126x)  # aucun CDN non plus
+newsagent.svg (121x)  # aucun CDN non plus
+kindergarten.svg (118x)  # aucun CDN non plus
+museum.svg (117x)
+shoes.svg (107x)  # aucun CDN non plus
+bicycle.svg (104x)
+florist.svg (99x)
+library.svg (97x)
+mobile_phone.svg (94x)  # aucun CDN non plus
+gift.svg (83x)
+theatre.svg (77x)
+deli.svg (76x)  # aucun CDN non plus
+pastry.svg (72x)  # aucun CDN non plus
+greengrocer.svg (69x)  # aucun CDN non plus
+car_repair.svg (65x)
+furniture.svg (62x)
+doityourself.svg (59x)  # aucun CDN non plus
+electronics.svg (59x)  # aucun CDN non plus
+cosmetics.svg (58x)  # aucun CDN non plus
+interior_decoration.svg (58x)  # aucun CDN non plus
+copyshop.svg (57x)  # aucun CDN non plus
+car.svg (53x)
+police.svg (53x)
+attraction.svg (47x)
+travel_agency.svg (47x)  # aucun CDN non plus
+veterinary.svg (47x)
+chemist.svg (44x)  # aucun CDN non plus
+antiques.svg (43x)  # aucun CDN non plus
+massage.svg (41x)  # aucun CDN non plus
+perfumery.svg (41x)  # aucun CDN non plus
+wine.svg (41x)  # aucun CDN non plus
+post_office.svg (38x)
+viewpoint.svg (37x)
+sports.svg (34x)  # aucun CDN non plus
+variety_store.svg (34x)  # aucun CDN non plus
+bookmaker.svg (33x)  # aucun CDN non plus
+parking_entrance.svg (33x)  # aucun CDN non plus
+toys.svg (33x)  # aucun CDN non plus
+pet.svg (31x)  # aucun CDN non plus
+tattoo.svg (31x)  # aucun CDN non plus
+yes.svg (31x)  # aucun CDN non plus
+funeral_directors.svg (30x)  # aucun CDN non plus
+artwork.svg (29x)  # aucun CDN non plus
+cheese.svg (29x)  # aucun CDN non plus
+second_hand.svg (29x)  # aucun CDN non plus
+art.svg (28x)  # aucun CDN non plus
+computer.svg (28x)  # aucun CDN non plus
+dry_cleaning.svg (28x)  # aucun CDN non plus
+seafood.svg (28x)  # aucun CDN non plus
+tailor.svg (28x)  # aucun CDN non plus
+confectionery.svg (27x)
+houseware.svg (26x)  # aucun CDN non plus
+stationery.svg (26x)  # aucun CDN non plus
+ticket.svg (24x)
+townhall.svg (24x)
+e-cigarette.svg (23x)  # aucun CDN non plus
+telecommunication.svg (23x)  # aucun CDN non plus
+trade.svg (23x)  # aucun CDN non plus
+music.svg (22x)
+watches.svg (22x)  # aucun CDN non plus
+hospital.svg (20x)
+kitchen.svg (20x)  # aucun CDN non plus
+mall.svg (20x)  # aucun CDN non plus
+bag.svg (19x)  # aucun CDN non plus
+car_parts.svg (19x)  # aucun CDN non plus
+hardware.svg (19x)
+department_store.svg (18x)  # aucun CDN non plus
+hostel.svg (18x)
+carpet.svg (17x)  # aucun CDN non plus
+hearing_aids.svg (17x)  # aucun CDN non plus
+photo.svg (17x)  # aucun CDN non plus
+erotic.svg (16x)  # aucun CDN non plus
+locksmith.svg (16x)  # aucun CDN non plus
+bed.svg (15x)  # aucun CDN non plus
+coffee.svg (15x)
+cinema.svg (15x)
+tea.svg (15x)  # aucun CDN non plus
+university.svg (15x)
+wholesale.svg (15x)  # aucun CDN non plus
+fashion_accessories.svg (14x)
+lighting.svg (14x)  # aucun CDN non plus
+tyres.svg (14x)  # aucun CDN non plus
+beverages.svg (13x)  # aucun CDN non plus
+cannabis.svg (13x)  # aucun CDN non plus
+curtain.svg (13x)  # aucun CDN non plus
+fabric.svg (13x)  # aucun CDN non plus
+baby_goods.svg (12x)  # aucun CDN non plus
+craft.svg (12x)  # aucun CDN non plus
+sewing.svg (12x)  # aucun CDN non plus
+games.svg (11x)  # aucun CDN non plus
+general.svg (11x)  # aucun CDN non plus
+kiosk.svg (11x)  # aucun CDN non plus
+musical_instrument.svg (11x)  # aucun CDN non plus
+paint.svg (11x)
+pet_grooming.svg (11x)
+collector.svg (10x)  # aucun CDN non plus
+tobacco.svg (10x)  # aucun CDN non plus
+health_food.svg (9x)  # aucun CDN non plus
+medical_supply.svg (9x)  # aucun CDN non plus
+nutrition_supplements.svg (9x)  # aucun CDN non plus
+outdoor.svg (9x)  # aucun CDN non plus
+charity.svg (8x)  # aucun CDN non plus
+fire_station.svg (8x)
+frozen_food.svg (8x)  # aucun CDN non plus
+motorcycle.svg (8x)
+appliance.svg (7x)  # aucun CDN non plus
+bathroom_furnishing.svg (7x)  # aucun CDN non plus
+garden_centre.svg (7x)  # aucun CDN non plus
+grocery.svg (7x)
+hairdresser_supply.svg (7x)  # aucun CDN non plus
+herbalist.svg (7x)  # aucun CDN non plus
+printing.svg (7x)  # aucun CDN non plus
+storage_rental.svg (7x)
+farm.svg (6x)
+frame.svg (6x)  # aucun CDN non plus
+leather.svg (6x)  # aucun CDN non plus
+pawnbroker.svg (6x)  # aucun CDN non plus
+clock.svg (5x)
+hifi.svg (5x)  # aucun CDN non plus
+household_linen.svg (5x)  # aucun CDN non plus
+outpost.svg (5x)  # aucun CDN non plus
+tool_hire.svg (5x)  # aucun CDN non plus
+arts_centre.svg (4x)  # aucun CDN non plus
+anime.svg (4x)  # aucun CDN non plus
+food.svg (4x)
+gold_buyer.svg (4x)  # aucun CDN non plus
+printer_ink.svg (4x)  # aucun CDN non plus
+rental.svg (4x)  # aucun CDN non plus
+video.svg (4x)  # aucun CDN non plus
+boutique.svg (3x)  # aucun CDN non plus
+camera.svg (3x)  # aucun CDN non plus
+estate_agent.svg (3x)  # aucun CDN non plus
+electrical.svg (3x)  # aucun CDN non plus
+glaziery.svg (3x)  # aucun CDN non plus
+hookah.svg (3x)  # aucun CDN non plus
+lace.svg (3x)  # aucun CDN non plus
+mobile_phone_accessories.svg (3x)  # aucun CDN non plus
+shoe_repair.svg (3x)  # aucun CDN non plus
+video_games.svg (3x)  # aucun CDN non plus
+wellness.svg (3x)  # aucun CDN non plus
+window_blind.svg (3x)  # aucun CDN non plus
+bicycle_rental.svg (2x)
+bicycle_repair.svg (2x)
+fireplace.svg (2x)
+fuel.svg (2x)
+gallery.svg (2x)  # aucun CDN non plus
+honey.svg (2x)  # aucun CDN non plus
+motorcycle_repair.svg (2x)
+money_lender.svg (2x)  # aucun CDN non plus
+model.svg (2x)  # aucun CDN non plus
+orthopedics.svg (2x)  # aucun CDN non plus
+party.svg (2x)  # aucun CDN non plus
+piercing.svg (2x)  # aucun CDN non plus
+pottery.svg (2x)  # aucun CDN non plus
+radiotechnics.svg (2x)  # aucun CDN non plus
+repair.svg (2x)  # aucun CDN non plus
+small_electric_vehicle.svg (2x)  # aucun CDN non plus
+social_facility.svg (2x)
+spices.svg (2x)  # aucun CDN non plus
+vending_machine.svg (2x)
+audio_video_professional_supplies.svg (1x)  # aucun CDN non plus
+art_supplies.svg (1x)  # aucun CDN non plus
+auction_house.svg (1x)  # aucun CDN non plus
+bell.svg (1x)  # aucun CDN non plus
+bicycle_wash.svg (1x)  # aucun CDN non plus
+bonsai.svg (1x)  # aucun CDN non plus
+building_materials.svg (1x)  # aucun CDN non plus
+car_pound.svg (1x)  # aucun CDN non plus
+conference_centre.svg (1x)  # aucun CDN non plus
+duty_free.svg (1x)  # aucun CDN non plus
+doors.svg (1x)  # aucun CDN non plus
+ebikes;micro_mobility;scooters.svg (1x)  # aucun CDN non plus
+electro.svg (1x)  # aucun CDN non plus
+events_centre.svg (1x)  # aucun CDN non plus
+flooring.svg (1x)  # aucun CDN non plus
+fountain.svg (1x)
+fishing.svg (1x)  # aucun CDN non plus
+garden_furniture.svg (1x)  # aucun CDN non plus
+hookah_lounge.svg (1x)  # aucun CDN non plus
+ice_cream.svg (1x)  # aucun CDN non plus
+ironingshop.svg (1x)  # aucun CDN non plus
+minerals.svg (1x)  # aucun CDN non plus
+machine_parts.svg (1x)  # aucun CDN non plus
+mobility_hub.svg (1x)  # aucun CDN non plus
+loading_dock.svg (1x)  # aucun CDN non plus
+no.svg (1x)  # aucun CDN non plus
+parking.svg (1x)
+pasta.svg (1x)  # aucun CDN non plus
+packaging.svg (1x)  # aucun CDN non plus
+popup.svg (1x)  # aucun CDN non plus
+psychic.svg (1x)
+recycling.svg (1x)
+public_bookcase.svg (1x)  # aucun CDN non plus
+rope.svg (1x)  # aucun CDN non plus
+planetarium.svg (1x)  # aucun CDN non plus
+scuba_diving.svg (1x)
+security.svg (1x)  # aucun CDN non plus
+signage.svg (1x)  # aucun CDN non plus
+swimming_pool.svg (1x)  # aucun CDN non plus
+tiles.svg (1x)  # aucun CDN non plus
+toilets.svg (1x)  # aucun CDN non plus
+trophy.svg (1x)  # aucun CDN non plus
+venue_centre.svg (1x)  # aucun CDN non plus
+weapons.svg (1x)  # aucun CDN non plus
+window_frames.svg (1x)  # aucun CDN non plus
+wool.svg (1x)  # aucun CDN non plus
+wood.svg (1x)  # aucun CDN non plus
+shop.svg (0x)
