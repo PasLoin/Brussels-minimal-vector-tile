@@ -1,0 +1,1424 @@
+{
+  "alcohol": [
+    "alcohol",
+    null,
+    "alcohol-shop",
+    null
+  ],
+  "anime": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "antiques": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "appliance": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "art": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "art_supplies": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "arts_centre": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "artwork": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "attraction": [
+    null,
+    null,
+    "attraction",
+    null
+  ],
+  "auction_house": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "audio_video_professional_supplies": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "baby_goods": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "bag": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "bakery": [
+    null,
+    null,
+    "bakery",
+    null
+  ],
+  "bank": [
+    null,
+    null,
+    "bank",
+    null
+  ],
+  "bar": [
+    null,
+    null,
+    "bar",
+    null
+  ],
+  "bathroom_furnishing": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "beauty": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "bed": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "bell": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "beverages": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "bicycle": [
+    null,
+    null,
+    "bicycle",
+    null
+  ],
+  "bicycle_rental": [
+    null,
+    "bicycle_rental",
+    null,
+    null
+  ],
+  "bicycle_repair": [
+    null,
+    "bicycle_repair",
+    null,
+    null
+  ],
+  "bicycle_wash": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "bonsai": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "bookmaker": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "books": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "boutique": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "building_materials": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "butcher": [
+    "butcher",
+    null,
+    null,
+    null
+  ],
+  "cafe": [
+    null,
+    null,
+    "cafe",
+    null
+  ],
+  "camera": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cannabis": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "car": [
+    null,
+    null,
+    "car",
+    null
+  ],
+  "car_parts": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "car_pound": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "car_repair": [
+    null,
+    null,
+    "car",
+    null
+  ],
+  "carpet": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "charity": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cheese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "chemist": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "chocolate": [
+    null,
+    "chocolate",
+    null,
+    null
+  ],
+  "cinema": [
+    null,
+    null,
+    "cinema",
+    null
+  ],
+  "clinic": [
+    null,
+    null,
+    "doctor",
+    null
+  ],
+  "clock": [
+    null,
+    "clock",
+    null,
+    null
+  ],
+  "clothes": [
+    null,
+    null,
+    "clothing-store",
+    null
+  ],
+  "coffee": [
+    null,
+    "coffee",
+    null,
+    null
+  ],
+  "collector": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "community_centre": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "computer": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "confectionery": [
+    null,
+    null,
+    "confectionery",
+    null
+  ],
+  "conference_centre": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "convenience": [
+    null,
+    null,
+    "grocery",
+    null
+  ],
+  "copyshop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cosmetics": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "courthouse": [
+    "courthouse",
+    null,
+    null,
+    null
+  ],
+  "craft": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-friture": [
+    "cuisine_friture",
+    null,
+    null,
+    null
+  ],
+  "curtain": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "deli": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "dentist": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "department_store": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "doityourself": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "doors": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "dry_cleaning": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "duty_free": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "e-cigarette": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "ebikes;micro_mobility;scooters": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "electrical": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "electro": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "electronics": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "erotic": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "estate_agent": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "events_centre": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "fabric": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "farm": [
+    null,
+    null,
+    "farm",
+    null
+  ],
+  "fashion_accessories": [
+    null,
+    "fashion_accessories",
+    null,
+    null
+  ],
+  "fast_food": [
+    null,
+    null,
+    "fast-food",
+    null
+  ],
+  "fire_station": [
+    null,
+    null,
+    "fire-station",
+    null
+  ],
+  "fireplace": [
+    null,
+    "fireplace",
+    null,
+    null
+  ],
+  "fishing": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "flooring": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "florist": [
+    null,
+    "florist",
+    "florist",
+    null
+  ],
+  "food": [
+    null,
+    "food",
+    null,
+    null
+  ],
+  "fountain": [
+    null,
+    "fountain",
+    null,
+    null
+  ],
+  "frame": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "frozen_food": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "fuel": [
+    null,
+    null,
+    "fuel",
+    null
+  ],
+  "funeral_directors": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "furniture": [
+    null,
+    "furniture",
+    "furniture",
+    null
+  ],
+  "gallery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "games": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "garden_centre": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "garden_furniture": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "general": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "gift": [
+    null,
+    null,
+    "gift",
+    null
+  ],
+  "glaziery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "gold_buyer": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "greengrocer": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "grocery": [
+    null,
+    null,
+    "grocery",
+    null
+  ],
+  "hairdresser": [
+    null,
+    null,
+    "hairdresser",
+    null
+  ],
+  "hairdresser_supply": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "hardware": [
+    null,
+    null,
+    "hardware",
+    null
+  ],
+  "health_food": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "hearing_aids": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "herbalist": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "hifi": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "honey": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "hookah": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "hookah_lounge": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "hospital": [
+    null,
+    null,
+    "hospital",
+    null
+  ],
+  "hostel": [
+    null,
+    null,
+    "lodging",
+    null
+  ],
+  "hotel": [
+    null,
+    null,
+    "lodging",
+    null
+  ],
+  "household_linen": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "houseware": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "ice_cream": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "information": [
+    null,
+    null,
+    "information",
+    null
+  ],
+  "interior_decoration": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "ironingshop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "jewelry": [
+    null,
+    null,
+    "jewelry-store",
+    null
+  ],
+  "kindergarten": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "kiosk": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "kitchen": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "lace": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "laundry": [
+    null,
+    "laundry",
+    "laundry",
+    null
+  ],
+  "leather": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "library": [
+    null,
+    "library",
+    "library",
+    null
+  ],
+  "lighting": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "loading_dock": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "locksmith": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "machine_parts": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "mall": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "massage": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "medical_supply": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "minerals": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "mobile_phone": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "mobile_phone_accessories": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "mobility_hub": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "model": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "money_lender": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "motorcycle": [
+    null,
+    "motorcycle",
+    null,
+    null
+  ],
+  "motorcycle_repair": [
+    null,
+    "motorcycle_repair",
+    null,
+    null
+  ],
+  "museum": [
+    null,
+    "museum",
+    "museum",
+    null
+  ],
+  "music": [
+    null,
+    null,
+    "music",
+    null
+  ],
+  "musical_instrument": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "newsagent": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "no": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "nutrition_supplements": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "optician": [
+    null,
+    null,
+    "optician",
+    null
+  ],
+  "orthopedics": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "outdoor": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "outpost": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "packaging": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "paint": [
+    null,
+    null,
+    "paint",
+    null
+  ],
+  "parking": [
+    null,
+    null,
+    "parking",
+    null
+  ],
+  "parking_entrance": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "party": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "pastry": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "pawnbroker": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "perfumery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "pet": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "pet_grooming": [
+    null,
+    "pet_grooming",
+    null,
+    null
+  ],
+  "pharmacy": [
+    null,
+    "pharmacy",
+    "pharmacy",
+    null
+  ],
+  "photo": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "piercing": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "place_of_worship": [
+    null,
+    null,
+    "religious-christian",
+    null
+  ],
+  "planetarium": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "police": [
+    null,
+    null,
+    "police",
+    null
+  ],
+  "popup": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "post_office": [
+    null,
+    "post_box",
+    "post",
+    null
+  ],
+  "pottery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "printer_ink": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "printing": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "psychic": [
+    null,
+    "psychic",
+    null,
+    null
+  ],
+  "pub": [
+    null,
+    null,
+    "beer",
+    null
+  ],
+  "public_bookcase": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "radiotechnics": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "recycling": [
+    null,
+    null,
+    "recycling",
+    null
+  ],
+  "rental": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "repair": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "restaurant": [
+    null,
+    null,
+    "restaurant",
+    null
+  ],
+  "rope": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "school": [
+    null,
+    "school",
+    "school",
+    null
+  ],
+  "scuba_diving": [
+    null,
+    "scuba_diving",
+    null,
+    null
+  ],
+  "seafood": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "second_hand": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "security": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "sewing": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "shoe_repair": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "shoes": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "shop": [
+    null,
+    null,
+    "shop",
+    null
+  ],
+  "signage": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "small_electric_vehicle": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "social_facility": [
+    null,
+    "social_facility",
+    null,
+    null
+  ],
+  "spices": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "sports": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "stationery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "storage_rental": [
+    null,
+    "storage_rental",
+    null,
+    null
+  ],
+  "supermarket": [
+    null,
+    null,
+    "grocery",
+    null
+  ],
+  "swimming_pool": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "tailor": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "tattoo": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "tea": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "telecommunication": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "theatre": [
+    null,
+    null,
+    "theatre",
+    null
+  ],
+  "ticket": [
+    null,
+    "ticket",
+    null,
+    null
+  ],
+  "tiles": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "tobacco": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "toilets": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "tool_hire": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "townhall": [
+    null,
+    "town_hall",
+    "town-hall",
+    null
+  ],
+  "toys": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "trade": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "travel_agency": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "trophy": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "tyres": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "university": [
+    null,
+    null,
+    "college",
+    null
+  ],
+  "vacant": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "variety_store": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending_machine": [
+    null,
+    "vending_machine",
+    null,
+    null
+  ],
+  "venue_centre": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "veterinary": [
+    null,
+    null,
+    "veterinary",
+    null
+  ],
+  "video": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "video_games": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "viewpoint": [
+    null,
+    "binoculars",
+    "viewpoint",
+    null
+  ],
+  "watches": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "weapons": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "wellness": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "wholesale": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "window_blind": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "window_frames": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "wine": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "wood": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "wool": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "yes": [
+    null,
+    null,
+    null,
+    null
+  ]
+}
