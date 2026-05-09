@@ -57,7 +57,7 @@ OSM_TYPE_KEYS = {
 # www/assets/icons/ avec le nom {key}_{value}.svg
 # (ex: cuisine_friture.svg, religion_muslim.svg).
 # ═══════════════════════════════════════════════════════════
-SUB_TYPE_KEYS = {'cuisine', 'religion', 'denomination'}
+SUB_TYPE_KEYS = {'cuisine', 'religion'}
 
 # ═══════════════════════════════════════════════════════════
 # Mapping OSM tag value → CDN icon name quand ils diffèrent
