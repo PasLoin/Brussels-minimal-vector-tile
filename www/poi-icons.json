@@ -22,6 +22,16 @@
         "key": "cuisine",
         "value": "friture",
         "icon_key": "cuisine-friture"
+      },
+      {
+        "key": "cuisine",
+        "value": "sandwich",
+        "icon_key": "cuisine-sandwich"
+      },
+      {
+        "key": "religion",
+        "value": "muslim",
+        "icon_key": "religion-muslim"
       }
     ]
   },
@@ -523,8 +533,2342 @@
     null,
     null
   ],
+  "cuisine-afghan": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-african": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-african;ethiopian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-african;fusion": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-algerian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-american;barbecue;burger;diner;friture;hotdog;kebab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-arab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-arab;barbecue;breakfast;burger;chicken;coffee_shop;fine_dining": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-arab;fish;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-arab;grill": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-arab;kebab;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-arab;lebanese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-arabic;tajine": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-argentinian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-armenian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-asian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-asian;barbecue": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-asian;chinese;vietnamese;thai": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-asian;coffee_shop;brunch;pancakes": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-asian;coffee_shop;tea": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-asian;indian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-asian;korean": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-asian;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-asian;sichuan": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-asian;thai;vietnamese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-asian;wok": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-bagel": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-bagel;breakfast;cake;coffee_shop;sandwich;tea": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-bagel;cake;coffee_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-bagel;coffee_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-bagel;coffee_shop;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-baklawa;knafeh": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-barbecue": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-beer;pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-belgian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-belgian;asian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-belgian;breakfast;lunch;burger;regional;fish_and_chips;bistro": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-belgian;french": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-belgian;mussels": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-belgian;regional": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-bistro": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-brasserie": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-brasserie;belgian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-brasserie;belgian;bistro": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-brasserie;french;burger": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-brasserie;international": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-brasserie;rôtisserie": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-brazilian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-bread;sandwich;pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-breakfast": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-breakfast;brunch;arab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-breakfast;burger;chicken": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-breakfast;cake;coffee_shop;tapas;tea": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-breakfast;tea": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-british": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-brownie": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-brunch": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-brunch;breakfast;lunch;coffee_shop;tea": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-brunch;burger": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-bubble_tea": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-bulgarian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;belgian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;brasserie": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;breakfast": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;fried_chicken": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;fries": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;friture": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;friture;kebab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;grill;steak_house": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;kebab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;kebab;friture": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;pita;durum": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-burger;shawarma": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-cake": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-cake;coffee_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-cake;coffee_shop;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-cambodian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-cambodian;indochinese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-cameroonian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-canteen": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-chicken": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-chicken;friture;burger;fish_and_chips;arab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-chinese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-chinese;asian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-chinese;japanese;sushi": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-chinese;thai": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-chinese;thai;vietnamese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-chinese;vietnamese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-chips": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee;bakery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;bakery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;cake;asian;teahouse;dessert": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;greek": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;international": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;juice;pastry;mediterranean": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;local;organic;lunch;breakfast;brunch": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;lunch;organic": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;organic": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;pancake;sandwich;cake": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;pastry": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;sandwich;pastry": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;sandwich;salad;pancake": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;tea": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee_shop;waffle": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-colombian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-couscous": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-creole": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-crepe": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-crepe;ice_cream": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-crepe;pancake": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-crepe;tacos": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-deli;cheese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-dessert": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-donut": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-donut;coffee_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-egyptian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-empanada": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-ethiopian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-ethiopian;lebanese;moroccan": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-european": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-falafel": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-falafel;pakora;greek": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fast_food;asian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fine_dining": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fine_dining;french": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-finger_food": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fish": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fish;seafood": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fish_and_chips": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fondue": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french;belgian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french;bistro;diner;brunch": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french;cafe": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french;diner;bistro": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french;fine_dining": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french;international;gastronomic": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french;italian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french;italian;buffet": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french;japanese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french;local": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french;mediterranean": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french;omelette;soup": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french;regional": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-french_tacos": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fried_chicken": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fried_food": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fries": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fries;kebab;pita;turkish": [
+    null,
+    null,
+    null,
+    null
+  ],
   "cuisine-friture": [
     "cuisine_friture",
+    null,
+    null,
+    null
+  ],
+  "cuisine-friture;burger": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-friture;burger;pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-friture;greek": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-friture;kaaskroket": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-friture;kebab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-friture;kebab;turkish": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-friture;pitta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-friture;waffle": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fusion": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fusion;cafe;salad": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-generic; Greek": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-georgian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-greek": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-greek;gyros": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-greek;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-grill": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-grill;chicken;kebab;barbecue;turkish": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-grill;steak_house": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-gyros": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-gyros;greek": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-hawaiian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-hawaiian;poke": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-hawaiian;poke_bowl": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-healthy;sandwich;salad;pie": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-hot_dog": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-hot_pot": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-ice_cream": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-ice_cream;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-ice_cream;waffle": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-indian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-indian;bangladeshi": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-indian;buffet": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-indian;nepalese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-indian;nepalese;tibetan": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-indian;south_indian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-indonesian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-international": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-international;french;cantine": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-international;waffle": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-iranian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-italian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-italian;asian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-italian;bakery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-italian;coffee_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-italian;french": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-italian;indian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-italian;italian_pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-italian;italian_pizza;pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-italian;pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-italian;pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-italian;pizza;pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-italian;spanish;pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-italian_pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-japanese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-japanese;korean": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-japanese;nikkei": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-japanese;ramen": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-japanese;ramen;poke": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-japanese;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-japanese;sushi": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-japanese;thai": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-japanese;vietnamese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-juice": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-juice;sandwich;cafe": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-juice;smoothie;smoothies": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-kebab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-kebab;barbecue;arab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-kebab;burger": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-kebab;burger;mediterranean": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-kebab;burger;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-kebab;dürüm;pita;sandwich;fries;turkish": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-kebab;friture": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-kebab;grill": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-kebab;moroccan": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-kebab;pita;pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-kebab;steak_house": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-kebab;turkish": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-korean": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-kosovar": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-latin_american": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-lebanese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-lebanese;grill;italian;pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-lebanese;mediterranean": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-lebanese;pakistani": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-lebanese;palestinian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-lebanese;syrian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-local": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-local;french": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-malagasy": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-mauritian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-meat;fries;salad": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-meatballs": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-mediterranean": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-mexican": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-middle_eastern": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-middle_eastern;lebanese;syrian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-middle_eastern;street_food": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-moroccan": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-new_zealand": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-nigerian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-noodle": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-noodle;thai;wok": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-organic": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-oriental;lebanese;arab;mediterranean": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-oriental;organic;lebanese;moroccan;middle_eastern": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-painza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pakistani": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-palestinian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pancake": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pancake;bagel;waffle": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pasta;bistro;local": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pasta;chicken;burger": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pasta;french;belgian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pasta;pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pasta;roman": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pasta;sandwich;coffee_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pasta;sandwich;salad": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-persian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-persian;belgian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-peruvian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pita": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pita;durum;tacos": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pitta;durum": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pitta;grill;friture": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;burger;kebab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;coffee_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;italian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;italian;cafe": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;italian;pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;italian;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;kebab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;lebanese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;pancake": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;pasta;burger": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;pasta;burger;panini": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;pasta;sandwich;shawarma;arab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza;steak_house": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-poke": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-poke;hawaiian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-polish": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-portuguese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-portuguese;belgian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-ramen": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-ramen;japanese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-ramen;soba": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-ramen;sushi": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-regional": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-regional;artisanal;brunch;breakfast": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-regional;belgium": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-regional;burger": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-regional;french": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-regional;french;burger;steak_house": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-regional;italian;sandwich;indian;french": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-regional;seafood": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-romanian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-salad": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-salad;chicken;pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-salad;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich": [
+    "cuisine_sandwich",
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;argentinian;italian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;burger;pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;cafe": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;coffee;pastry": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;coffee_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;coffee_shop;salad": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;dessert;pasta;cake": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;greek;pita": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;ice_cream": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;ice_cream;crepe;breakfast": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;italian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;kebab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;pasta;noodles;coffee_shop;chicken": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;pasta;turkish": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;pizza;pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;poke": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;salad;breakfast;dessert": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;salad;pasta": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;soup;french;brunch;breakfast;cafe": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich;turkish": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sardinian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-seafood": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-seafood;belgian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-seafood;fine_dining;friture;regional": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-seasonal": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-senegalese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-smoothie": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-soup;salads;coffee": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-spaghetti_bolognese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-spanish": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-spanish;tapas": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-steak_house": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sushi": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sushi;asian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sushi;italian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sushi;japanese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sushi;ramen": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-swedish;coffee_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-swiss": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-syrian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-tacos": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-tacos;sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-taiwanese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-tapas": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-tea": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-tea;cake;coffee_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-tea;coffee_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-tea_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-teahouse": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-thai": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-thai;chinese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-thai;indian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-thai;vietnamese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-tibetan": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-tunisian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-turc;kebab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-turkish": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-turkish;kebab;pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-turkish;pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-turkish;pizza;kebab": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-venezuelan": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-vietnamese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-vietnamese;spring_rolls": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-vietnamese;thai": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-waffle": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-waffle;cafe;coffee_shop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-waffle;ice_cream": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-warm_dishes": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-west_african": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-world": [
+    null,
     null,
     null,
     null
@@ -1574,6 +3918,54 @@
     null
   ],
   "rehabilitation": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "religion-bahai": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "religion-buddhist": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "religion-christian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "religion-hindu": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "religion-jewish": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "religion-muslim": [
+    "religion_muslim",
+    null,
+    null,
+    null
+  ],
+  "religion-none": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "religion-scientologist": [
     null,
     null,
     null,
