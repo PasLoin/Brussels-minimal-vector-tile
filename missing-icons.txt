@@ -78,8 +78,8 @@ dry_cleaning.svg (28x)  # aucun CDN non plus
 seafood.svg (28x)  # aucun CDN non plus
 houseware.svg (26x)  # aucun CDN non plus
 stationery.svg (26x)  # aucun CDN non plus
-ticket.svg (24x)
 townhall.svg (24x)
+ticket.svg (24x)
 e-cigarette.svg (23x)  # aucun CDN non plus
 music.svg (23x)
 telecommunication.svg (23x)  # aucun CDN non plus
@@ -130,8 +130,8 @@ collector.svg (10x)  # aucun CDN non plus
 plumber.svg (10x)
 tobacco.svg (10x)  # aucun CDN non plus
 dressmaker.svg (9x)  # aucun CDN non plus
-health_food.svg (9x)  # aucun CDN non plus
 handicraft.svg (9x)  # aucun CDN non plus
+health_food.svg (9x)  # aucun CDN non plus
 medical_supply.svg (9x)  # aucun CDN non plus
 nutrition_supplements.svg (9x)  # aucun CDN non plus
 outdoor.svg (9x)  # aucun CDN non plus
@@ -148,8 +148,8 @@ bathroom_furnishing.svg (7x)  # aucun CDN non plus
 defibrillator.svg (7x)
 farm.svg (7x)
 garden_centre.svg (7x)  # aucun CDN non plus
-glaziery.svg (7x)  # aucun CDN non plus
 grocery.svg (7x)
+glaziery.svg (7x)  # aucun CDN non plus
 hairdresser_supply.svg (7x)  # aucun CDN non plus
 herbalist.svg (7x)  # aucun CDN non plus
 printer.svg (7x)  # aucun CDN non plus
@@ -157,8 +157,8 @@ storage_rental.svg (7x)
 atelier.svg (6x)  # aucun CDN non plus
 carpenter.svg (6x)  # aucun CDN non plus
 frame.svg (6x)  # aucun CDN non plus
-leather.svg (6x)  # aucun CDN non plus
 key_cutter.svg (6x)  # aucun CDN non plus
+leather.svg (6x)  # aucun CDN non plus
 pawnbroker.svg (6x)  # aucun CDN non plus
 clock.svg (5x)
 emergency_ward_entrance.svg (5x)  # aucun CDN non plus
@@ -166,55 +166,54 @@ government.svg (5x)  # aucun CDN non plus
 hifi.svg (5x)  # aucun CDN non plus
 household_linen.svg (5x)  # aucun CDN non plus
 outpost.svg (5x)  # aucun CDN non plus
-tool_hire.svg (5x)  # aucun CDN non plus
 tower.svg (5x)
+tool_hire.svg (5x)  # aucun CDN non plus
 works.svg (5x)  # aucun CDN non plus
 anime.svg (4x)  # aucun CDN non plus
 arts_centre.svg (4x)  # aucun CDN non plus
 company.svg (4x)  # aucun CDN non plus
 food.svg (4x)
 gold_buyer.svg (4x)  # aucun CDN non plus
-ngo.svg (4x)  # aucun CDN non plus
 park.svg (4x)
 printer_ink.svg (4x)  # aucun CDN non plus
-rental.svg (4x)  # aucun CDN non plus
+ngo.svg (4x)  # aucun CDN non plus
 rehabilitation.svg (4x)  # aucun CDN non plus
+rental.svg (4x)  # aucun CDN non plus
 scout.svg (4x)  # aucun CDN non plus
 video.svg (4x)  # aucun CDN non plus
 board.svg (3x)  # aucun CDN non plus
 boutique.svg (3x)  # aucun CDN non plus
-building.svg (3x)
 camera.svg (3x)  # aucun CDN non plus
+building.svg (3x)
 centre.svg (3x)  # aucun CDN non plus
-castle.svg (3x)
 clockmaker.svg (3x)  # aucun CDN non plus
 electrical.svg (3x)  # aucun CDN non plus
-electrician.svg (3x)  # aucun CDN non plus
 estate_agent.svg (3x)  # aucun CDN non plus
+electrician.svg (3x)  # aucun CDN non plus
+castle.svg (3x)
 hookah.svg (3x)  # aucun CDN non plus
 house.svg (3x)  # aucun CDN non plus
 joiner.svg (3x)  # aucun CDN non plus
 lace.svg (3x)  # aucun CDN non plus
 manor.svg (3x)  # aucun CDN non plus
-luthier.svg (3x)  # aucun CDN non plus
 mobile_phone_accessories.svg (3x)  # aucun CDN non plus
 photographic_laboratory.svg (3x)  # aucun CDN non plus
 pottery.svg (3x)  # aucun CDN non plus
-shoe_repair.svg (3x)  # aucun CDN non plus
 sport.svg (3x)  # aucun CDN non plus
-sports_centre.svg (3x)  # aucun CDN non plus
 stonemason.svg (3x)  # aucun CDN non plus
+shoe_repair.svg (3x)  # aucun CDN non plus
+sports_centre.svg (3x)  # aucun CDN non plus
 upholsterer.svg (3x)  # aucun CDN non plus
+video_games.svg (3x)  # aucun CDN non plus
 watchmaker.svg (3x)  # aucun CDN non plus
 wayside_shrine.svg (3x)  # aucun CDN non plus
-video_games.svg (3x)  # aucun CDN non plus
 wellness.svg (3x)  # aucun CDN non plus
 window_blind.svg (3x)  # aucun CDN non plus
 alternative;counselling;laboratory;psychotherapist;speech_therapist.svg (2x)  # aucun CDN non plus
 association.svg (2x)  # aucun CDN non plus
 beekeeper.svg (2x)  # aucun CDN non plus
-bicycle_rental.svg (2x)
 bicycle_repair.svg (2x)
+bicycle_rental.svg (2x)
 dance.svg (2x)  # aucun CDN non plus
 fireplace.svg (2x)
 flagpole.svg (2x)  # aucun CDN non plus
@@ -223,118 +222,118 @@ gallery.svg (2x)  # aucun CDN non plus
 gardener.svg (2x)  # aucun CDN non plus
 honey.svg (2x)  # aucun CDN non plus
 metal_construction.svg (2x)  # aucun CDN non plus
+motorcycle_repair.svg (2x)
 model.svg (2x)  # aucun CDN non plus
 money_lender.svg (2x)  # aucun CDN non plus
-motorcycle_repair.svg (2x)
 orthopedics.svg (2x)  # aucun CDN non plus
 painter.svg (2x)  # aucun CDN non plus
 party.svg (2x)  # aucun CDN non plus
 piercing.svg (2x)  # aucun CDN non plus
 printmaker.svg (2x)  # aucun CDN non plus
 radiotechnics.svg (2x)  # aucun CDN non plus
-repair.svg (2x)  # aucun CDN non plus
 research.svg (2x)  # aucun CDN non plus
-small_electric_vehicle.svg (2x)  # aucun CDN non plus
-social_facility.svg (2x)
+repair.svg (2x)  # aucun CDN non plus
 spices.svg (2x)  # aucun CDN non plus
+social_facility.svg (2x)
+small_electric_vehicle.svg (2x)  # aucun CDN non plus
 vending_machine.svg (2x)
 winery.svg (2x)  # aucun CDN non plus
-artist.svg (1x)  # aucun CDN non plus
 archive.svg (1x)  # aucun CDN non plus
-art_supplies.svg (1x)  # aucun CDN non plus
 advertising.svg (1x)  # aucun CDN non plus
+art_supplies.svg (1x)  # aucun CDN non plus
+artist.svg (1x)  # aucun CDN non plus
 audio_video_professional_supplies.svg (1x)  # aucun CDN non plus
 auction_house.svg (1x)  # aucun CDN non plus
 bell.svg (1x)  # aucun CDN non plus
 billboard.svg (1x)
 bicycle_wash.svg (1x)  # aucun CDN non plus
 bonsai.svg (1x)  # aucun CDN non plus
-board_games.svg (1x)  # aucun CDN non plus
 builder.svg (1x)  # aucun CDN non plus
-building_materials.svg (1x)  # aucun CDN non plus
 cabinet_maker.svg (1x)  # aucun CDN non plus
+building_materials.svg (1x)  # aucun CDN non plus
+board_games.svg (1x)  # aucun CDN non plus
 car_pound.svg (1x)  # aucun CDN non plus
 chapel.svg (1x)  # aucun CDN non plus
 coffee_roaster.svg (1x)  # aucun CDN non plus
 conference_centre.svg (1x)  # aucun CDN non plus
 coworking.svg (1x)  # aucun CDN non plus
-courtyard.svg (1x)  # aucun CDN non plus
-culture.svg (1x)  # aucun CDN non plus
 doctor.svg (1x)
+courtyard.svg (1x)  # aucun CDN non plus
 distillery.svg (1x)  # aucun CDN non plus
-door_construction.svg (1x)  # aucun CDN non plus
 distillery;brewery.svg (1x)  # aucun CDN non plus
+culture.svg (1x)  # aucun CDN non plus
+door_construction.svg (1x)  # aucun CDN non plus
 duty_free.svg (1x)  # aucun CDN non plus
 doors.svg (1x)  # aucun CDN non plus
 ebikes;micro_mobility;scooters.svg (1x)  # aucun CDN non plus
 electro.svg (1x)  # aucun CDN non plus
 events_centre.svg (1x)  # aucun CDN non plus
-fishing.svg (1x)  # aucun CDN non plus
-flooring.svg (1x)  # aucun CDN non plus
 fort.svg (1x)  # aucun CDN non plus
-folly.svg (1x)  # aucun CDN non plus
+fishing.svg (1x)  # aucun CDN non plus
 foundation.svg (1x)  # aucun CDN non plus
 fountain.svg (1x)
+folly.svg (1x)  # aucun CDN non plus
+flooring.svg (1x)  # aucun CDN non plus
+garden.svg (1x)
 freemasonry.svg (1x)  # aucun CDN non plus
 garden_furniture.svg (1x)  # aucun CDN non plus
 glassblower.svg (1x)  # aucun CDN non plus
-garden.svg (1x)
 helipad.svg (1x)  # aucun CDN non plus
 hookah_lounge.svg (1x)  # aucun CDN non plus
+hvac.svg (1x)  # aucun CDN non plus
+ice_cream.svg (1x)  # aucun CDN non plus
 insect_hotel.svg (1x)  # aucun CDN non plus
 insurance.svg (1x)  # aucun CDN non plus
-hvac.svg (1x)  # aucun CDN non plus
 jeweller.svg (1x)  # aucun CDN non plus
-ice_cream.svg (1x)  # aucun CDN non plus
 ironingshop.svg (1x)  # aucun CDN non plus
 laboratory.svg (1x)  # aucun CDN non plus
-loading_dock.svg (1x)  # aucun CDN non plus
 locomotive.svg (1x)  # aucun CDN non plus
-machine_parts.svg (1x)  # aucun CDN non plus
-medical_imaging.svg (1x)  # aucun CDN non plus
 logistics.svg (1x)  # aucun CDN non plus
+loading_dock.svg (1x)  # aucun CDN non plus
+machine_parts.svg (1x)  # aucun CDN non plus
 metal_painter.svg (1x)  # aucun CDN non plus
 milestone.svg (1x)
-metal_works.svg (1x)  # aucun CDN non plus
 minerals.svg (1x)  # aucun CDN non plus
+medical_imaging.svg (1x)  # aucun CDN non plus
 mobility_hub.svg (1x)  # aucun CDN non plus
+metal_works.svg (1x)  # aucun CDN non plus
 monument.svg (1x)
-packaging.svg (1x)  # aucun CDN non plus
 parking.svg (1x)
-pasta.svg (1x)  # aucun CDN non plus
+packaging.svg (1x)  # aucun CDN non plus
 parquet_layer.svg (1x)  # aucun CDN non plus
+pasta.svg (1x)  # aucun CDN non plus
 planetarium.svg (1x)  # aucun CDN non plus
 popup.svg (1x)  # aucun CDN non plus
-poster_box.svg (1x)
 psychic.svg (1x)
+poster_box.svg (1x)
+recycling.svg (1x)
 public_bookcase.svg (1x)  # aucun CDN non plus
 publisher.svg (1x)  # aucun CDN non plus
-recycling.svg (1x)
 railway_car.svg (1x)  # aucun CDN non plus
-restoration.svg (1x)  # aucun CDN non plus
 rope.svg (1x)  # aucun CDN non plus
+restoration.svg (1x)  # aucun CDN non plus
 ruins.svg (1x)
-security.svg (1x)  # aucun CDN non plus
-scuba_diving.svg (1x)
 sculptor.svg (1x)  # aucun CDN non plus
-social.svg (1x)  # aucun CDN non plus
-shrub.svg (1x)
+security.svg (1x)  # aucun CDN non plus
+signage.svg (1x)  # aucun CDN non plus
 signmaker.svg (1x)  # aucun CDN non plus
 spa.svg (1x)
-statue.svg (1x)
+social.svg (1x)  # aucun CDN non plus
+scuba_diving.svg (1x)
+shrub.svg (1x)
 sun_protection.svg (1x)  # aucun CDN non plus
 swimming_pool.svg (1x)  # aucun CDN non plus
+statue.svg (1x)
 tanning_salon.svg (1x)  # aucun CDN non plus
-signage.svg (1x)  # aucun CDN non plus
-tiles.svg (1x)  # aucun CDN non plus
 toilets.svg (1x)  # aucun CDN non plus
+tiles.svg (1x)  # aucun CDN non plus
 trampoline_park.svg (1x)  # aucun CDN non plus
-textile.svg (1x)  # aucun CDN non plus
 trophy.svg (1x)  # aucun CDN non plus
+textile.svg (1x)  # aucun CDN non plus
 venue_centre.svg (1x)  # aucun CDN non plus
 veterans.svg (1x)  # aucun CDN non plus
 weapons.svg (1x)  # aucun CDN non plus
 window_frames.svg (1x)  # aucun CDN non plus
-wool.svg (1x)  # aucun CDN non plus
 wood.svg (1x)  # aucun CDN non plus
+wool.svg (1x)  # aucun CDN non plus
 shop.svg (0x)
