@@ -11,7 +11,6 @@ COMMON_OPTS=(
   --simplify-only-low-zooms
   --drop-densest-as-needed
   --extend-zooms-if-still-dropping
-  --coalesce-densest-as-needed
   --generate-ids
   --force
 )
@@ -116,11 +115,10 @@ TIPPE_LOG=$(tippecanoe -o buildings.pmtiles \
   --simplify-only-low-zooms \
   --drop-densest-as-needed \
   --extend-zooms-if-still-dropping \
-  --coalesce-densest-as-needed \
   --generate-ids \
   --force \
-  -L'{"file":"buildings_merged.json","layer":"buildings","minimum-zoom":10,"maximum-zoom":14,"simplification":2}' \
-  -L'{"file":"buildings_detail.json","layer":"buildings","minimum-zoom":15,"maximum-zoom":18,"simplification":2}' \
+  -L'{"file":"buildings_merged.json","layer":"buildings","minimum-zoom":10,"maximum-zoom":12,"simplification":2}' \
+  -L'{"file":"buildings_detail.json","layer":"buildings","minimum-zoom":13,"maximum-zoom":18,"simplification":2}' \
   2>&1 || true)
 
 echo "$TIPPE_LOG"
