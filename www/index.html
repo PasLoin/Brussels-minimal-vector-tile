@@ -104,8 +104,9 @@
     .view-toggle { 
       position: absolute; 
       top: 10px; 
-      right: 50px; 
+      right: 16px; 
       z-index: 10; 
+      display: flex; gap: 8px; 
     } 
     .view-toggle button { 
       background: rgba(242, 239, 233, 0.92); 
@@ -122,13 +123,52 @@
     .view-toggle button:hover { 
       background: #fff; 
     }
+    .view-toggle button.active {
+      background: #734a08;
+      color: #fff;
+    }
+    .data-popup .maplibregl-popup-content {
+      padding: 8px;
+      font-size: 10px;
+      max-width: 300px;
+      max-height: 400px;
+      overflow: auto;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      pointer-events: none;
+    }
+    .data-popup table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .data-popup th, .data-popup td {
+      text-align: left;
+      padding: 2px 4px;
+      border-bottom: 1px solid #eee;
+      word-break: break-all;
+    }
+    .data-popup th {
+      color: #666;
+      font-weight: bold;
+      width: 35%;
+      vertical-align: top;
+    }
+    .data-popup .layer-info {
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 5px;
+      padding-bottom: 5px;
+      font-weight: bold;
+      color: #734a08;
+    }
   </style>
 </head>
 <body>
 
 <div id="map"></div>
 <div class="view-toggle"> 
-  <button id="toggle-3d">MODE 3D</button> 
+  <button id="toggle-3d">MODE 3D</button> <button id="toggle-data">DATA</button> 
 </div>
 
 <div class="title panel" id="title-panel">
@@ -470,6 +510,56 @@ function initMap(style) {
   };
 
   updateOsmLink(map);
+
+  /* ── Mode DATA ── */
+  const toggleDataBtn = document.getElementById('toggle-data');
+  let isDataMode = false;
+  const dataPopup = new maplibregl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+    className: 'data-popup',
+    anchor: 'bottom-left',
+    offset: [10, -10]
+  });
+
+  toggleDataBtn.onclick = () => {
+    isDataMode = !isDataMode;
+    toggleDataBtn.classList.toggle('active', isDataMode);
+    if (!isDataMode) {
+      dataPopup.remove();
+      map.getCanvas().style.cursor = '';
+    } else {
+      map.getCanvas().style.cursor = 'crosshair';
+    }
+  };
+
+  map.on('mousemove', (e) => {
+    if (!isDataMode) return;
+
+    const features = map.queryRenderedFeatures(e.point);
+    if (features.length > 0) {
+      const f = features[0];
+      const props = f.properties;
+      
+      let html = `<div class="layer-info">${f.layer.id} (${f.sourceLayer})</div><table>`;
+      // Sort properties alphabetically for better UX
+      const sortedKeys = Object.keys(props).sort();
+      for (const key of sortedKeys) {
+        html += `<tr><th>${key}</th><td>${props[key]}</td></tr>`;
+      }
+      html += `</table>`;
+
+      dataPopup.setLngLat(e.lngLat)
+        .setHTML(html)
+        .addTo(map);
+    } else {
+      dataPopup.remove();
+    }
+  });
+
+  map.on('mouseleave', () => {
+    if (isDataMode) dataPopup.remove();
+  });
 
 }
 </script>
