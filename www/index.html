@@ -346,6 +346,7 @@ async function loadAllPoiIcons(map) {
   // Patcher l'expression icon-image du layer poi-icon
   const iconImageExpr = buildIconImageExpression(meta);
   map.setLayoutProperty('poi-icon', 'icon-image', iconImageExpr);
+  if (map.getLayer('leisure-icon')) map.setLayoutProperty('leisure-icon', 'icon-image', iconImageExpr);
   console.log('POI icon-image expression built from _meta.type_keys:', meta.type_keys);
 
   // Charger les icônes SVG
@@ -379,6 +380,12 @@ fetch('./style.json')
 function initMap(style) {
   // ── Hide poi-icon layer initially to avoid "image not found" warnings ──
   const poiIconLayer = style.layers.find(l => l.id === 'poi-icon');
+  const leisureIconLayer = style.layers.find(l => l.id === 'leisure-icon');
+  if (leisureIconLayer) {
+    leisureIconLayer.layout = leisureIconLayer.layout || {};
+    leisureIconLayer.layout.visibility = 'none';
+    delete leisureIconLayer.layout['icon-image'];
+  }
   if (poiIconLayer) {
     poiIconLayer.layout = poiIconLayer.layout || {};
     poiIconLayer.layout.visibility = 'none';
@@ -404,6 +411,7 @@ function initMap(style) {
   map.on('load', async () => {
     await loadAllPoiIcons(map);
     map.setLayoutProperty('poi-icon', 'visibility', 'visible');
+    if (map.getLayer('leisure-icon')) map.setLayoutProperty('leisure-icon', 'visibility', 'visible');
   });
 
   /* ── Légende dynamique ── */
