@@ -57,6 +57,14 @@ jobs:
           file brussels_capital_region-latest.osm.pbf
           ls -lh brussels_capital_region-latest.osm.pbf
 
+      - name: Check PBF freshness
+        run: |
+          echo "=== Downloaded PBF ==="
+          md5sum brussels_capital_region-latest.osm.pbf
+          ls -lh brussels_capital_region-latest.osm.pbf
+          echo "=== Repo PBF ==="
+          git show HEAD:brussels_capital_region-latest.osm.pbf | md5sum || echo "Not yet in repo"
+
       - name: Extract GeoJSON layers
         run: bash generate_json.bash
 
