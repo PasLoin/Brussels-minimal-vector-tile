@@ -22,6 +22,7 @@ declare -A MAX_ZOOM=(
   [water]=18
   [green]=18
   [trees]=18
+  [leisure]=18
   [boundaries]=14
   [poi]=16
   [pedestrian]=18
@@ -37,6 +38,7 @@ declare -A SIMPLIFICATION=(
   [water]=2
   [green]=2
   [trees]=2
+  [leisure]=2
   [boundaries]=10
   [poi]=10
   [pedestrian]=10
@@ -54,7 +56,7 @@ TOTAL_OUTPUT=0
 TOTAL_SIZE=0
 
 # ── Couches standard (tout sauf buildings) ───────────────
-for layer in landuse roads water green trees boundaries poi pedestrian cycleway railway public_transport; do
+for layer in landuse roads water green trees leisure boundaries poi pedestrian cycleway railway public_transport; do
   echo "→ ${layer} (z10-${MAX_ZOOM[$layer]})"
   
   if [ -f "${layer}.json" ]; then
