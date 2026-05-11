@@ -167,6 +167,9 @@ print(f"  {before} → {len(kept)} POI "
       f"{stats['dup']} doublons, {stats['skip']} ignorés)")
 POI_POINTS
 
+extract leisure \
+  nwr/leisure=playground,pitch,fitness_station,dog_park,outdoor_seating
+
 extract pedestrian \
   nwr/highway=pedestrian,footway,path,steps
 
@@ -184,4 +187,4 @@ python3 extract_stib_routes.py
 rm -f _tmp_pt.osm.pbf _tmp_pt.osm
 echo "  $(wc -l < "public_transport.json") lignes"
 
-echo "✓ 11 couches extraites (+ buildings_detail.json pour zoom haut)"
+echo "✓ 12 couches extraites (+ buildings_detail.json pour zoom haut)"
