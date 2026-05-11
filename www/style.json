@@ -50,6 +50,10 @@
     "public_transport": {
       "type": "vector",
       "url": "./public_transport.pmtiles.gz"
+    },
+    "leisure": {
+      "type": "vector",
+      "url": "./leisure.pmtiles.gz"
     }
   },
   "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
@@ -1010,6 +1014,68 @@
           18,
           4
         ]
+      }
+    },
+    {
+      "id": "leisure-fill",
+      "type": "fill",
+      "source": "leisure",
+      "source-layer": "leisure",
+      "filter": [
+        "==",
+        [
+          "geometry-type"
+        ],
+        "Polygon"
+      ],
+      "paint": {
+        "fill-color": [
+          "match",
+          [
+            "get",
+            "leisure"
+          ],
+          "pitch",
+          "#8ad3af",
+          "playground",
+          "#f2e8f1",
+          "dog_park",
+          "#def3c0",
+          "fitness_station",
+          "#def3c0",
+          "outdoor_seating",
+          "#e6e1d9",
+          "#def3c0"
+        ],
+        "fill-opacity": 1.0
+      }
+    },
+    {
+      "id": "leisure-outline",
+      "type": "line",
+      "source": "leisure",
+      "source-layer": "leisure",
+      "filter": [
+        "==",
+        [
+          "geometry-type"
+        ],
+        "Polygon"
+      ],
+      "paint": {
+        "line-color": [
+          "match",
+          [
+            "get",
+            "leisure"
+          ],
+          "pitch",
+          "#6fb792",
+          "playground",
+          "#d5c9d4",
+          "#adadad"
+        ],
+        "line-width": 0.5
       }
     },
     {
@@ -5527,6 +5593,26 @@
       }
     },
     {
+      "id": "leisure-point",
+      "type": "circle",
+      "source": "leisure",
+      "source-layer": "leisure",
+      "filter": [
+        "==",
+        [
+          "geometry-type"
+        ],
+        "Point"
+      ],
+      "minzoom": 14,
+      "paint": {
+        "circle-radius": 3,
+        "circle-color": "#734a08",
+        "circle-stroke-color": "#fff",
+        "circle-stroke-width": 0.8
+      }
+    },
+    {
       "id": "poi-circle",
       "type": "circle",
       "source": "poi",
@@ -5684,6 +5770,130 @@
       "type": "symbol",
       "source": "poi",
       "source-layer": "poi",
+      "minzoom": 15,
+      "layout": {
+        "icon-image": [
+          "coalesce",
+          [
+            "case",
+            [
+              "==",
+              [
+                "get",
+                "cuisine"
+              ],
+              "friture"
+            ],
+            [
+              "image",
+              "poi-cuisine-friture"
+            ],
+            [
+              "image",
+              ""
+            ]
+          ],
+          [
+            "image",
+            [
+              "concat",
+              "poi-",
+              [
+                "get",
+                "shop"
+              ]
+            ]
+          ],
+          [
+            "image",
+            [
+              "concat",
+              "poi-",
+              [
+                "get",
+                "amenity"
+              ]
+            ]
+          ],
+          [
+            "image",
+            [
+              "concat",
+              "poi-",
+              [
+                "get",
+                "tourism"
+              ]
+            ]
+          ],
+          [
+            "case",
+            [
+              "has",
+              "shop"
+            ],
+            [
+              "image",
+              "poi-shop"
+            ],
+            [
+              "image",
+              ""
+            ]
+          ]
+        ],
+        "icon-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          15,
+          0.7,
+          18,
+          1.0
+        ],
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": false,
+        "icon-padding": 2,
+        "icon-anchor": "center",
+        "text-field": [
+          "step",
+          [
+            "zoom"
+          ],
+          "",
+          16,
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": 10,
+        "text-offset": [
+          0,
+          1.2
+        ],
+        "text-anchor": "top",
+        "text-optional": true
+      },
+      "paint": {
+        "icon-opacity": 0.9,
+        "text-color": "#734a08",
+        "text-halo-color": "rgba(255,255,255,0.8)",
+        "text-halo-width": 1.2
+      }
+    },
+    {
+      "id": "leisure-icon",
+      "type": "symbol",
+      "source": "leisure",
+      "source-layer": "leisure",
       "minzoom": 15,
       "layout": {
         "icon-image": [
