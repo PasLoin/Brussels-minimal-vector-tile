@@ -37,17 +37,47 @@ jobs:
 
       - name: Download Brussels OSM extract
         run: |
+          set -e
+          success=false
           for i in 1 2 3; do
             echo "Tentative $i/3..."
-            wget --tries=3 --timeout=60 -nv \
-              https://download.openstreetmap.fr/extracts/europe/belgium/brussels_capital_region-latest.osm.pbf \
-              && break
+            if wget --tries=3 --timeout=60 -nv \
+              https://download.openstreetmap.fr/extracts/europe/belgium/brussels_capital_region-latest.osm.pbf; then
+              success=true
+              break
+            fi
             echo "Échec, nouvelle tentative dans 10s..."
             rm -f brussels_capital_region-latest.osm.pbf
             sleep 10
           done
+          if [ "$success" = false ]; then
+            echo "::error::Impossible de télécharger le fichier OSM après 3 tentatives"
+            exit 1
+          fi
           file brussels_capital_region-latest.osm.pbf
           ls -lh brussels_capital_region-latest.osm.pbf
+
+      - name: Check PBF freshness
+        run: |
+          echo "=== Downloaded PBF ==="
+          md5sum brussels_capital_region-latest.osm.pbf
+          ls -lh brussels_capital_region-latest.osm.pbf
+          echo "=== Repo PBF ==="
+          git show HEAD:brussels_capital_region-latest.osm.pbf | md5sum || echo "Not yet in repo"
+
+
+      - name: Check PBF freshness2
+        run: |
+          echo "=== Downloaded PBF ==="
+          md5sum brussels_capital_region-latest.osm.pbf
+          ls -lh brussels_capital_region-latest.osm.pbf
+          osmium fileinfo brussels_capital_region-latest.osm.pbf
+          echo "=== Repo PBF ==="
+          git show HEAD:brussels_capital_region-latest.osm.pbf > /tmp/repo.pbf 2>/dev/null \
+            && md5sum /tmp/repo.pbf \
+            && osmium fileinfo /tmp/repo.pbf \
+            || echo "Not yet in repo2"
+          
 
       - name: Extract GeoJSON layers
         run: bash generate_json.bash
@@ -68,7 +98,7 @@ jobs:
           cp *.pmtiles.gz www/
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add www/*.pmtiles.gz www/poi-icons.json missing-icons.txt sizepmtiles.md brussels_capital_region-latest.osm.pbf
+          git add -f www/*.pmtiles.gz www/poi-icons.json missing-icons.txt sizepmtiles.md brussels_capital_region-latest.osm.pbf
           if git diff --cached --quiet; then
             echo "Pas de changements à commiter"
           else
