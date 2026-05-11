@@ -398,6 +398,7 @@ function initMap(style) {
 
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 100, unit: 'metric' }), 'bottom-right');
+  map.addControl(new maplibregl.NavigationControl({ showZoom: false, showCompass: true }), 'bottom-right');
 
   /* ── Load POI icons from poi-icons.json, then reveal the icon layer ── */
   map.on('load', async () => {
