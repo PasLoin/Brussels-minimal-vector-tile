@@ -159,7 +159,7 @@
   "bar": [
     null,
     null,
-    null,
+    "bar",
     null
   ],
   "bathroom_furnishing": [
@@ -201,12 +201,12 @@
   "bicycle": [
     null,
     null,
-    null,
+    "bicycle",
     null
   ],
   "bicycle_rental": [
     null,
-    null,
+    "bicycle_rental",
     null,
     null
   ],
@@ -405,7 +405,7 @@
   "cinema": [
     null,
     null,
-    null,
+    "cinema",
     null
   ],
   "cleaning": [
@@ -435,12 +435,12 @@
   "clothes": [
     null,
     null,
-    null,
+    "clothing-store",
     null
   ],
   "coffee": [
     null,
-    null,
+    "coffee",
     null,
     null
   ],
@@ -489,7 +489,7 @@
   "convenience": [
     null,
     null,
-    null,
+    "grocery",
     null
   ],
   "copyshop": [
@@ -3057,7 +3057,7 @@
   "fire_station": [
     null,
     null,
-    null,
+    "fire-station",
     null
   ],
   "fireplace": [
@@ -3087,7 +3087,7 @@
   "florist": [
     null,
     "florist",
-    "florist",
+    null,
     null
   ],
   "folly": [
@@ -3116,7 +3116,7 @@
   ],
   "fountain": [
     null,
-    null,
+    "fountain",
     null,
     null
   ],
@@ -3153,7 +3153,7 @@
   "furniture": [
     null,
     "furniture",
-    null,
+    "furniture",
     null
   ],
   "gallery": [
@@ -3237,7 +3237,7 @@
   "grocery": [
     null,
     null,
-    null,
+    "grocery",
     null
   ],
   "hairdresser": [
@@ -3261,7 +3261,7 @@
   "hardware": [
     null,
     null,
-    null,
+    "hardware",
     null
   ],
   "health_food": [
@@ -3447,7 +3447,7 @@
   "laundry": [
     null,
     "laundry",
-    null,
+    "laundry",
     null
   ],
   "leather": [
@@ -3620,7 +3620,7 @@
   ],
   "museum": [
     null,
-    null,
+    "museum",
     "museum",
     null
   ],
@@ -3711,7 +3711,7 @@
   "parking": [
     null,
     null,
-    null,
+    "parking",
     null
   ],
   "parking_entrance": [
@@ -3770,7 +3770,7 @@
   ],
   "pharmacy": [
     null,
-    null,
+    "pharmacy",
     "pharmacy",
     null
   ],
@@ -3801,7 +3801,7 @@
   "place_of_worship": [
     null,
     null,
-    null,
+    "religious-christian",
     null
   ],
   "planetarium": [
@@ -3831,7 +3831,7 @@
   "post_office": [
     null,
     "post_box",
-    null,
+    "post",
     null
   ],
   "poster_box": [
@@ -3872,7 +3872,7 @@
   ],
   "psychic": [
     null,
-    null,
+    "psychic",
     null,
     null
   ],
@@ -4245,7 +4245,7 @@
   "theatre": [
     null,
     null,
-    null,
+    "theatre",
     null
   ],
   "ticket": [
@@ -4287,7 +4287,7 @@
   "townhall": [
     null,
     "town_hall",
-    null,
+    "town-hall",
     null
   ],
   "toys": [
@@ -4371,7 +4371,7 @@
   "veterinary": [
     null,
     null,
-    null,
+    "veterinary",
     null
   ],
   "video": [
@@ -4389,7 +4389,7 @@
   "viewpoint": [
     null,
     "binoculars",
-    null,
+    "viewpoint",
     null
   ],
   "watches": [
