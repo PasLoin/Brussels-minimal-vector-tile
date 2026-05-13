@@ -39,7 +39,7 @@
   "alcohol": [
     "alcohol",
     null,
-    null,
+    "alcohol-shop",
     null
   ],
   "alternative;counselling;laboratory;psychotherapist;speech_therapist": [
@@ -212,7 +212,7 @@
   ],
   "bicycle_repair": [
     null,
-    null,
+    "bicycle_repair",
     null,
     null
   ],
@@ -3087,7 +3087,7 @@
   "florist": [
     null,
     "florist",
-    null,
+    "florist",
     null
   ],
   "folly": [

@@ -249,7 +249,7 @@ async function loadPoiIcon(map, poiType, localName, temakiName, makiName, libert
       if (!svg.includes('<svg')) continue;
 
       svg = svg.replace(/\s*fill="[^"]*"/g, '');
-      svg = svg.replace(/<svg /, `<svg fill="${ICON_COLOR}" `);
+      svg = svg.replace(/<svg(\s|>)/i, `<svg fill="${ICON_COLOR}" $1`);
 
       const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
       const blobUrl = URL.createObjectURL(blob);
