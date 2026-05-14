@@ -1022,12 +1022,22 @@
       "source": "roads",
       "source-layer": "roads",
       "filter": [
-        "==",
+        "all",
         [
-          "get",
-          "man_made"
+          "==",
+          [
+            "get",
+            "man_made"
+          ],
+          "tunnel"
         ],
-        "tunnel"
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Polygon"
+        ]
       ],
       "layout": {
         "fill-sort-key": [
@@ -1045,6 +1055,64 @@
       "paint": {
         "fill-color": "#adadad",
         "fill-opacity": 0.3
+      }
+    },
+    {
+      "id": "man_made-tunnel-line-fill",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "man_made"
+          ],
+          "tunnel"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ]
+      ],
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#adadad",
+        "line-opacity": 0.3,
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          2,
+          16,
+          10,
+          18,
+          20
+        ]
       }
     },
     {
@@ -2207,7 +2275,6 @@
         ]
       }
     },
-
     {
       "id": "roads-tunnel-casing-busway",
       "type": "line",
