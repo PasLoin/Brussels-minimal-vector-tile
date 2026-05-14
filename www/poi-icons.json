@@ -159,7 +159,7 @@
   "bar": [
     null,
     null,
-    "bar",
+    null,
     null
   ],
   "bathroom_furnishing": [
@@ -201,7 +201,7 @@
   "bicycle": [
     null,
     null,
-    "bicycle",
+    null,
     null
   ],
   "bicycle_rental": [
@@ -321,7 +321,7 @@
   "car": [
     null,
     null,
-    "car",
+    null,
     null
   ],
   "car_parts": [
@@ -339,7 +339,7 @@
   "car_repair": [
     null,
     null,
-    "car",
+    null,
     null
   ],
   "carpenter": [
@@ -357,7 +357,7 @@
   "castle": [
     null,
     null,
-    "castle",
+    null,
     null
   ],
   "caterer": [
@@ -3141,7 +3141,7 @@
   "fuel": [
     null,
     null,
-    "fuel",
+    null,
     null
   ],
   "funeral_directors": [
@@ -3153,7 +3153,7 @@
   "furniture": [
     null,
     "furniture",
-    "furniture",
+    null,
     null
   ],
   "gallery": [
@@ -3201,7 +3201,7 @@
   "gift": [
     null,
     null,
-    "gift",
+    null,
     null
   ],
   "glassblower": [
@@ -3627,7 +3627,7 @@
   "music": [
     null,
     null,
-    "music",
+    null,
     null
   ],
   "musical_instrument": [
@@ -3831,7 +3831,7 @@
   "post_office": [
     null,
     "post_box",
-    "post",
+    null,
     null
   ],
   "poster_box": [
@@ -4089,7 +4089,7 @@
   "shop": [
     null,
     null,
-    "shop",
+    null,
     null
   ],
   "shrub": [
@@ -4287,7 +4287,7 @@
   "townhall": [
     null,
     "town_hall",
-    "town-hall",
+    null,
     null
   ],
   "toys": [
@@ -4329,7 +4329,7 @@
   "university": [
     null,
     null,
-    "college",
+    null,
     null
   ],
   "upholsterer": [
