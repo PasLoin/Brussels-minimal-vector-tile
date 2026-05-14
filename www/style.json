@@ -1017,6 +1017,74 @@
       }
     },
     {
+      "id": "man_made-tunnel-fill",
+      "type": "fill",
+      "source": "roads",
+      "source-layer": "roads",
+      "filter": [
+        "==",
+        [
+          "get",
+          "man_made"
+        ],
+        "tunnel"
+      ],
+      "layout": {
+        "fill-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "fill-color": "#adadad",
+        "fill-opacity": 0.3
+      }
+    },
+    {
+      "id": "man_made-tunnel-outline",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "filter": [
+        "==",
+        [
+          "get",
+          "man_made"
+        ],
+        "tunnel"
+      ],
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#ffc0cb",
+        "line-width": 2,
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
       "id": "leisure-fill",
       "type": "fill",
       "source": "leisure",
@@ -2139,74 +2207,7 @@
         ]
       }
     },
-    {
-      "id": "man_made-tunnel-fill",
-      "type": "fill",
-      "source": "roads",
-      "source-layer": "roads",
-      "filter": [
-        "==",
-        [
-          "get",
-          "man_made"
-        ],
-        "tunnel"
-      ],
-      "layout": {
-        "fill-sort-key": [
-          "coalesce",
-          [
-            "to-number",
-            [
-              "get",
-              "layer"
-            ]
-          ],
-          0
-        ]
-      },
-      "paint": {
-        "fill-color": "#adadad",
-        "fill-opacity": 0.5
-      }
-    },
-    {
-      "id": "man_made-tunnel-outline",
-      "type": "line",
-      "source": "roads",
-      "source-layer": "roads",
-      "filter": [
-        "==",
-        [
-          "get",
-          "man_made"
-        ],
-        "tunnel"
-      ],
-      "layout": {
-        "line-join": "round",
-        "line-cap": "round",
-        "line-sort-key": [
-          "coalesce",
-          [
-            "to-number",
-            [
-              "get",
-              "layer"
-            ]
-          ],
-          0
-        ]
-      },
-      "paint": {
-        "line-color": "#ffc0cb",
-        "line-width": 2,
-        "line-dasharray": [
-          2,
-          2
-        ]
-      }
-    },
+
     {
       "id": "roads-tunnel-casing-busway",
       "type": "line",
