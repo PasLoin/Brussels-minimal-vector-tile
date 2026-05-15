@@ -120,12 +120,24 @@ def process_polygon(coords):
     }
 
 
+def polygon_centroid(coords):
+    """Centroïde géographique (lon, lat) d'un polygone."""
+    ring = coords[0]
+    pts = ring[:-1] if ring[0] == ring[-1] and len(ring) > 1 else ring
+    if not pts:
+        return None
+    lon = sum(p[0] for p in pts) / len(pts)
+    lat = sum(p[1] for p in pts) / len(pts)
+    return [lon, lat]
+
+
 def main():
     src = "leisure.json"
     with open(src) as f:
         data = json.load(f)
 
     features = data.get("features", [])
+    new_points = []
     enriched = 0
 
     for feat in features:
@@ -141,35 +153,59 @@ def main():
 
         geom = feat.get("geometry", {})
         result = None
+        centroid = None
 
         if geom.get("type") == "Polygon":
             result = process_polygon(geom["coordinates"])
+            centroid = polygon_centroid(geom["coordinates"])
         elif geom.get("type") == "MultiPolygon":
             best = None
             for poly in geom["coordinates"]:
                 r = process_polygon(poly)
                 if r and (best is None or r["pitch_length"] > best["pitch_length"]):
                     best = r
+                    centroid = polygon_centroid(poly)
             result = best
 
-        if result is None:
+        if result is None or centroid is None:
             continue
 
-        # Stocker les propriétés utiles au rendu
+        canon = sorted(matched)[0]
+        sport_render = SPORT_ALIAS.get(canon, canon)
+
+        # Enrichir le polygone (pour le fill/outline)
         props["bearing"] = result["bearing"]
         props["pitch_length"] = result["pitch_length"]
         props["pitch_width"] = result["pitch_width"]
+        props["sport_render"] = sport_render
 
-        # Sport normalisé (un seul pour le nom d'image)
-        canon = sorted(matched)[0]
-        props["sport_render"] = SPORT_ALIAS.get(canon, canon)
+        # Créer un Point au centroïde (pour le marquage)
+        point_props = {
+            "leisure": "pitch",
+            "sport_render": sport_render,
+            "bearing": result["bearing"],
+            "pitch_length": result["pitch_length"],
+            "pitch_width": result["pitch_width"],
+        }
+        # Copier le nom s'il existe
+        if props.get("name"):
+            point_props["name"] = props["name"]
+
+        new_points.append({
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": centroid},
+            "properties": point_props,
+        })
 
         enriched += 1
+
+    # Ajouter les points à la collection
+    features.extend(new_points)
 
     with open(src, "w") as f:
         json.dump(data, f, ensure_ascii=False)
 
-    print(f"  {enriched} terrains enrichis (bearing + dimensions)")
+    print(f"  {enriched} terrains enrichis + {len(new_points)} points centroïdes ajoutés")
 
 
 if __name__ == "__main__":
