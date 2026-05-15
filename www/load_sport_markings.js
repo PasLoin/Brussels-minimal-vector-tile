@@ -3,99 +3,78 @@
  * ──────────────────────
  * Charge les SVG de marquage sportif dans MapLibre GL.
  *
- * Deux modes d'intégration (au choix) :
+ *   setupSportMarkings(map);          // une seule ligne, après new Map()
  *
- *   A) Lazy via styleimagemissing (recommandé) :
- *        setupSportMarkings(map);
- *      → les images sont chargées à la demande quand le renderer en a besoin.
- *
- *   B) Eager au chargement :
- *        await loadSportMarkings(map);
- *      → toutes les images sont pré-chargées.
- *
- * Les SVG sont rasterisés via <canvas> pour éviter les problèmes WebGL
- * avec les sources SVG non-bitmap.
+ * - Pré-charge toutes les images dès que la map est prête (map.on load).
+ * - Fallback via styleimagemissing pour les images pas encore chargées
+ *   au premier rendu.
+ * - Rasterise les SVG via <canvas> → ImageData pour éviter les
+ *   warnings WebGL « non-DOM-Element uploads ».
  */
 
-const SPORT_MARKINGS = [
+var SPORT_MARKINGS = [
   'sport-markings-tennis',
   'sport-markings-soccer',
-  'sport-markings-basketball',
-  // ← ajouter les futurs sports ici
+  'sport-markings-basketball'
 ];
 
-// Résolution de rasterisation (2× pour retina)
-const RASTER_SCALE = 2;
+var RASTER_SCALE = 2;
+var _pending = {};
 
-/**
- * Rasterise un SVG en ImageData via canvas, puis l'ajoute à la map.
- */
-function loadAndAddImage(map, name, basePath) {
-  return new Promise(function(resolve) {
-    if (map.hasImage(name)) { resolve(); return; }
+function rasterizeAndAdd(map, name, basePath) {
+  if (map.hasImage(name) || _pending[name]) return;
+  _pending[name] = true;
 
-    var img = new Image();
-    img.crossOrigin = 'anonymous';
+  var img = new Image();
+  img.crossOrigin = 'anonymous';
 
-    img.onload = function() {
-      var w = img.naturalWidth  || img.width;
-      var h = img.naturalHeight || img.height;
-      if (w === 0 || h === 0) {
-        console.warn('[sport-markings] ' + name + ': dimensions nulles, skip');
-        resolve();
-        return;
-      }
+  img.onload = function() {
+    if (map.hasImage(name)) return;
 
-      var canvas  = document.createElement('canvas');
-      canvas.width  = w * RASTER_SCALE;
-      canvas.height = h * RASTER_SCALE;
-      var ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    var w = img.naturalWidth  || img.width  || 200;
+    var h = img.naturalHeight || img.height || 100;
 
-      if (!map.hasImage(name)) {
-        map.addImage(name, ctx.getImageData(0, 0, canvas.width, canvas.height), {
-          pixelRatio: RASTER_SCALE,
-          sdf: false
-        });
-      }
-      resolve();
-    };
+    var canvas  = document.createElement('canvas');
+    canvas.width  = w * RASTER_SCALE;
+    canvas.height = h * RASTER_SCALE;
 
-    img.onerror = function() {
-      console.warn('[sport-markings] ' + name + ': introuvable (' + basePath + name + '.svg)');
-      resolve();
-    };
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    img.src = basePath + name + '.svg';
-  });
+    var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    map.addImage(name, imageData, { pixelRatio: RASTER_SCALE });
+    console.log('[sport-markings] ' + name + ' loaded (' + w + '×' + h + ' → ' + canvas.width + '×' + canvas.height + ')');
+  };
+
+  img.onerror = function() {
+    console.warn('[sport-markings] ' + name + ': not found at ' + basePath + name + '.svg');
+    _pending[name] = false;
+  };
+
+  img.src = basePath + name + '.svg';
 }
 
-/**
- * Mode A — Lazy : écoute styleimagemissing et charge à la demande.
- * Appeler une seule fois, même avant map.on('load').
- */
 function setupSportMarkings(map, basePath) {
   if (basePath === undefined) basePath = './assets/icons/';
-  var pending = {};
 
+  // Fallback : charge à la demande quand MapLibre ne trouve pas l'image
   map.on('styleimagemissing', function(e) {
-    var id = e.id;
-    if (id.indexOf('sport-markings-') !== 0) return;
-    if (pending[id]) return;
-    pending[id] = true;
-    loadAndAddImage(map, id, basePath);
+    if (e.id.indexOf('sport-markings-') === 0) {
+      rasterizeAndAdd(map, e.id, basePath);
+    }
   });
-}
 
-/**
- * Mode B — Eager : pré-charge toutes les images connues.
- * Retourne une Promise résolue quand tout est chargé.
- */
-function loadSportMarkings(map, basePath) {
-  if (basePath === undefined) basePath = './assets/icons/';
-  return Promise.all(
-    SPORT_MARKINGS.map(function(name) {
-      return loadAndAddImage(map, name, basePath);
-    })
-  );
+  // Pré-chargement : lance le fetch dès que possible
+  function preload() {
+    SPORT_MARKINGS.forEach(function(name) {
+      rasterizeAndAdd(map, name, basePath);
+    });
+  }
+
+  if (map.loaded()) {
+    preload();
+  } else {
+    map.on('load', preload);
+  }
 }
