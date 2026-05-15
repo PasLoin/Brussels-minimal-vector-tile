@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="107"
+     viewBox="0 0 200 107">
+  <!--
+    Terrain de basketball FIBA — 28 m × 15 m
+    Échelle : s = 200/28 ≈ 7.143 unités/m
+    Paniers à 1.575 m du fond de court.
+  -->
+  <g fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="square">
+
+    <!-- Limites du terrain -->
+    <rect x="1" y="1" width="198" height="105"/>
+
+    <!-- Ligne médiane -->
+    <line x1="100" y1="1" x2="100" y2="106"/>
+
+    <!-- Cercle central (r = 1.8 m → 12.9) -->
+    <circle cx="100" cy="53.5" r="12.9"/>
+
+    <!-- ─── Côté gauche ─── -->
+    <!--   Panier à x = 1 + 11.25 = 12.25 -->
+
+    <!-- Raquette / zone restrictive (5.8 m × 4.9 m → 41.4 × 35) -->
+    <rect x="1" y="36" width="41.4" height="35"/>
+
+    <!-- Ligne de lancer-franc semi-cercle (r = 1.8 m → 12.9) côté terrain -->
+    <path d="M 42.4 40.6 A 12.9 12.9 0 0 1 42.4 66.4"/>
+    <!-- Demi arrière (pointillé) -->
+    <path d="M 42.4 40.6 A 12.9 12.9 0 0 0 42.4 66.4"
+          stroke-dasharray="3,2.5"/>
+
+    <!-- Ligne à 3 points (r = 6.75 m → 48.2 du panier) -->
+    <!--   Parties droites à 0.9 m du bord (y = 7.4 et y = 99.6) -->
+    <!--   Arc raccordé à x ≈ 26.4 -->
+    <path d="M 1 7.4 L 26.4 7.4 A 48.2 48.2 0 0 1 26.4 99.6 L 1 99.6"/>
+
+    <!-- Zone de non-charge (r = 1.25 m → 8.9) -->
+    <path d="M 12.25 44.6 A 8.9 8.9 0 0 1 12.25 62.4"/>
+
+    <!-- Panier (anneau) -->
+    <circle cx="12.25" cy="53.5" r="1.8" stroke-width="1"/>
+    <!-- Panneau -->
+    <line x1="10.5" y1="49" x2="10.5" y2="58" stroke-width="1.5"/>
+
+    <!-- ─── Côté droit ─── -->
+    <!--   Panier à x = 199 - 11.25 = 187.75 -->
+
+    <!-- Raquette -->
+    <rect x="157.6" y="36" width="41.4" height="35"/>
+
+    <!-- Lancer-franc semi-cercle -->
+    <path d="M 157.6 40.6 A 12.9 12.9 0 0 0 157.6 66.4"/>
+    <path d="M 157.6 40.6 A 12.9 12.9 0 0 1 157.6 66.4"
+          stroke-dasharray="3,2.5"/>
+
+    <!-- Ligne à 3 points -->
+    <path d="M 199 7.4 L 173.6 7.4 A 48.2 48.2 0 0 0 173.6 99.6 L 199 99.6"/>
+
+    <!-- Zone de non-charge -->
+    <path d="M 187.75 44.6 A 8.9 8.9 0 0 0 187.75 62.4"/>
+
+    <!-- Panier -->
+    <circle cx="187.75" cy="53.5" r="1.8" stroke-width="1"/>
+    <!-- Panneau -->
+    <line x1="189.5" y1="49" x2="189.5" y2="58" stroke-width="1.5"/>
+
+  </g>
+</svg>

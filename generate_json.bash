@@ -170,6 +170,10 @@ POI_POINTS
 extract leisure \
   nwr/leisure=playground,pitch,fitness_station,dog_park,outdoor_seating
 
+# ── Orientation des terrains de sport ────────────────────
+echo "  → calcul orientation des terrains de sport"
+python3 compute_pitch_bearing.py
+
 extract pedestrian \
   nwr/highway=pedestrian,footway,path,steps
 
