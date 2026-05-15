@@ -75,10 +75,9 @@ PITCH_SPORT_OUTLINE = {
 
 # 3. Marquages sportifs (symbole rotatif)
 #
-#    Taille fixe par sport, basée sur les dimensions standard :
-#      tennis     ≈ 24 m  → 24 / (200 × 0.377) = 0.318
-#      soccer     ≈ 105 m → 105 / (200 × 0.377) = 1.393
-#      basketball ≈ 28 m  → 28 / (200 × 0.377) = 0.371
+#    À z18 (seul zoom), m/px ≈ 0.377 à Bruxelles.
+#    icon_size = longueur_m / (200 px × 0.377 m/px) = longueur_m × 0.01327
+#    Utilise pitch_length si disponible, sinon dimensions standard du sport.
 #
 PITCH_MARKINGS = {
     "id": "pitch-markings",
@@ -100,14 +99,21 @@ PITCH_MARKINGS = {
         "icon-pitch-alignment": "map",
         "icon-rotate": ["coalesce", ["get", "bearing"], 0],
         "icon-size": [
-            "match", ["get", "sport_render"],
-            "tennis",     0.32,
-            "soccer",     1.39,
-            "basketball", 0.37,
-            0.33,
+            "*",
+            [
+                "case",
+                ["has", "pitch_length"], ["get", "pitch_length"],
+                ["match", ["get", "sport_render"],
+                    "tennis", 24,
+                    "soccer", 105,
+                    "basketball", 28,
+                    50,
+                ],
+            ],
+            0.01327,
         ],
-        "icon-allow-overlap": True,
-        "icon-ignore-placement": True,
+        "icon-allow-overlap": False,
+        "icon-ignore-placement": False,
         "symbol-placement": "point",
     },
     "paint": {
