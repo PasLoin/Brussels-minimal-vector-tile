@@ -8,6 +8,8 @@
  * - Pré-charge toutes les images dès map.on('load').
  * - Fallback styleimagemissing pour les images pas encore prêtes.
  * - Rasterise les SVG via <canvas> → ImageData (évite warnings WebGL).
+ *   Pas de pixelRatio — l'image fait 200 CSS px, le coefficient
+ *   icon-size dans le style est calibré sur cette base.
  */
 
 var SPORT_MARKINGS = [
@@ -16,7 +18,6 @@ var SPORT_MARKINGS = [
   'sport-markings-basketball'
 ];
 
-var RASTER_SCALE = 2;
 var _pending = {};
 
 function rasterizeAndAdd(map, name, basePath) {
@@ -33,16 +34,16 @@ function rasterizeAndAdd(map, name, basePath) {
     var h = img.naturalHeight || img.height || 100;
 
     var canvas  = document.createElement('canvas');
-    canvas.width  = w * RASTER_SCALE;
-    canvas.height = h * RASTER_SCALE;
+    canvas.width  = w;
+    canvas.height = h;
 
     var ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, w, h);
 
-    var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    var imageData = ctx.getImageData(0, 0, w, h);
 
-    map.addImage(name, imageData, { pixelRatio: RASTER_SCALE });
-    console.log('[sport-markings] ' + name + ' loaded (' + w + 'x' + h + ' → ' + canvas.width + 'x' + canvas.height + ')');
+    map.addImage(name, imageData);
+    console.log('[sport-markings] ' + name + ' loaded (' + w + 'x' + h + ')');
   };
 
   img.onerror = function() {
