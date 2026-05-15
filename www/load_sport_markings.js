@@ -42,7 +42,7 @@ function rasterizeAndAdd(map, name, basePath) {
 
     var imageData = ctx.getImageData(0, 0, w, h);
 
-    map.addImage(name, imageData);
+    map.addImage(name, imageData, { pixelRatio: 1 });
     console.log('[sport-markings] ' + name + ' loaded (' + w + 'x' + h + ')');
   };
 
