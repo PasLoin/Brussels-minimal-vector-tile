@@ -52,51 +52,71 @@ def centroid_of_ring(ring):
 
 
 def process_polygon(coords):
-    """Analyse un polygone de terrain : bearing, longueur, largeur."""
+    """Analyse un polygone de terrain : bearing, longueur, largeur.
+
+    Stratégie :
+      1. Trouver l'orientation via l'arête la plus longue.
+      2. Projeter TOUS les sommets sur l'axe long et l'axe perpendiculaire.
+      3. Utiliser l'étendue (max − min) de chaque projection.
+    Cela corrige le cas courant où un bord de 24 m est découpé
+    en plusieurs segments par des nœuds intermédiaires OSM.
+    """
     ring = coords[0]
     if len(ring) < 4:
         return None
 
-    edges = [edge_info(ring[i], ring[i + 1]) for i in range(len(ring) - 1)]
-    if not edges:
+    # ── 1. Convertir tous les sommets en mètres (repère local) ──
+    ref_lon, ref_lat = ring[0][0], ring[0][1]
+    pts_m = []
+    for p in ring[:-1]:                       # exclure la fermeture
+        mx = dx_meters(ref_lon, ref_lat, p[0], p[1])
+        my = dy_meters(ref_lat, p[1])
+        pts_m.append((mx, my))
+
+    if len(pts_m) < 3:
         return None
 
-    # Axe long = arête la plus longue
-    edges_sorted = sorted(edges, key=lambda e: e[0], reverse=True)
-    long_len, long_bearing = edges_sorted[0]
+    # ── 2. Orientation : arête la plus longue ──
+    edges = []
+    for i in range(len(pts_m)):
+        j = (i + 1) % len(pts_m)
+        ex = pts_m[j][0] - pts_m[i][0]
+        ey = pts_m[j][1] - pts_m[i][1]
+        length = math.hypot(ex, ey)
+        edges.append((length, ex, ey))
 
-    # Largeur = plus long segment à peu près perpendiculaire
-    width = 0
-    for seg_len, seg_bearing in edges_sorted[1:]:
-        angle_diff = abs((seg_bearing - long_bearing + 90) % 180 - 90)
-        if angle_diff > 30:          # ≈ perpendiculaire
-            width = seg_len
-            break
-    if width == 0 and len(edges_sorted) > 1:
-        width = edges_sorted[1][0]
+    edges.sort(key=lambda e: e[0], reverse=True)
+    _, best_ex, best_ey = edges[0]
+    angle_rad = math.atan2(best_ex, best_ey)  # depuis le nord, CW
 
-    # Normaliser le bearing dans [0, 180) — un terrain est symétrique
-    norm_bearing = long_bearing % 180
+    # ── 3. Projeter tous les sommets sur cet axe ──
+    cos_a = math.cos(angle_rad)
+    sin_a = math.sin(angle_rad)
 
-    # Conversion pour icon-rotate (SVG paysage : axe long = x = est)
-    # rotate=0 → l'axe x du SVG pointe vers l'est
-    # On veut que l'axe x s'aligne sur le bearing de l'axe long
-    #   bearing est mesuré depuis le nord CW
-    #   est = 90° depuis le nord
-    # → icon_rotate = bearing - 90
+    proj_long = []   # projection sur l'axe long
+    proj_perp = []   # projection sur l'axe perpendiculaire
+    for mx, my in pts_m:
+        proj_long.append(mx * sin_a + my * cos_a)
+        proj_perp.append(mx * cos_a - my * sin_a)
+
+    pitch_length = max(proj_long) - min(proj_long)
+    pitch_width  = max(proj_perp) - min(proj_perp)
+
+    # S'assurer que length ≥ width
+    if pitch_width > pitch_length:
+        pitch_length, pitch_width = pitch_width, pitch_length
+        angle_rad += math.pi / 2
+
+    # ── 4. Bearing → icon-rotate ──
+    norm_bearing = math.degrees(angle_rad) % 180
     icon_rotate = (norm_bearing - 90) % 360
     if icon_rotate > 180:
         icon_rotate -= 360
 
-    # Centroïde
-    cx, cy = centroid_of_ring(ring)
-
     return {
         "bearing": round(icon_rotate, 1),
-        "pitch_length": round(long_len, 1),
-        "pitch_width": round(width, 1),
-        "_cx": cx,
-        "_cy": cy,
+        "pitch_length": round(pitch_length, 1),
+        "pitch_width": round(pitch_width, 1),
     }
 
 
