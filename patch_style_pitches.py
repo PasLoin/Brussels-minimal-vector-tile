@@ -75,27 +75,21 @@ PITCH_SPORT_OUTLINE = {
 
 # 3. Marquages sportifs (symbole rotatif)
 #
-#    icon-size est calculé pour que le SVG (200 px de large) couvre
-#    la longueur réelle du terrain à chaque zoom.
-#
-#    Formule : icon_size = pitch_length_m / (svg_width_px × m_per_px_at_zoom)
-#
-#    À Bruxelles (lat ≈ 50.85°) :
-#       z16 → m/px ≈ 1.507  →  coeff = 1/(200×1.507) = 0.00332
-#       z17 → m/px ≈ 0.754  →  coeff = 0.00663
-#       z18 → m/px ≈ 0.377  →  coeff = 0.01327
+#    Taille fixe par sport, basée sur les dimensions standard :
+#      tennis     ≈ 24 m  → 24 / (200 × 0.377) = 0.318
+#      soccer     ≈ 105 m → 105 / (200 × 0.377) = 1.393
+#      basketball ≈ 28 m  → 28 / (200 × 0.377) = 0.371
 #
 PITCH_MARKINGS = {
     "id": "pitch-markings",
     "type": "symbol",
     "source": "leisure",
     "source-layer": "leisure",
-    "minzoom": 17,
+    "minzoom": 18,
     "filter": [
         "all",
         ["==", ["get", "leisure"], "pitch"],
         ["has", "sport_render"],
-        ["has", "bearing"],
         ["==", ["geometry-type"], "Polygon"],
     ],
     "layout": {
@@ -106,20 +100,18 @@ PITCH_MARKINGS = {
         "icon-pitch-alignment": "map",
         "icon-rotate": ["coalesce", ["get", "bearing"], 0],
         "icon-size": [
-            "interpolate", ["exponential", 2], ["zoom"],
-            17, ["*", ["coalesce", ["get", "pitch_length"], 50], 0.00663],
-            18, ["*", ["coalesce", ["get", "pitch_length"], 50], 0.01327],
+            "match", ["get", "sport_render"],
+            "tennis",     0.32,
+            "soccer",     1.39,
+            "basketball", 0.37,
+            0.33,
         ],
         "icon-allow-overlap": True,
         "icon-ignore-placement": True,
         "symbol-placement": "point",
     },
     "paint": {
-        "icon-opacity": [
-            "interpolate", ["linear"], ["zoom"],
-            17, 0.7,
-            18, 0.95,
-        ],
+        "icon-opacity": 0.9,
     },
 }
 
