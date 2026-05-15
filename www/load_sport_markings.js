@@ -3,13 +3,11 @@
  * ──────────────────────
  * Charge les SVG de marquage sportif dans MapLibre GL.
  *
- *   setupSportMarkings(map);          // une seule ligne, après new Map()
+ *   setupSportMarkings(map);          // après new Map()
  *
- * - Pré-charge toutes les images dès que la map est prête (map.on load).
- * - Fallback via styleimagemissing pour les images pas encore chargées
- *   au premier rendu.
- * - Rasterise les SVG via <canvas> → ImageData pour éviter les
- *   warnings WebGL « non-DOM-Element uploads ».
+ * - Pré-charge toutes les images dès map.on('load').
+ * - Fallback styleimagemissing pour les images pas encore prêtes.
+ * - Rasterise les SVG via <canvas> → ImageData (évite warnings WebGL).
  */
 
 var SPORT_MARKINGS = [
@@ -44,7 +42,7 @@ function rasterizeAndAdd(map, name, basePath) {
     var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
     map.addImage(name, imageData, { pixelRatio: RASTER_SCALE });
-    console.log('[sport-markings] ' + name + ' loaded (' + w + '×' + h + ' → ' + canvas.width + '×' + canvas.height + ')');
+    console.log('[sport-markings] ' + name + ' loaded (' + w + 'x' + h + ' → ' + canvas.width + 'x' + canvas.height + ')');
   };
 
   img.onerror = function() {
@@ -58,14 +56,12 @@ function rasterizeAndAdd(map, name, basePath) {
 function setupSportMarkings(map, basePath) {
   if (basePath === undefined) basePath = './assets/icons/';
 
-  // Fallback : charge à la demande quand MapLibre ne trouve pas l'image
   map.on('styleimagemissing', function(e) {
     if (e.id.indexOf('sport-markings-') === 0) {
       rasterizeAndAdd(map, e.id, basePath);
     }
   });
 
-  // Pré-chargement : lance le fetch dès que possible
   function preload() {
     SPORT_MARKINGS.forEach(function(name) {
       rasterizeAndAdd(map, name, basePath);
