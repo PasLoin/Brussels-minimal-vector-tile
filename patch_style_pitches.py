@@ -138,30 +138,31 @@ PITCH_MARKINGS = {
 
 def patch_style(style):
     layers = style["layers"]
-    existing_ids = {layer["id"] for layer in layers}
-
-    # Idempotent : si déjà patché, on ne fait rien
     PITCH_IDS = {"pitch-sport-fill", "pitch-sport-outline", "pitch-markings"}
-    if PITCH_IDS <= existing_ids:
-        print("  (couches pitch déjà présentes — skip)")
-        return style
 
-    # Supprimer les couches partielles d'un patch précédent éventuel
+    # Supprimer les couches pitch existantes pour les (ré)insérer au bon endroit
     layers[:] = [l for l in layers if l["id"] not in PITCH_IDS]
 
-    # Trouver la position de "leisure-fill" pour insérer juste AVANT
+    # Trouver la position APRÈS "leisure-outline" pour dessiner par-dessus
     target_idx = None
     for i, layer in enumerate(layers):
-        if layer["id"] == "leisure-fill":
-            target_idx = i
+        if layer["id"] == "leisure-outline":
+            target_idx = i + 1
             break
 
     if target_idx is None:
-        print("⚠  Couche 'leisure-fill' non trouvée — insertion en fin de liste")
+        # Fallback : après leisure-fill
+        for i, layer in enumerate(layers):
+            if layer["id"] == "leisure-fill":
+                target_idx = i + 1
+                break
+
+    if target_idx is None:
+        print("⚠  Couche 'leisure-outline' non trouvée — insertion en fin de liste")
         target_idx = len(layers)
 
-    # Insérer les couches sport AVANT leisure-fill
-    # (le fill sport écrasera visuellement leisure-fill pour les pitchs concernés)
+    # Insérer les couches sport APRÈS leisure-outline
+    # → elles dessinent PAR-DESSUS le fill vert générique
     new_layers = [PITCH_SPORT_FILL, PITCH_SPORT_OUTLINE]
     for j, nl in enumerate(new_layers):
         layers.insert(target_idx + j, nl)
