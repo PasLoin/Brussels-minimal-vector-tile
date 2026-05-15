@@ -93,7 +93,7 @@ jobs:
       - name: Generate PMTiles
         run: bash generate_pmtiles.bash
 
-      - name: Patch style with pitch sport layers
+      - name: Ensure pitch sport layers in style
         run: python3 patch_style_pitches.py www/style.json
 
       - name: Commit artifacts to repo
