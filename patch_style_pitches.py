@@ -75,21 +75,25 @@ PITCH_SPORT_OUTLINE = {
 
 # 3. Marquages sportifs (symbole rotatif)
 #
-#    À z18 (seul zoom), m/px ≈ 0.377 à Bruxelles.
-#    icon_size = longueur_m / (200 px × 0.377 m/px) = longueur_m × 0.01327
-#    Utilise pitch_length si disponible, sinon dimensions standard du sport.
+#    Les marquages sont rendus sur des Points centroïdes
+#    (créés par compute_pitch_bearing.py), pas sur les polygones
+#    → positionnement exact, indépendant du clipping des tuiles.
+#
+#    icon_size = longueur_m × coeff(zoom)
+#      z17 → coeff = 0.00663
+#      z18 → coeff = 0.01327
 #
 PITCH_MARKINGS = {
     "id": "pitch-markings",
     "type": "symbol",
     "source": "leisure",
     "source-layer": "leisure",
-    "minzoom": 18,
+    "minzoom": 17,
     "filter": [
         "all",
         ["==", ["get", "leisure"], "pitch"],
         ["has", "sport_render"],
-        ["==", ["geometry-type"], "Polygon"],
+        ["==", ["geometry-type"], "Point"],
     ],
     "layout": {
         "icon-image": [
@@ -99,25 +103,34 @@ PITCH_MARKINGS = {
         "icon-pitch-alignment": "map",
         "icon-rotate": ["coalesce", ["get", "bearing"], 0],
         "icon-size": [
-            "*",
-            [
-                "case",
-                ["has", "pitch_length"], ["get", "pitch_length"],
-                ["match", ["get", "sport_render"],
-                    "tennis", 24,
-                    "soccer", 105,
-                    "basketball", 28,
-                    50,
+            "interpolate", ["exponential", 2], ["zoom"],
+            17, ["*",
+                ["case",
+                    ["has", "pitch_length"], ["get", "pitch_length"],
+                    ["match", ["get", "sport_render"],
+                        "tennis", 24, "soccer", 105, "basketball", 28, 50],
                 ],
+                0.00663,
             ],
-            0.01327,
+            18, ["*",
+                ["case",
+                    ["has", "pitch_length"], ["get", "pitch_length"],
+                    ["match", ["get", "sport_render"],
+                        "tennis", 24, "soccer", 105, "basketball", 28, 50],
+                ],
+                0.01327,
+            ],
         ],
-        "icon-allow-overlap": False,
-        "icon-ignore-placement": False,
+        "icon-allow-overlap": True,
+        "icon-ignore-placement": True,
         "symbol-placement": "point",
     },
     "paint": {
-        "icon-opacity": 0.9,
+        "icon-opacity": [
+            "interpolate", ["linear"], ["zoom"],
+            17, 0.7,
+            18, 0.95,
+        ],
     },
 }
 
