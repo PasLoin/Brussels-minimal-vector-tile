@@ -43,7 +43,7 @@ function rasterizeAndAdd(map, name, basePath) {
     var imageData = ctx.getImageData(0, 0, w, h);
 
     map.addImage(name, imageData, { pixelRatio: 1 });
-    console.log('[sport-markings] ' + name + ' loaded (' + w + 'x' + h + ')');
+    console.log('[sport-markings] ' + name + ' loaded (' + w + 'x' + h + ') DPR=' + (window.devicePixelRatio || 1));
   };
 
   img.onerror = function() {
