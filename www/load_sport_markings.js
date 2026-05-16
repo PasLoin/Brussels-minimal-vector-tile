@@ -7,9 +7,9 @@
  *
  * - Pré-charge toutes les images dès map.on('load').
  * - Fallback styleimagemissing pour les images pas encore prêtes.
- * - Rasterise les SVG via <canvas> → ImageData (évite warnings WebGL).
- *   Pas de pixelRatio — l'image fait 200 CSS px, le coefficient
- *   icon-size dans le style est calibré sur cette base.
+ * - Rasterise les SVG via <canvas> à la résolution du device (DPR×).
+ *   pixelRatio = DPR → l'image fait toujours 200 CSS px.
+ *   Le coefficient icon-size est calibré sur cette base.
  */
 
 var SPORT_MARKINGS = [
@@ -24,6 +24,7 @@ function rasterizeAndAdd(map, name, basePath) {
   if (map.hasImage(name) || _pending[name]) return;
   _pending[name] = true;
 
+  var dpr = window.devicePixelRatio || 1;
   var img = new Image();
   img.crossOrigin = 'anonymous';
 
@@ -34,16 +35,16 @@ function rasterizeAndAdd(map, name, basePath) {
     var h = img.naturalHeight || img.height || 100;
 
     var canvas  = document.createElement('canvas');
-    canvas.width  = w;
-    canvas.height = h;
+    canvas.width  = w * dpr;
+    canvas.height = h * dpr;
 
     var ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, w, h);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    var imageData = ctx.getImageData(0, 0, w, h);
+    var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-    map.addImage(name, imageData, { pixelRatio: 1 });
-    console.log('[sport-markings] ' + name + ' loaded (' + w + 'x' + h + ') DPR=' + (window.devicePixelRatio || 1));
+    map.addImage(name, imageData, { pixelRatio: dpr });
+    console.log('[sport-markings] ' + name + ' loaded (' + w + 'x' + h + ' @' + dpr + 'x)');
   };
 
   img.onerror = function() {
