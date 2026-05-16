@@ -80,8 +80,8 @@ PITCH_SPORT_OUTLINE = {
 #    → positionnement exact, indépendant du clipping des tuiles.
 #
 #    icon_size = longueur_m × coeff(zoom)
-#      z17 → coeff = 0.01326  (2× pour diagnostic)
-#      z18 → coeff = 0.02654  (2× pour diagnostic)
+#      z17 → coeff = 1/(200 × 0.754) = 0.00663
+#      z18 → coeff = 1/(200 × 0.377) = 0.01327
 #
 PITCH_MARKINGS = {
     "id": "pitch-markings",
@@ -110,7 +110,7 @@ PITCH_MARKINGS = {
                     ["match", ["get", "sport_render"],
                         "tennis", 24, "soccer", 105, "basketball", 28, 50],
                 ],
-                0.01326,
+                0.00663,
             ],
             18, ["*",
                 ["case",
@@ -118,7 +118,7 @@ PITCH_MARKINGS = {
                     ["match", ["get", "sport_render"],
                         "tennis", 24, "soccer", 105, "basketball", 28, 50],
                 ],
-                0.02654,
+                0.01327,
             ],
         ],
         "icon-allow-overlap": True,
