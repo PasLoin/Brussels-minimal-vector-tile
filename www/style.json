@@ -1174,7 +1174,7 @@
           "pitch",
           "#8ad3af",
           "playground",
-          "#f2e8f1",
+          "#d5f0d5",
           "dog_park",
           "#def3c0",
           "fitness_station",
@@ -1208,7 +1208,7 @@
           "pitch",
           "#6fb792",
           "playground",
-          "#d5c9d4",
+          "#c2e1c2",
           "#adadad"
         ],
         "line-width": 0.5
@@ -5964,6 +5964,9 @@
       "source-layer": "leisure",
       "minzoom": 15,
       "layout": {
+        "icon-padding": 50,
+        "symbol-placement": "point",
+        "icon-allow-overlap": false,
         "icon-image": [
           "coalesce",
           [
@@ -6047,9 +6050,7 @@
           18,
           1.0
         ],
-        "icon-allow-overlap": true,
         "icon-ignore-placement": false,
-        "icon-padding": 2,
         "icon-anchor": "center",
         "text-field": [
           "step",
@@ -6079,7 +6080,15 @@
         "text-color": "#734a08",
         "text-halo-color": "rgba(255,255,255,0.8)",
         "text-halo-width": 1.2
-      }
+      },
+      "filter": [
+        "!=",
+        [
+          "get",
+          "leisure"
+        ],
+        "playground"
+      ]
     }
   ]
 }

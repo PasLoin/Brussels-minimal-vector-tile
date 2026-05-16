@@ -192,6 +192,12 @@
     null,
     null
   ],
+  "bench": [
+    null,
+    "bench",
+    null,
+    null
+  ],
   "beverages": [
     null,
     null,
@@ -3804,6 +3810,12 @@
     null,
     null
   ],
+  "playground": [
+    null,
+    null,
+    "playground",
+    null
+  ],
   "plumber": [
     null,
     "plumber",
@@ -3999,6 +4011,12 @@
   "ruins": [
     null,
     "ruins",
+    null,
+    null
+  ],
+  "sand": [
+    null,
+    null,
     null,
     null
   ],
@@ -4303,6 +4321,12 @@
     null
   ],
   "travel_agency": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "tree": [
     null,
     null,
     null,
