@@ -220,7 +220,7 @@
       ],
       "paint": {
         "fill-color": "#bd4a72",
-        "fill-opacity": 0.3
+        "fill-opacity": 0.1
       }
     },
     {
@@ -1054,7 +1054,7 @@
       },
       "paint": {
         "fill-color": "#adadad",
-        "fill-opacity": 0.3
+        "fill-opacity": 0.1
       }
     },
     {
