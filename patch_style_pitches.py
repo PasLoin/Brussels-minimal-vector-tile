@@ -79,11 +79,11 @@ PITCH_SPORT_OUTLINE = {
 #    (créés par compute_pitch_bearing.py), pas sur les polygones
 #    → positionnement exact, indépendant du clipping des tuiles.
 #
-#    icon_size = longueur_m × coeff(zoom)
-#    MapLibre GL JS tileSize = 512 (pas 256)
-#    coeff = tileSize × 2^z / (svg_width × C × cos(lat))
-#      z17 → 0.01326
-#      z18 → 0.02654
+#    icon_size = longueur_m × coeff(zoom) × 0.92 (retrait)
+#    Le facteur 0.92 garde les lignes à l'intérieur du polygone
+#    OSM, qui inclut souvent les bords extérieurs du terrain.
+#      z17 → 0.01326 × 0.92 = 0.01220
+#      z18 → 0.02654 × 0.92 = 0.02442
 #
 PITCH_MARKINGS = {
     "id": "pitch-markings",
@@ -112,7 +112,7 @@ PITCH_MARKINGS = {
                     ["match", ["get", "sport_render"],
                         "tennis", 24, "soccer", 105, "basketball", 28, 50],
                 ],
-                0.01326,
+                0.01220,
             ],
             18, ["*",
                 ["case",
@@ -120,7 +120,7 @@ PITCH_MARKINGS = {
                     ["match", ["get", "sport_render"],
                         "tennis", 24, "soccer", 105, "basketball", 28, 50],
                 ],
-                0.02654,
+                0.02442,
             ],
         ],
         "icon-allow-overlap": True,
