@@ -16,7 +16,7 @@ import math
 import sys
 
 # Sports supportés (extensible)
-KNOWN_SPORTS = {"tennis", "soccer", "football", "basketball"}
+KNOWN_SPORTS = {"tennis", "soccer", "football", "basketball", "boules"}
 
 # Alias de normalisation pour le rendu
 SPORT_ALIAS = {"football": "soccer"}
