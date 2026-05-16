@@ -20,6 +20,7 @@ PITCH_FILLS = {
     "soccer":     "#5a9e4b",
     "tennis":     "#4a7c3f",
     "basketball": "#c47a4a",
+    "boules":     "#c4a86a",
 }
 PITCH_FILL_DEFAULT = "#8ad3af"   # fallback (leisure-fill d'origine)
 
@@ -43,6 +44,7 @@ PITCH_SPORT_FILL = {
             "soccer",     PITCH_FILLS["soccer"],
             "tennis",     PITCH_FILLS["tennis"],
             "basketball", PITCH_FILLS["basketball"],
+            "boules",     PITCH_FILLS["boules"],
             PITCH_FILL_DEFAULT,
         ],
         "fill-opacity": 1.0,
@@ -67,6 +69,7 @@ PITCH_SPORT_OUTLINE = {
             "soccer",     "#3d7a32",
             "tennis",     "#3a6530",
             "basketball", "#9e5e33",
+            "boules",     "#9e8a4e",
             "#6fb792",
         ],
         "line-width": 0.8,
@@ -110,7 +113,7 @@ PITCH_MARKINGS = {
                 ["case",
                     ["has", "pitch_length"], ["get", "pitch_length"],
                     ["match", ["get", "sport_render"],
-                        "tennis", 24, "soccer", 105, "basketball", 28, 50],
+                        "tennis", 24, "soccer", 105, "basketball", 28, "boules", 15, 50],
                 ],
                 0.01220,
             ],
@@ -118,7 +121,7 @@ PITCH_MARKINGS = {
                 ["case",
                     ["has", "pitch_length"], ["get", "pitch_length"],
                     ["match", ["get", "sport_render"],
-                        "tennis", 24, "soccer", 105, "basketball", 28, 50],
+                        "tennis", 24, "soccer", 105, "basketball", 28, "boules", 15, 50],
                 ],
                 0.02442,
             ],
