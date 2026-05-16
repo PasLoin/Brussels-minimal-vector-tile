@@ -15,7 +15,8 @@
 var SPORT_MARKINGS = [
   'sport-markings-tennis',
   'sport-markings-soccer',
-  'sport-markings-basketball'
+  'sport-markings-basketball',
+  'sport-markings-boules'
 ];
 
 var _pending = {};
