@@ -80,9 +80,10 @@ PITCH_SPORT_OUTLINE = {
 #    → positionnement exact, indépendant du clipping des tuiles.
 #
 #    icon_size = longueur_m × coeff(zoom)
-#    Image logique = 200×DPR px, pixelRatio=1, rendu = 200 CSS px
-#      z17 → coeff = 1/(200 × 0.754) = 0.00663
-#      z18 → coeff = 1/(200 × 0.377) = 0.01327
+#    MapLibre GL JS tileSize = 512 (pas 256)
+#    coeff = tileSize × 2^z / (svg_width × C × cos(lat))
+#      z17 → 0.01326
+#      z18 → 0.02654
 #
 PITCH_MARKINGS = {
     "id": "pitch-markings",
@@ -111,7 +112,7 @@ PITCH_MARKINGS = {
                     ["match", ["get", "sport_render"],
                         "tennis", 24, "soccer", 105, "basketball", 28, 50],
                 ],
-                0.00663,
+                0.01326,
             ],
             18, ["*",
                 ["case",
@@ -119,7 +120,7 @@ PITCH_MARKINGS = {
                     ["match", ["get", "sport_render"],
                         "tennis", 24, "soccer", 105, "basketball", 28, 50],
                 ],
-                0.01327,
+                0.02654,
             ],
         ],
         "icon-allow-overlap": True,
