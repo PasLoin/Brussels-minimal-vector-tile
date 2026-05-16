@@ -1698,12 +1698,6 @@
     null,
     null
   ],
-  "cuisine-iranian": [
-    null,
-    null,
-    null,
-    null
-  ],
   "cuisine-italian": [
     null,
     null,
@@ -3882,12 +3876,6 @@
     "beer",
     null
   ],
-  "public_bookcase": [
-    null,
-    null,
-    null,
-    null
-  ],
   "publisher": [
     null,
     null,
@@ -4179,6 +4167,12 @@
   "storage_rental": [
     null,
     "storage_rental",
+    null,
+    null
+  ],
+  "studio": [
+    null,
+    null,
     null,
     null
   ],
