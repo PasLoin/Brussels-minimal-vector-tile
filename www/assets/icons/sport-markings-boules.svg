@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="53"
+     viewBox="0 0 200 53">
+  <!--
+    Terrain de pétanque/boules — 15 m × 4 m
+    Échelle : s = 200/15 ≈ 13.33 unités/m
+    Stroke blanc sur fond transparent.
+  -->
+  <g fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="square">
+
+    <!-- Limites du terrain -->
+    <rect x="1" y="1" width="198" height="51"/>
+
+    <!-- Ligne médiane (pointillée) -->
+    <line x1="100" y1="1" x2="100" y2="52"
+          stroke-dasharray="3,3" stroke-width="0.8"/>
+
+    <!-- Lignes de pied (à 1 m du fond = 13.3 unités) -->
+    <line x1="13.3" y1="1" x2="13.3" y2="52" stroke-width="0.8"/>
+    <line x1="186.7" y1="1" x2="186.7" y2="52" stroke-width="0.8"/>
+
+    <!-- Cercles de lancer (ø 50 cm = 6.67, à 1 m du fond) -->
+    <circle cx="13.3" cy="26.5" r="3.3"/>
+    <circle cx="186.7" cy="26.5" r="3.3"/>
+
+    <!-- Lignes de but mort (à 1.5 m du fond = 20 unités) -->
+    <line x1="20" y1="1" x2="20" y2="52"
+          stroke-dasharray="2,3" stroke-width="0.6"/>
+    <line x1="180" y1="1" x2="180" y2="52"
+          stroke-dasharray="2,3" stroke-width="0.6"/>
+
+    <!-- Marque centrale (point de repère cochonnet) -->
+    <circle cx="100" cy="26.5" r="1.5" fill="#fff" stroke="none"/>
+
+  </g>
+</svg>
