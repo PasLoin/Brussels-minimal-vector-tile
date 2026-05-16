@@ -20,6 +20,7 @@ PITCH_FILLS = {
     "soccer":     "#5a9e4b",
     "tennis":     "#4a7c3f",
     "basketball": "#c47a4a",
+    "boules":     "#c4a86a",
 }
 PITCH_FILL_DEFAULT = "#8ad3af"   # fallback (leisure-fill d'origine)
 
@@ -43,6 +44,7 @@ PITCH_SPORT_FILL = {
             "soccer",     PITCH_FILLS["soccer"],
             "tennis",     PITCH_FILLS["tennis"],
             "basketball", PITCH_FILLS["basketball"],
+            "boules",     PITCH_FILLS["boules"],
             PITCH_FILL_DEFAULT,
         ],
         "fill-opacity": 1.0,
@@ -67,6 +69,7 @@ PITCH_SPORT_OUTLINE = {
             "soccer",     "#3d7a32",
             "tennis",     "#3a6530",
             "basketball", "#9e5e33",
+            "boules",     "#9e8a4e",
             "#6fb792",
         ],
         "line-width": 0.8,
@@ -79,9 +82,11 @@ PITCH_SPORT_OUTLINE = {
 #    (créés par compute_pitch_bearing.py), pas sur les polygones
 #    → positionnement exact, indépendant du clipping des tuiles.
 #
-#    icon_size = longueur_m × coeff(zoom)
-#      z17 → coeff = 0.01326  (2× pour diagnostic)
-#      z18 → coeff = 0.02654  (2× pour diagnostic)
+#    icon_size = longueur_m × coeff(zoom) × 0.92 (retrait)
+#    Le facteur 0.92 garde les lignes à l'intérieur du polygone
+#    OSM, qui inclut souvent les bords extérieurs du terrain.
+#      z17 → 0.01326 × 0.92 = 0.01220
+#      z18 → 0.02654 × 0.92 = 0.02442
 #
 PITCH_MARKINGS = {
     "id": "pitch-markings",
@@ -108,17 +113,17 @@ PITCH_MARKINGS = {
                 ["case",
                     ["has", "pitch_length"], ["get", "pitch_length"],
                     ["match", ["get", "sport_render"],
-                        "tennis", 24, "soccer", 105, "basketball", 28, 50],
+                        "tennis", 24, "soccer", 105, "basketball", 28, "boules", 15, 50],
                 ],
-                0.01326,
+                0.01220,
             ],
             18, ["*",
                 ["case",
                     ["has", "pitch_length"], ["get", "pitch_length"],
                     ["match", ["get", "sport_render"],
-                        "tennis", 24, "soccer", 105, "basketball", 28, 50],
+                        "tennis", 24, "soccer", 105, "basketball", 28, "boules", 15, 50],
                 ],
-                0.02654,
+                0.02442,
             ],
         ],
         "icon-allow-overlap": True,

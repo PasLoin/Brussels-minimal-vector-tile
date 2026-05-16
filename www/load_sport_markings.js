@@ -7,15 +7,16 @@
  *
  * - Pré-charge toutes les images dès map.on('load').
  * - Fallback styleimagemissing pour les images pas encore prêtes.
- * - Rasterise les SVG via <canvas> → ImageData (évite warnings WebGL).
- *   Pas de pixelRatio — l'image fait 200 CSS px, le coefficient
- *   icon-size dans le style est calibré sur cette base.
+ * - Rasterise les SVG via <canvas> à la taille native.
+ *   pixelRatio = 1, coefficients calibrés pour le tileSize 512
+ *   de MapLibre GL JS (et non 256 comme dans l'ancien Mapbox GL).
  */
 
 var SPORT_MARKINGS = [
   'sport-markings-tennis',
   'sport-markings-soccer',
-  'sport-markings-basketball'
+  'sport-markings-basketball',
+  'sport-markings-boules'
 ];
 
 var _pending = {};
@@ -43,7 +44,7 @@ function rasterizeAndAdd(map, name, basePath) {
     var imageData = ctx.getImageData(0, 0, w, h);
 
     map.addImage(name, imageData, { pixelRatio: 1 });
-    console.log('[sport-markings] ' + name + ' loaded (' + w + 'x' + h + ') DPR=' + (window.devicePixelRatio || 1));
+    console.log('[sport-markings] ' + name + ' (' + w + 'x' + h + ')');
   };
 
   img.onerror = function() {
