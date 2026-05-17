@@ -5,7 +5,7 @@
     "landuse": {
       "type": "vector",
       "url": "./landuse.pmtiles.gz",
-      "attribution": "\u00a9 OpenStreetMap contributors"
+      "attribution": "© OpenStreetMap contributors"
     },
     "roads": {
       "type": "vector",
@@ -1215,6 +1215,100 @@
       }
     },
     {
+      "id": "pitch-sport-fill",
+      "type": "fill",
+      "source": "leisure",
+      "source-layer": "leisure",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "leisure"
+          ],
+          "pitch"
+        ],
+        [
+          "has",
+          "sport_render"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Polygon"
+        ]
+      ],
+      "paint": {
+        "fill-color": [
+          "match",
+          [
+            "get",
+            "sport_render"
+          ],
+          "soccer",
+          "#5a9e4b",
+          "tennis",
+          "#4a7c3f",
+          "basketball",
+          "#c47a4a",
+          "boules",
+          "#c4a86a",
+          "#8ad3af"
+        ],
+        "fill-opacity": 1.0
+      }
+    },
+    {
+      "id": "pitch-sport-outline",
+      "type": "line",
+      "source": "leisure",
+      "source-layer": "leisure",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "leisure"
+          ],
+          "pitch"
+        ],
+        [
+          "has",
+          "sport_render"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Polygon"
+        ]
+      ],
+      "paint": {
+        "line-color": [
+          "match",
+          [
+            "get",
+            "sport_render"
+          ],
+          "soccer",
+          "#3d7a32",
+          "tennis",
+          "#3a6530",
+          "basketball",
+          "#9e5e33",
+          "boules",
+          "#9e8a4e",
+          "#6fb792"
+        ],
+        "line-width": 0.8
+      }
+    },
+    {
       "id": "buildings-fill",
       "type": "fill",
       "source": "buildings",
@@ -1224,7 +1318,6 @@
         "fill-color": "#fce1c5"
       }
     },
-
     {
       "id": "buildings-3d",
       "type": "fill-extrusion",
@@ -1321,7 +1414,6 @@
         "line-width": 0.5
       }
     },
-
     {
       "id": "landuse-military-hatch",
       "type": "fill",
@@ -1340,12 +1432,6 @@
         "fill-pattern": "military-hatch"
       }
     },
-
-
-
-
-
-    
     {
       "id": "trees-hedge",
       "type": "line",
@@ -1485,7 +1571,7 @@
           18,
           32
         ],
-        "text-field": "\u25cf",
+        "text-field": "●",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -1559,7 +1645,7 @@
           18,
           32
         ],
-        "text-field": "\u25b2",
+        "text-field": "▲",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -1642,7 +1728,7 @@
           18,
           32
         ],
-        "text-field": "\u25cf",
+        "text-field": "●",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -1702,7 +1788,7 @@
       ],
       "minzoom": 17,
       "layout": {
-        "text-field": "\u25cf",
+        "text-field": "●",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -1761,7 +1847,7 @@
       ],
       "minzoom": 17,
       "layout": {
-        "text-field": "\u25b2",
+        "text-field": "▲",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -1829,7 +1915,7 @@
       ],
       "minzoom": 17,
       "layout": {
-        "text-field": "\u25cf",
+        "text-field": "●",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -5704,6 +5790,147 @@
         "circle-color": "#734a08",
         "circle-stroke-color": "#fff",
         "circle-stroke-width": 0.8
+      }
+    },
+    {
+      "id": "pitch-markings",
+      "type": "symbol",
+      "source": "leisure",
+      "source-layer": "leisure",
+      "minzoom": 17,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "leisure"
+          ],
+          "pitch"
+        ],
+        [
+          "has",
+          "sport_render"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Point"
+        ]
+      ],
+      "layout": {
+        "icon-image": [
+          "concat",
+          "sport-markings-",
+          [
+            "get",
+            "sport_render"
+          ]
+        ],
+        "icon-rotation-alignment": "map",
+        "icon-pitch-alignment": "map",
+        "icon-rotate": [
+          "coalesce",
+          [
+            "get",
+            "bearing"
+          ],
+          0
+        ],
+        "icon-size": [
+          "interpolate",
+          [
+            "exponential",
+            2
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          [
+            "*",
+            [
+              "case",
+              [
+                "has",
+                "pitch_length"
+              ],
+              [
+                "get",
+                "pitch_length"
+              ],
+              [
+                "match",
+                [
+                  "get",
+                  "sport_render"
+                ],
+                "tennis",
+                24,
+                "soccer",
+                105,
+                "basketball",
+                28,
+                "boules",
+                15,
+                50
+              ]
+            ],
+            0.0122
+          ],
+          18,
+          [
+            "*",
+            [
+              "case",
+              [
+                "has",
+                "pitch_length"
+              ],
+              [
+                "get",
+                "pitch_length"
+              ],
+              [
+                "match",
+                [
+                  "get",
+                  "sport_render"
+                ],
+                "tennis",
+                24,
+                "soccer",
+                105,
+                "basketball",
+                28,
+                "boules",
+                15,
+                50
+              ]
+            ],
+            0.02442
+          ]
+        ],
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "symbol-placement": "point"
+      },
+      "paint": {
+        "icon-opacity": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          0.7,
+          18,
+          0.95
+        ]
       }
     },
     {
