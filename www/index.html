@@ -18,7 +18,6 @@
     }
     #map { position: absolute; inset: 0; }
 
-    /* ── Titre ── */
     .panel {
       position: absolute; left: 16px; z-index: 5;
       background: rgba(242, 239, 233, 0.92);
@@ -26,156 +25,54 @@
       border-radius: 6px;
       border: 1px solid rgba(0,0,0,0.1);
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      display: flex;
-      flex-direction: column;
-      width: 220px;
+      display: flex; flex-direction: column; width: 220px;
     }
     .panel-header {
-      padding: 10px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      user-select: none;
+      padding: 10px 14px; display: flex; justify-content: space-between;
+      align-items: center; cursor: pointer; user-select: none;
     }
-    .panel-content {
-      padding: 0 14px 10px 14px;
-      overflow-y: auto;
-    }
-    .collapsed .panel-content {
-      display: none;
-    }
-    .toggle-icon {
-      font-size: 10px;
-      transition: transform 0.2s;
-    }
-    .collapsed .toggle-icon {
-      transform: rotate(-90deg);
-    }
+    .panel-content { padding: 0 14px 10px 14px; overflow-y: auto; }
+    .collapsed .panel-content { display: none; }
+    .toggle-icon { font-size: 10px; transition: transform 0.2s; }
+    .collapsed .toggle-icon { transform: rotate(-90deg); }
 
     .title { top: 16px; }
-    .title h1 {
-      font-size: 14px; font-weight: bold; color: #222;
-      letter-spacing: 0.02em;
-    }
-    .title p {
-      font-size: 11px; color: #666; margin-top: 2px;
-    }
-    .osm-edit {
-      display: block;
-      font-size: 11px;
-      margin-top: 8px;
-      color: #0078ff;
-      text-decoration: none;
-    }
-    .osm-edit.disabled {
-      color: #999;
-      pointer-events: none;
-      cursor: default;
-    }
+    .title h1 { font-size: 14px; font-weight: bold; color: #222; letter-spacing: 0.02em; }
+    .title p { font-size: 11px; color: #666; margin-top: 2px; }
+    .osm-edit { display: block; font-size: 11px; margin-top: 8px; color: #0078ff; text-decoration: none; }
+    .osm-edit.disabled { color: #999; pointer-events: none; cursor: default; }
 
-    .legend {
-      bottom: 24px;
-      max-height: 50vh;
-    }
-    .legend h2 {
-      font-size: 13px; font-weight: bold; color: #222;
-    }
-    .legend-row {
-      display: flex; align-items: center; gap: 8px;
-      padding: 4px 0; cursor: pointer; user-select: none;
-      transition: opacity 0.15s;
-    }
+    .legend { bottom: 24px; max-height: 50vh; }
+    .legend h2 { font-size: 13px; font-weight: bold; color: #222; }
+    .legend-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; user-select: none; transition: opacity 0.15s; }
     .legend-row.off { opacity: 0.3; }
-    .legend-row .swatch {
-      width: 16px; height: 4px; border-radius: 1px; flex-shrink: 0;
-      border: 1px solid rgba(0,0,0,0.1);
-    }
-    .legend-row .swatch.fill {
-      height: 12px; width: 12px; border-radius: 2px;
-    }
-    .legend-row .swatch.dot {
-      height: 8px; width: 8px; border-radius: 50%;
-    }
-    .legend-row span {
-      font-size: 11px; color: #444;
-    }
+    .legend-row .swatch { width: 16px; height: 4px; border-radius: 1px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.1); }
+    .legend-row .swatch.fill { height: 12px; width: 12px; border-radius: 2px; }
+    .legend-row .swatch.dot { height: 8px; width: 8px; border-radius: 50%; }
+    .legend-row span { font-size: 11px; color: #444; }
 
-    /* ── Contrôles MapLibre ── */
     .maplibregl-ctrl-group { border-radius: 4px !important; border: 1px solid rgba(0,0,0,0.1) !important; box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; }
     .maplibregl-ctrl-attrib { font-size: 10px !important; background: rgba(255,255,255,0.7) !important; }
-    .view-toggle { 
-      position: absolute; 
-      top: 10px; 
-      right: 16px; 
-      z-index: 10; 
-      display: flex; gap: 8px; 
-    } 
-    .view-toggle button { 
-      background: rgba(242, 239, 233, 0.92); 
-      backdrop-filter: blur(8px); 
-      border: 1px solid rgba(0,0,0,0.1); 
-      border-radius: 4px; 
-      padding: 6px 10px; 
-      font-size: 12px; 
-      font-weight: bold; 
-      cursor: pointer; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
-      color: #444; 
-    } 
-    .view-toggle button:hover { 
-      background: #fff; 
-    }
-    .view-toggle button.active {
-      background: #734a08;
-      color: #fff;
-    }
-    .data-popup .maplibregl-popup-content {
-      padding: 8px;
-      font-size: 10px;
-      max-width: 300px;
-      max-height: 400px;
-      overflow: auto;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(0,0,0,0.1);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      pointer-events: none;
-    }
-    .data-popup table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .data-popup th, .data-popup td {
-      text-align: left;
-      padding: 2px 4px;
-      border-bottom: 1px solid #eee;
-      word-break: break-all;
-    }
-    .data-popup th {
-      color: #666;
-      font-weight: bold;
-      width: 35%;
-      vertical-align: top;
-    }
-    .data-popup .layer-info {
-      border-bottom: 1px solid #ccc;
-      margin-bottom: 5px;
-      padding-bottom: 5px;
-      font-weight: bold;
-      color: #734a08;
-    }
+    .view-toggle { position: absolute; top: 10px; right: 16px; z-index: 10; display: flex; gap: 8px; }
+    .view-toggle button { background: rgba(242, 239, 233, 0.92); backdrop-filter: blur(8px); border: 1px solid rgba(0,0,0,0.1); border-radius: 4px; padding: 6px 10px; font-size: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); color: #444; }
+    .view-toggle button:hover { background: #fff; }
+    .view-toggle button.active { background: #734a08; color: #fff; }
+    .data-popup .maplibregl-popup-content { padding: 8px; font-size: 10px; max-width: 300px; max-height: 400px; overflow: auto; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 12px rgba(0,0,0,0.15); pointer-events: none; }
+    .data-popup table { width: 100%; border-collapse: collapse; }
+    .data-popup th, .data-popup td { text-align: left; padding: 2px 4px; border-bottom: 1px solid #eee; word-break: break-all; }
+    .data-popup th { color: #666; font-weight: bold; width: 35%; vertical-align: top; }
+    .data-popup .layer-info { border-bottom: 1px solid #ccc; margin-bottom: 5px; padding-bottom: 5px; font-weight: bold; color: #734a08; }
   </style>
 </head>
 <body>
 
 <div id="map"></div>
-<div class="view-toggle"> 
-  <button id="toggle-3d">MODE 3D</button> <button id="toggle-data">DATA</button> 
+<div class="view-toggle">
+  <button id="toggle-3d">MODE 3D</button> <button id="toggle-data">DATA</button>
 </div>
 
 <div class="title panel" id="title-panel">
-  <div class="panel-header" onclick="togglePanel('title-panel')">
+  <div class="panel-header" onclick="window._togglePanel('title-panel')">
     <h1>Bruxelles</h1>
     <span class="toggle-icon">v</span>
   </div>
@@ -186,211 +83,25 @@
 </div>
 
 <div class="legend panel" id="legend-panel">
-  <div class="panel-header" onclick="togglePanel('legend-panel')">
+  <div class="panel-header" onclick="window._togglePanel('legend-panel')">
     <h2>Légende</h2>
     <span class="toggle-icon">v</span>
   </div>
   <div class="panel-content" id="legend-content"></div>
 </div>
 
-<script>
+<script type="module">
+import { togglePanel, updateOsmLink, buildDataPopupHtml } from './map_ui.js';
+import { loadAllPoiIcons } from './poi_icons.js';
 
-function togglePanel(id) {
-  document.getElementById(id).classList.toggle('collapsed');
-}
-
-function updateOsmLink(map) {
-  const link = document.getElementById('osm-edit');
-  const zoom = map.getZoom();
-  const center = map.getCenter();
-  
-  if (zoom >= 16) {
-    link.classList.remove('disabled');
-    link.href = `https://www.openstreetmap.org/edit#map=${Math.round(zoom)}/${center.lat.toFixed(5)}/${center.lng.toFixed(5)}`;
-  } else {
-    link.classList.add('disabled');
-    link.href = '#';
-  }
-}
+// Exposer pour les onclick inline
+window._togglePanel = togglePanel;
 
 /* ── PMTiles ── */
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
 
-/* ══════════════════════════════════════════════════════════
-   POI Icons — chargés depuis poi-icons.json (généré par
-   generate_poi_icons.py).  Le JSON contient _meta.type_keys
-   et _meta.special_cases → on construit l'expression
-   icon-image dynamiquement.  Plus rien à changer ici ni
-   dans style.json quand on ajoute un type dans le pipeline.
-   ══════════════════════════════════════════════════════════ */
-const ICON_COLOR = '#734a08';
-const ICON_SIZE = 20;
-
-// CDN bases
-const LOCAL   = './assets/icons/';
-const TEMAKI  = 'https://cdn.jsdelivr.net/npm/@ideditor/temaki@5/icons/';
-const LIBERTY = 'https://raw.githubusercontent.com/maputnik/osm-liberty/gh-pages/icons/';
-const MAKI    = 'https://cdn.jsdelivr.net/npm/@mapbox/maki/icons/';
-
-/**
- * Fetch SVG, recolor, render to canvas, add to map.
- * Tries sources in order: local → temaki → maki → liberty
- */
-async function loadPoiIcon(map, poiType, localName, temakiName, makiName, libertyName) {
-  const urls = [];
-  if (localName)   urls.push(LOCAL + localName + '.svg');
-  if (temakiName)  urls.push(TEMAKI + temakiName + '.svg');
-  if (makiName)    urls.push(MAKI + makiName + '.svg');
-  if (libertyName) urls.push(LIBERTY + libertyName + '.svg');
-
-  for (const url of urls) {
-    try {
-      const res = await fetch(url);
-      if (!res.ok) continue;
-      let svg = await res.text();
-      if (!svg.includes('<svg')) continue;
-
-      svg = svg.replace(/\s*fill="[^"]*"/g, '');
-      svg = svg.replace(/<svg(\s|>)/i, `<svg fill="${ICON_COLOR}" $1`);
-
-      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
-      const blobUrl = URL.createObjectURL(blob);
-      const img = new Image();
-
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = blobUrl;
-      });
-
-      const canvas = document.createElement('canvas');
-      canvas.width = ICON_SIZE;
-      canvas.height = ICON_SIZE;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, ICON_SIZE, ICON_SIZE);
-      URL.revokeObjectURL(blobUrl);
-
-      const imageData = ctx.getImageData(0, 0, ICON_SIZE, ICON_SIZE);
-      map.addImage('poi-' + poiType, imageData, { pixelRatio: 1 });
-      return true;
-
-    } catch (e) {
-      continue;
-    }
-  }
-  return false;
-}
-
-/**
- * Construit l'expression MapLibre icon-image à partir de _meta.
- * Génère dynamiquement les branches du coalesce pour chaque
- * type_key détecté + les special_cases.
- *
- * Résultat équivalent à :
- *   ["coalesce",
- *     // special cases
- *     ["case", ["==", ["get","cuisine"], "friture"], ["image","poi-cuisine-friture"], ["image",""]],
- *     // pour chaque type_key : shop, amenity, tourism, craft, …
- *     ["image", ["concat", "poi-", ["get", "shop"]]],
- *     ["image", ["concat", "poi-", ["get", "amenity"]]],
- *     ...
- *     // fallback générique shop
- *     ["case", ["has","shop"], ["image","poi-shop"], ["image",""]]
- *   ]
- */
-function buildIconImageExpression(meta) {
-  const expr = ['coalesce'];
-
-  // 1. Special cases (cuisine=friture, etc.)
-  for (const sc of (meta.special_cases || [])) {
-    expr.push([
-      'case',
-      ['==', ['get', sc.key], sc.value],
-      ['image', 'poi-' + sc.icon_key],
-      ['image', '']
-    ]);
-  }
-
-  // 2. Chaque type_key détecté dans les données
-  for (const key of (meta.type_keys || [])) {
-    expr.push(['image', ['concat', 'poi-', ['get', key]]]);
-  }
-
-  // 3. Fallback : icône générique "shop" si le feature a un tag shop
-  expr.push([
-    'case',
-    ['has', 'shop'],
-    ['image', 'poi-shop'],
-    ['image', '']
-  ]);
-
-  return expr;
-}
-
-/**
- * Charge poi-icons.json, construit l'expression icon-image,
- * puis charge toutes les icônes SVG.
- */
-async function loadAllPoiIcons(map) {
-  // Load military hatch pattern
-  try {
-    const res = await fetch('./assets/military_hatch.svg');
-    const svgText = await res.text();
-    const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
-    const blobUrl = URL.createObjectURL(blob);
-    const img = new Image();
-    await new Promise((resolve, reject) => {
-      img.onload = resolve;
-      img.onerror = reject;
-      img.src = blobUrl;
-    });
-    const size = 20;
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0, size, size);
-    URL.revokeObjectURL(blobUrl);
-    const imageData = ctx.getImageData(0, 0, size, size);
-    if (!map.hasImage('military-hatch')) map.addImage('military-hatch', imageData, { pixelRatio: 1 });
-    console.log('Military hatch pattern loaded');
-  } catch (err) {
-    console.error('Impossible de charger le motif militaire:', err);
-  }
-  
-  let data;
-  try {
-    const resp = await fetch('./poi-icons.json');
-    data = await resp.json();
-  } catch (err) {
-    console.error('Impossible de charger poi-icons.json:', err);
-    return;
-  }
-
-  // Extraire les métadonnées et le mapping d'icônes
-  const meta = data._meta || { type_keys: [], special_cases: [] };
-  delete data._meta;
-
-  // Patcher l'expression icon-image du layer poi-icon
-  const iconImageExpr = buildIconImageExpression(meta);
-  map.setLayoutProperty('poi-icon', 'icon-image', iconImageExpr);
-  if (map.getLayer('leisure-icon')) map.setLayoutProperty('leisure-icon', 'icon-image', iconImageExpr);
-  console.log('POI icon-image expression built from _meta.type_keys:', meta.type_keys);
-
-  // Charger les icônes SVG
-  const entries = Object.entries(data);
-  const results = await Promise.allSettled(
-    entries.map(([type, sources]) =>
-      loadPoiIcon(map, type, ...sources)
-    )
-  );
-  const loaded = results.filter(r => r.status === 'fulfilled' && r.value).length;
-  console.log(`POI icons: ${loaded}/${entries.length} loaded`);
-  map.triggerRepaint();
-}
-
-/* ── Charger le style et patcher les URLs PMTiles ── */
+/* ── Charger le style ── */
 fetch('./style.json')
   .then(r => r.json())
   .then(style => {
@@ -407,7 +118,6 @@ fetch('./style.json')
   });
 
 function initMap(style) {
-  // ── Hide poi-icon layer initially to avoid "image not found" warnings ──
   const poiIconLayer = style.layers.find(l => l.id === 'poi-icon');
   const leisureIconLayer = style.layers.find(l => l.id === 'leisure-icon');
   if (leisureIconLayer) {
@@ -418,18 +128,13 @@ function initMap(style) {
   if (poiIconLayer) {
     poiIconLayer.layout = poiIconLayer.layout || {};
     poiIconLayer.layout.visibility = 'none';
-    // Remove hardcoded icon-image — will be set dynamically from poi-icons.json
     delete poiIconLayer.layout['icon-image'];
   }
 
   const map = new maplibregl.Map({
-    container: 'map',
-    style,
-    center: [4.3517, 50.8503],
-    zoom: 13,
-    hash: true,
-    maxZoom: 18,
-    minZoom: 10,
+    container: 'map', style,
+    center: [4.3517, 50.8503], zoom: 13,
+    hash: true, maxZoom: 18, minZoom: 10,
   });
   window.map = map;
   setupSportMarkings(map);
@@ -438,7 +143,6 @@ function initMap(style) {
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 100, unit: 'metric' }), 'bottom-right');
   map.addControl(new maplibregl.NavigationControl({ showZoom: false, showCompass: true }), 'bottom-right');
 
-  /* ── Load POI icons from poi-icons.json, then reveal the icon layer ── */
   map.on('load', async () => {
     await loadAllPoiIcons(map);
     map.setLayoutProperty('poi-icon', 'visibility', 'visible');
@@ -449,7 +153,6 @@ function initMap(style) {
   map.on('load', () => {
     const layers = map.getStyle().layers;
     const el = document.getElementById('legend-content');
-    
     const categories = [
       { label: 'Résidentiel', pattern: 'landuse-residential', type: 'fill' },
       { label: 'Industriel', pattern: 'landuse-industrial', type: 'fill' },
@@ -477,33 +180,25 @@ function initMap(style) {
 
     categories.forEach(cat => {
       let matchedLayers = layers.filter(l => l.id.startsWith(cat.pattern));
-      if (cat.extraPatterns) {
-        cat.extraPatterns.forEach(ep => {
-          matchedLayers = matchedLayers.concat(layers.filter(l => l.id.startsWith(ep)));
-        });
-      }
+      if (cat.extraPatterns) cat.extraPatterns.forEach(ep => {
+        matchedLayers = matchedLayers.concat(layers.filter(l => l.id.startsWith(ep)));
+      });
       if (matchedLayers.length === 0) return;
 
       let color = cat.color || '#ccc';
       if (!cat.color) {
         for (const layer of matchedLayers) {
-          const p = layer.paint;
-          if (!p) continue;
+          const p = layer.paint; if (!p) continue;
           const c = p['fill-color'] || p['line-color'] || p['circle-color'] || p['text-color'];
-          if (c && typeof c === 'string') {
-            color = c;
-            break;
-          }
+          if (c && typeof c === 'string') { color = c; break; }
         }
       }
 
       let allRelatedLayers = matchedLayers.map(l => l.id);
-      if (cat.pattern === 'roads-') {
-        allRelatedLayers.push('road-labels');
-      }
+      if (cat.pattern === 'roads-') allRelatedLayers.push('road-labels');
       if (cat.pattern === 'railway-rail') {
-        const bridgeCasing = layers.find(l => l.id === 'railway-bridge-casing');
-        if (bridgeCasing) allRelatedLayers.push('railway-bridge-casing');
+        const bc = layers.find(l => l.id === 'railway-bridge-casing');
+        if (bc) allRelatedLayers.push('railway-bridge-casing');
       }
 
       const row = document.createElement('div');
@@ -512,15 +207,12 @@ function initMap(style) {
       if (cat.type === 'fill') cls = 'swatch fill';
       else if (cat.type === 'dot') cls = 'swatch dot';
       row.innerHTML = `<div class="${cls}" style="background:${color}"></div><span>${cat.label}</span>`;
-      
       let on = true;
       row.onclick = () => {
         on = !on;
         row.classList.toggle('off', !on);
         const v = on ? 'visible' : 'none';
-        allRelatedLayers.forEach(id => {
-          if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v);
-        });
+        allRelatedLayers.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v); });
       };
       el.appendChild(row);
     });
@@ -528,14 +220,13 @@ function initMap(style) {
 
   map.on('moveend', () => updateOsmLink(map));
   map.on('zoomend', () => updateOsmLink(map));
-  
+
   /* ── Toggle 2D/3D ── */
   const toggleBtn = document.getElementById('toggle-3d');
   let is3d = false;
   toggleBtn.onclick = () => {
     is3d = !is3d;
     toggleBtn.textContent = is3d ? 'MODE 2D' : 'MODE 3D';
-    
     if (is3d) {
       if (map.getLayer('buildings-fill')) map.setLayoutProperty('buildings-fill', 'visibility', 'none');
       if (map.getLayer('buildings-outline')) map.setLayoutProperty('buildings-outline', 'visibility', 'none');
@@ -551,56 +242,32 @@ function initMap(style) {
 
   updateOsmLink(map);
 
-  /* ── Mode DATA ── */
+  /* ── Mode DATA (avec échappement XSS) ── */
   const toggleDataBtn = document.getElementById('toggle-data');
   let isDataMode = false;
   const dataPopup = new maplibregl.Popup({
-    closeButton: false,
-    closeOnClick: false,
-    className: 'data-popup',
-    anchor: 'bottom-left',
-    offset: [10, -10]
+    closeButton: false, closeOnClick: false,
+    className: 'data-popup', anchor: 'bottom-left', offset: [10, -10]
   });
 
   toggleDataBtn.onclick = () => {
     isDataMode = !isDataMode;
     toggleDataBtn.classList.toggle('active', isDataMode);
-    if (!isDataMode) {
-      dataPopup.remove();
-      map.getCanvas().style.cursor = '';
-    } else {
-      map.getCanvas().style.cursor = 'crosshair';
-    }
+    if (!isDataMode) { dataPopup.remove(); map.getCanvas().style.cursor = ''; }
+    else { map.getCanvas().style.cursor = 'crosshair'; }
   };
 
   map.on('mousemove', (e) => {
     if (!isDataMode) return;
-
     const features = map.queryRenderedFeatures(e.point);
     if (features.length > 0) {
-      const f = features[0];
-      const props = f.properties;
-      
-      let html = `<div class="layer-info">${f.layer.id} (${f.sourceLayer})</div><table>`;
-      // Sort properties alphabetically for better UX
-      const sortedKeys = Object.keys(props).sort();
-      for (const key of sortedKeys) {
-        html += `<tr><th>${key}</th><td>${props[key]}</td></tr>`;
-      }
-      html += `</table>`;
-
-      dataPopup.setLngLat(e.lngLat)
-        .setHTML(html)
-        .addTo(map);
+      dataPopup.setLngLat(e.lngLat).setHTML(buildDataPopupHtml(features[0])).addTo(map);
     } else {
       dataPopup.remove();
     }
   });
 
-  map.on('mouseleave', () => {
-    if (isDataMode) dataPopup.remove();
-  });
-
+  map.on('mouseleave', () => { if (isDataMode) dataPopup.remove(); });
 }
 </script>
 </body>

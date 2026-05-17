@@ -76,8 +76,30 @@ describe('Configuration de la carte', () => {
   });
 
   it('référence le chargement des POI', () => {
-    // Vérifie que le script gère les POI d'une manière ou d'une autre
-    expect(html).toContain('poi');
+    // Vérifie que le script importe le module POI
+    expect(html).toContain('poi_icons.js');
+  });
+});
+
+describe('Architecture modulaire', () => {
+  it('utilise script type=module', () => {
+    expect(html).toContain('type="module"');
+  });
+
+  it('importe map_ui.js', () => {
+    expect(html).toContain("from './map_ui.js'");
+  });
+
+  it('importe poi_icons.js', () => {
+    expect(html).toContain("from './poi_icons.js'");
+  });
+
+  it('les modules existent sur le disque', () => {
+    const fs = require('fs');
+    const path = require('path');
+    expect(fs.existsSync(path.resolve(__dirname, '../../www/map_ui.js'))).toBe(true);
+    expect(fs.existsSync(path.resolve(__dirname, '../../www/poi_icons.js'))).toBe(true);
+    expect(fs.existsSync(path.resolve(__dirname, '../../www/load_sport_markings.js'))).toBe(true);
   });
 });
 

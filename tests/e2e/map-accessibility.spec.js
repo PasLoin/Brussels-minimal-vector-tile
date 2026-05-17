@@ -36,18 +36,8 @@ test.describe('Responsive', () => {
   });
 });
 
-test.describe('Captures visuelles (snapshots)', () => {
-  test('capture de l\'état initial de la carte', async ({ page }) => {
-    await page.goto('/');
-    await page.waitForSelector('canvas.maplibregl-canvas', { timeout: 15_000 });
-    // Attendre que les tuiles se chargent
-    await page.waitForTimeout(3000);
-
-    await expect(page).toHaveScreenshot('map-initial.png', {
-      maxDiffPixelRatio: 0.05, // 5% de tolérance (tuiles réseau)
-    });
-  });
-});
+// Snapshots visuels retirés — trop instables en CI (dépendance réseau/GPU).
+// Pour régression visuelle, préférer des tests ciblés sur l'UI statique.
 
 test.describe('Performance de chargement', () => {
   test('la carte se charge en moins de 10 secondes', async ({ page }) => {

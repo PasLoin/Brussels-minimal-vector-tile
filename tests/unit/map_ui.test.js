@@ -1,57 +1,19 @@
 /**
  * tests/unit/map_ui.test.js
  * ─────────────────────────
- * Tests unitaires des fonctions UI de la carte (inline dans index.html).
- * On les réimplémente ici pour les tester isolément.
+ * Tests unitaires de www/map_ui.js.
+ * Importe le VRAI module — plus de copie de fonctions.
  */
 import { describe, it, expect, beforeEach } from 'vitest';
+import {
+  togglePanel,
+  updateOsmLink,
+  escapeHtml,
+  buildDataPopupHtml,
+} from '../../www/map_ui.js';
 
 // ══════════════════════════════════════════════════════════
-// Fonctions extraites de index.html (copie fidèle)
-// ══════════════════════════════════════════════════════════
-
-function togglePanel(id) {
-  document.getElementById(id).classList.toggle('collapsed');
-}
-
-function updateOsmLink(map) {
-  const link = document.getElementById('osm-edit');
-  const zoom = map.getZoom();
-  const center = map.getCenter();
-
-  if (zoom >= 16) {
-    link.classList.remove('disabled');
-    link.href = `https://www.openstreetmap.org/edit#map=${Math.round(zoom)}/${center.lat.toFixed(5)}/${center.lng.toFixed(5)}`;
-  } else {
-    link.classList.add('disabled');
-    link.href = '#';
-  }
-}
-
-function buildIconImageExpression(meta) {
-  const expr = ['coalesce'];
-  for (const sc of (meta.special_cases || [])) {
-    expr.push([
-      'case',
-      ['==', ['get', sc.key], sc.value],
-      ['image', 'poi-' + sc.icon_key],
-      ['image', '']
-    ]);
-  }
-  for (const key of (meta.type_keys || [])) {
-    expr.push(['image', ['concat', 'poi-', ['get', key]]]);
-  }
-  expr.push([
-    'case',
-    ['has', 'shop'],
-    ['image', 'poi-shop'],
-    ['image', '']
-  ]);
-  return expr;
-}
-
-// ══════════════════════════════════════════════════════════
-// Tests
+// togglePanel
 // ══════════════════════════════════════════════════════════
 
 describe('togglePanel', () => {
@@ -74,6 +36,10 @@ describe('togglePanel', () => {
     expect(document.getElementById('test-panel').classList.contains('collapsed')).toBe(false);
   });
 });
+
+// ══════════════════════════════════════════════════════════
+// updateOsmLink
+// ══════════════════════════════════════════════════════════
 
 describe('updateOsmLink', () => {
   beforeEach(() => {
@@ -129,74 +95,95 @@ describe('updateOsmLink', () => {
   });
 });
 
-describe('buildIconImageExpression', () => {
-  it('retourne un coalesce minimal sans meta', () => {
-    const expr = buildIconImageExpression({});
-    expect(expr[0]).toBe('coalesce');
-    // Doit contenir au moins le fallback shop
-    const last = expr[expr.length - 1];
-    expect(last[0]).toBe('case');
-    expect(last[1]).toEqual(['has', 'shop']);
+// ══════════════════════════════════════════════════════════
+// escapeHtml
+// ══════════════════════════════════════════════════════════
+
+describe('escapeHtml', () => {
+  it('échappe les balises HTML', () => {
+    expect(escapeHtml('<script>alert("xss")</script>')).not.toContain('<script>');
+    expect(escapeHtml('<b>bold</b>')).toBe('&lt;b&gt;bold&lt;/b&gt;');
   });
 
-  it('inclut les type_keys comme branches image/concat', () => {
-    const expr = buildIconImageExpression({
-      type_keys: ['amenity', 'shop', 'tourism'],
-      special_cases: [],
-    });
-
-    // Après le coalesce, on doit trouver 3 branches image+concat
-    const concatBranches = expr.filter(
-      e => Array.isArray(e) && e[0] === 'image' && Array.isArray(e[1]) && e[1][0] === 'concat'
-    );
-    expect(concatBranches).toHaveLength(3);
-    expect(concatBranches[0]).toEqual(['image', ['concat', 'poi-', ['get', 'amenity']]]);
-    expect(concatBranches[1]).toEqual(['image', ['concat', 'poi-', ['get', 'shop']]]);
-    expect(concatBranches[2]).toEqual(['image', ['concat', 'poi-', ['get', 'tourism']]]);
+  it('échappe les guillemets et esperluettes', () => {
+    expect(escapeHtml('a & b')).toBe('a &amp; b');
   });
 
-  it('inclut les special_cases avant les type_keys', () => {
-    const expr = buildIconImageExpression({
-      type_keys: ['amenity'],
-      special_cases: [
-        { key: 'cuisine', value: 'friture', icon_key: 'cuisine-friture' },
-      ],
-    });
-
-    // expr[1] doit être le special case
-    expect(expr[1][0]).toBe('case');
-    expect(expr[1][1]).toEqual(['==', ['get', 'cuisine'], 'friture']);
-    expect(expr[1][2]).toEqual(['image', 'poi-cuisine-friture']);
-
-    // expr[2] doit être le type_key amenity
-    expect(expr[2]).toEqual(['image', ['concat', 'poi-', ['get', 'amenity']]]);
+  it('laisse passer le texte normal', () => {
+    expect(escapeHtml('hello world')).toBe('hello world');
   });
 
-  it('gère plusieurs special_cases', () => {
-    const expr = buildIconImageExpression({
-      type_keys: [],
-      special_cases: [
-        { key: 'cuisine', value: 'friture', icon_key: 'cuisine-friture' },
-        { key: 'religion', value: 'muslim', icon_key: 'religion-muslim' },
-      ],
-    });
+  it('gère les chaînes vides', () => {
+    expect(escapeHtml('')).toBe('');
+  });
+});
 
-    // 2 special cases + 1 fallback shop = 4 éléments après 'coalesce'
-    expect(expr).toHaveLength(4); // coalesce + 2 sc + 1 fallback
+// ══════════════════════════════════════════════════════════
+// buildDataPopupHtml
+// ══════════════════════════════════════════════════════════
+
+describe('buildDataPopupHtml', () => {
+  it('affiche le layer ID et le source layer', () => {
+    const feature = {
+      layer: { id: 'buildings-fill' },
+      sourceLayer: 'buildings',
+      properties: { height: '10' },
+    };
+    const html = buildDataPopupHtml(feature);
+    expect(html).toContain('buildings-fill');
+    expect(html).toContain('(buildings)');
   });
 
-  it('le fallback shop est toujours la dernière branche', () => {
-    const expr = buildIconImageExpression({
-      type_keys: ['amenity', 'tourism'],
-      special_cases: [{ key: 'cuisine', value: 'friture', icon_key: 'cuisine-friture' }],
-    });
+  it('trie les propriétés par ordre alphabétique', () => {
+    const feature = {
+      layer: { id: 'test' },
+      sourceLayer: 'src',
+      properties: { z_index: '1', amenity: 'cafe', name: 'Chez Jo' },
+    };
+    const html = buildDataPopupHtml(feature);
+    const keys = [...html.matchAll(/<th>([^<]+)<\/th>/g)].map(m => m[1]);
+    expect(keys).toEqual(['amenity', 'name', 'z_index']);
+  });
 
-    const last = expr[expr.length - 1];
-    expect(last).toEqual([
-      'case',
-      ['has', 'shop'],
-      ['image', 'poi-shop'],
-      ['image', ''],
-    ]);
+  it('échappe les valeurs HTML dans les propriétés (anti-XSS)', () => {
+    const feature = {
+      layer: { id: 'test' },
+      sourceLayer: 'src',
+      properties: { name: '<img src=x onerror=alert(1)>' },
+    };
+    const html = buildDataPopupHtml(feature);
+    expect(html).not.toContain('<img');
+    expect(html).toContain('&lt;img');
+  });
+
+  it('échappe les clés HTML dans les propriétés', () => {
+    const feature = {
+      layer: { id: 'test' },
+      sourceLayer: 'src',
+      properties: { '<script>': 'bad' },
+    };
+    const html = buildDataPopupHtml(feature);
+    expect(html).not.toContain('<script>');
+  });
+
+  it('échappe aussi le layer ID et sourceLayer', () => {
+    const feature = {
+      layer: { id: '<b>bad</b>' },
+      sourceLayer: '<i>evil</i>',
+      properties: {},
+    };
+    const html = buildDataPopupHtml(feature);
+    expect(html).not.toContain('<b>');
+    expect(html).not.toContain('<i>');
+  });
+
+  it('gère sourceLayer absent', () => {
+    const feature = {
+      layer: { id: 'test' },
+      properties: { a: '1' },
+    };
+    const html = buildDataPopupHtml(feature);
+    // sourceLayer || '' → chaîne vide
+    expect(html).toContain('test ()');
   });
 });
