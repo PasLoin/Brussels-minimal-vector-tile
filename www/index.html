@@ -333,6 +333,19 @@ function buildIconImageExpression(meta) {
  * puis charge toutes les icônes SVG.
  */
 async function loadAllPoiIcons(map) {
+  // Load military hatch pattern
+  try {
+    const image = await new Promise((resolve, reject) => {
+      map.loadImage('./assets/military_hatch.svg', (error, img) => {
+        if (error) reject(error);
+        else resolve(img);
+      });
+    });
+    if (!map.hasImage('military-hatch')) map.addImage('military-hatch', image);
+    console.log('Military hatch pattern loaded');
+  } catch (err) {
+    console.error('Impossible de charger le motif militaire:', err);
+  }
   let data;
   try {
     const resp = await fetch('./poi-icons.json');
@@ -405,6 +418,7 @@ function initMap(style) {
     maxZoom: 18,
     minZoom: 10,
   });
+  window.map = map;
   setupSportMarkings(map);
 
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');

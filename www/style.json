@@ -220,7 +220,7 @@
       ],
       "paint": {
         "fill-color": "#bd4a72",
-        "fill-opacity": 0.9
+        "fill-opacity": 0.1
       }
     },
     {
@@ -1054,7 +1054,7 @@
       },
       "paint": {
         "fill-color": "#adadad",
-        "fill-opacity": 0.3
+        "fill-opacity": 0.1
       }
     },
     {
@@ -1222,6 +1222,24 @@
       "minzoom": 13,
       "paint": {
         "fill-color": "#fce1c5"
+      }
+    },
+    {
+      "id": "landuse-military-hatch",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "minzoom": 10,
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "military"
+      ],
+      "paint": {
+        "fill-pattern": "military-hatch"
       }
     },
     {
