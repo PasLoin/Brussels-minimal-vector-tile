@@ -1224,24 +1224,7 @@
         "fill-color": "#fce1c5"
       }
     },
-    {
-      "id": "landuse-military-hatch",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "minzoom": 10,
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "military"
-      ],
-      "paint": {
-        "fill-pattern": "military-hatch"
-      }
-    },
+
     {
       "id": "buildings-3d",
       "type": "fill-extrusion",
@@ -1338,6 +1321,31 @@
         "line-width": 0.5
       }
     },
+
+    {
+      "id": "landuse-military-hatch",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "minzoom": 10,
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "military"
+      ],
+      "paint": {
+        "fill-pattern": "military-hatch"
+      }
+    },
+
+
+
+
+
+    
     {
       "id": "trees-hedge",
       "type": "line",
