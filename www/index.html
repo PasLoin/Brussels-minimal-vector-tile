@@ -153,6 +153,12 @@ function initMap(style) {
   map.on('load', () => {
     const layers = map.getStyle().layers;
     const el = document.getElementById('legend-content');
+    const extractColor = (v) => {
+      if (typeof v === 'string') return v;
+      if (Array.isArray(v) && v.length > 1) return extractColor(v[v.length - 1]);
+      return null;
+    };
+
     const categories = [
       { label: 'Résidentiel', pattern: 'landuse-residential', type: 'fill' },
       { label: 'Industriel', pattern: 'landuse-industrial', type: 'fill' },
@@ -189,8 +195,9 @@ function initMap(style) {
       if (!cat.color) {
         for (const layer of matchedLayers) {
           const p = layer.paint; if (!p) continue;
-          const c = p['fill-color'] || p['line-color'] || p['circle-color'] || p['text-color'];
-          if (c && typeof c === 'string') { color = c; break; }
+          const rawColor = p['fill-color'] || p['line-color'] || p['circle-color'] || p['text-color'];
+          const c = extractColor(rawColor);
+          if (c) { color = c; break; }
         }
       }
 
