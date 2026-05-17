@@ -101,7 +101,7 @@ jobs:
           cp *.pmtiles.gz www/
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f www/*.pmtiles.gz www/poi-icons.json missing-icons.txt sizepmtiles.md brussels_capital_region-latest.osm.pbf
+          git add -f www/*.pmtiles.gz www/style.json www/poi-icons.json missing-icons.txt sizepmtiles.md brussels_capital_region-latest.osm.pbf
           if git diff --cached --quiet; then
             echo "Pas de changements à commiter"
           else
