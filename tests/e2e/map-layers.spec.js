@@ -150,8 +150,11 @@ test.describe('Mode 3D et couches bâtiments', () => {
   test('activer le 3D masque buildings-fill et montre buildings-3d', async ({ page }) => {
     await page.locator('#toggle-3d').click();
 
-    // Attendre la transition (800ms dans le code)
-    await page.waitForTimeout(1000);
+    // Attendre que l'animation easeTo soit terminée (pitch > 0)
+    await page.waitForFunction(
+      () => window.map && window.map.getPitch() > 10,
+      { timeout: 5_000 }
+    );
 
     const result = await page.evaluate(() => {
       const fillVis = window.map.getLayer('buildings-fill')
@@ -170,10 +173,19 @@ test.describe('Mode 3D et couches bâtiments', () => {
   });
 
   test('désactiver le 3D restaure les bâtiments 2D', async ({ page }) => {
+    // Activer 3D
     await page.locator('#toggle-3d').click();
-    await page.waitForTimeout(1000);
+    await page.waitForFunction(
+      () => window.map && window.map.getPitch() > 10,
+      { timeout: 5_000 }
+    );
+
+    // Désactiver 3D
     await page.locator('#toggle-3d').click();
-    await page.waitForTimeout(1000);
+    await page.waitForFunction(
+      () => window.map && window.map.getPitch() < 1,
+      { timeout: 5_000 }
+    );
 
     const result = await page.evaluate(() => {
       const fillVis = window.map.getLayer('buildings-fill')
