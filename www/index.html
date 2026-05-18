@@ -139,9 +139,8 @@ function initMap(style) {
   window.map = map;
   setupSportMarkings(map);
 
-  map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 100, unit: 'metric' }), 'bottom-right');
-  map.addControl(new maplibregl.NavigationControl({ showZoom: false, showCompass: true }), 'bottom-right');
+  map.addControl(new maplibregl.NavigationControl(), 'bottom-right');
 
   map.on('load', async () => {
     await loadAllPoiIcons(map);
