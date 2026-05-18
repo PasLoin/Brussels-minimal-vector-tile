@@ -40,10 +40,12 @@ const ICONS_DIR = path.join(WWW, 'assets', 'icons');
 
 let errors = 0;
 let warnings = 0;
+let checks = 0;
+const testCases = []; // pour le JUnit XML
 
-function error(msg) { errors++; console.error(`  ❌ ${msg}`); }
+function error(msg) { errors++; checks++; console.error(`  ❌ ${msg}`); testCases.push({ name: msg, status: 'error' }); }
 function warn(msg) { warnings++; console.warn(`  ⚠️  ${msg}`); }
-function ok(msg) { console.log(`  ✅ ${msg}`); }
+function ok(msg) { checks++; console.log(`  ✅ ${msg}`); testCases.push({ name: msg, status: 'ok' }); }
 function section(title) { console.log(`\n── ${title} ──`); }
 
 // ══════════════════════════════════════════════════════════
@@ -338,8 +340,28 @@ if (duplicates.length === 0) {
 // ══════════════════════════════════════════════════════════
 
 section('Résumé');
-console.log(`  ${errors} erreur${errors !== 1 ? 's' : ''}, ${warnings} warning${warnings !== 1 ? 's' : ''}`);
+console.log(`  ${checks} vérifications, ${errors} erreur${errors !== 1 ? 's' : ''}, ${warnings} warning${warnings !== 1 ? 's' : ''}`);
 
+// ── JUnit XML pour le rapport CI ──
+const RESULTS_DIR = path.join('test-results');
+try {
+  fs.mkdirSync(RESULTS_DIR, { recursive: true });
+  const escXml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  xml += `<testsuites tests="${checks}" failures="${errors}">\n`;
+  xml += `  <testsuite name="validate-style" tests="${checks}" failures="${errors}">\n`;
+  for (const tc of testCases) {
+    xml += `    <testcase name="${escXml(tc.name)}" classname="validate-style">`;
+    if (tc.status === 'error') {
+      xml += `<failure message="${escXml(tc.name)}" />`;
+    }
+    xml += `</testcase>\n`;
+  }
+  xml += `  </testsuite>\n</testsuites>\n`;
+  fs.writeFileSync(path.join(RESULTS_DIR, 'validate-results.xml'), xml);
+} catch (e) {
+  console.warn(`  ⚠️  Impossible d'écrire le JUnit XML : ${e.message}`);
+}
 if (errors > 0) {
   console.log('\n💥 Validation échouée — la carte sera probablement cassée.\n');
   process.exit(1);
