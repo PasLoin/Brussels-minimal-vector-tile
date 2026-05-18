@@ -3,8 +3,6 @@ name: Tests
 on:
   pull_request:
     branches: [main, master]
-  push:
-    branches: [main, master]
   workflow_dispatch:
 
 concurrency:
@@ -68,6 +66,25 @@ jobs:
           fi
 
   # ═══════════════════════════════════════════════════════
+  # Validation style.json ↔ PMTiles ↔ assets
+  # ═══════════════════════════════════════════════════════
+  validate:
+    name: Validation données
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate style ↔ PMTiles ↔ assets
+        run: node tests/validate-style.mjs
+
+  # ═══════════════════════════════════════════════════════
   # Tests E2E (Playwright — Chromium uniquement)
   # ═══════════════════════════════════════════════════════
   e2e-tests:
@@ -127,7 +144,7 @@ jobs:
   test-report:
     name: Rapport de tests
     runs-on: ubuntu-latest
-    needs: [unit-tests, e2e-tests]
+    needs: [unit-tests, validate, e2e-tests]
     if: always()
 
     steps:
@@ -177,6 +194,7 @@ jobs:
             | Suite | Statut | Tests | Échecs |
             |-------|--------|-------|--------|
             | Unitaires (Vitest) | ${{ needs.unit-tests.result == 'success' && '✅' || '❌' }} | ${{ steps.unit.outputs.tests }} | ${{ steps.unit.outputs.failures }} |
+            | Validation données | ${{ needs.validate.result == 'success' && '✅' || '❌' }} | — | — |
             | E2E (Playwright) | ${{ needs.e2e-tests.result == 'success' && '✅' || '❌' }} | ${{ steps.e2e.outputs.tests }} | ${{ steps.e2e.outputs.failures }} |
 
             📦 Rapports détaillés dans les **Artifacts** du [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
@@ -185,6 +203,7 @@ jobs:
         if: always()
         run: |
           UNIT_ICON="${{ needs.unit-tests.result == 'success' && '✅' || '❌' }}"
+          VALIDATE_ICON="${{ needs.validate.result == 'success' && '✅' || '❌' }}"
           E2E_ICON="${{ needs.e2e-tests.result == 'success' && '✅' || '❌' }}"
 
           cat >> $GITHUB_STEP_SUMMARY << EOF
@@ -193,6 +212,7 @@ jobs:
           | Suite | Statut | Tests | Échecs |
           |-------|--------|-------|--------|
           | Unitaires (Vitest) | $UNIT_ICON | ${{ steps.unit.outputs.tests }} | ${{ steps.unit.outputs.failures }} |
+          | Validation données | $VALIDATE_ICON | — | — |
           | E2E (Playwright) | $E2E_ICON | ${{ steps.e2e.outputs.tests }} | ${{ steps.e2e.outputs.failures }} |
 
           📦 Rapports détaillés dans les **Artifacts** ci-dessus.
