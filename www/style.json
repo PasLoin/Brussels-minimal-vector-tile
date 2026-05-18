@@ -459,19 +459,21 @@
         "park"
       ],
       "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#e8f8ed",
-          "#a9ccac"
-        ]
+        "fill-color": "#a9ccac"
+      }
+    },
+    {
+      "id": "green-park-private-hatch",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "all",
+        ["==", ["get", "leisure"], "park"],
+        ["==", ["get", "access"], "private"]
+      ],
+      "paint": {
+        "fill-pattern": "military-hatch"
       }
     },
     {
