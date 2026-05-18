@@ -84,6 +84,14 @@ jobs:
       - name: Validate style ↔ PMTiles ↔ assets
         run: node tests/validate-style.mjs
 
+      - name: Upload validation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validate-results
+          path: test-results/validate-results.xml
+          retention-days: 30
+
   # ═══════════════════════════════════════════════════════
   # Tests E2E (Playwright — Chromium uniquement)
   # ═══════════════════════════════════════════════════════
@@ -168,6 +176,21 @@ jobs:
             echo "failures=?" >> $GITHUB_OUTPUT
           fi
 
+      - name: Parse validation results
+        id: validate
+        if: always()
+        run: |
+          XML="all-results/validate-results/validate-results.xml"
+          if [ -f "$XML" ]; then
+            TESTS=$(grep -oP 'tests="\K[0-9]+' "$XML" | head -1 || echo "?")
+            FAILURES=$(grep -oP 'failures="\K[0-9]+' "$XML" | head -1 || echo "?")
+            echo "tests=$TESTS" >> $GITHUB_OUTPUT
+            echo "failures=$FAILURES" >> $GITHUB_OUTPUT
+          else
+            echo "tests=?" >> $GITHUB_OUTPUT
+            echo "failures=?" >> $GITHUB_OUTPUT
+          fi
+
       - name: Parse E2E test results
         id: e2e
         if: always()
@@ -194,7 +217,7 @@ jobs:
             | Suite | Statut | Tests | Échecs |
             |-------|--------|-------|--------|
             | Unitaires (Vitest) | ${{ needs.unit-tests.result == 'success' && '✅' || '❌' }} | ${{ steps.unit.outputs.tests }} | ${{ steps.unit.outputs.failures }} |
-            | Validation données | ${{ needs.validate.result == 'success' && '✅' || '❌' }} | — | — |
+            | Validation données | ${{ needs.validate.result == 'success' && '✅' || '❌' }} | ${{ steps.validate.outputs.tests }} | ${{ steps.validate.outputs.failures }} |
             | E2E (Playwright) | ${{ needs.e2e-tests.result == 'success' && '✅' || '❌' }} | ${{ steps.e2e.outputs.tests }} | ${{ steps.e2e.outputs.failures }} |
 
             📦 Rapports détaillés dans les **Artifacts** du [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
@@ -212,7 +235,7 @@ jobs:
           | Suite | Statut | Tests | Échecs |
           |-------|--------|-------|--------|
           | Unitaires (Vitest) | $UNIT_ICON | ${{ steps.unit.outputs.tests }} | ${{ steps.unit.outputs.failures }} |
-          | Validation données | $VALIDATE_ICON | — | — |
+          | Validation données | $VALIDATE_ICON | ${{ steps.validate.outputs.tests }} | ${{ steps.validate.outputs.failures }} |
           | E2E (Playwright) | $E2E_ICON | ${{ steps.e2e.outputs.tests }} | ${{ steps.e2e.outputs.failures }} |
 
           📦 Rapports détaillés dans les **Artifacts** ci-dessus.
