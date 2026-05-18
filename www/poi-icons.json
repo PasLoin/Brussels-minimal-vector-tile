@@ -194,7 +194,7 @@
   ],
   "bench": [
     null,
-    null,
+    "bench",
     null,
     null
   ],
