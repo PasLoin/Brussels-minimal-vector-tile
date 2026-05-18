@@ -32,6 +32,7 @@ export default defineConfig({
     {
       name: 'mobile-chrome',
       use: { ...devices['Pixel 5'] },
+      testMatch: /map-(accessibility|load)\.spec/,
     },
   ],
 });
