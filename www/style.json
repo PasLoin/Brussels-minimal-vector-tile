@@ -469,8 +469,22 @@
       "source-layer": "green",
       "filter": [
         "all",
-        ["==", ["get", "leisure"], "park"],
-        ["==", ["get", "access"], "private"]
+        [
+          "==",
+          [
+            "get",
+            "leisure"
+          ],
+          "park"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "access"
+          ],
+          "private"
+        ]
       ],
       "paint": {
         "fill-pattern": "military-hatch"
