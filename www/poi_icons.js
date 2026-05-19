@@ -6,6 +6,7 @@
  */
 
 // ── Constantes ──
+const iconLoadingCache = new Map();
 export const ICON_COLOR = '#734a08';
 export const ICON_SIZE = 20;
 
@@ -34,41 +35,50 @@ export async function loadPoiIcon(map, poiType, localName, temakiName, makiName,
   if (makiName)    urls.push(MAKI + makiName + '.svg');
   if (libertyName) urls.push(LIBERTY + libertyName + '.svg');
 
-  for (const url of urls) {
-    try {
-      const res = await fetch(url);
-      if (!res.ok) continue;
-      let svg = await res.text();
-      if (!svg.includes('<svg')) continue;
+  const cacheKey = JSON.stringify(urls);
 
-      // Recolorer le SVG
-      svg = svg.replace(/\s*fill="[^"]*"/g, '');
-      svg = svg.replace(/<svg(\s|>)/i, `<svg fill="${ICON_COLOR}" $1`);
+  if (!iconLoadingCache.has(cacheKey)) {
+    iconLoadingCache.set(cacheKey, (async () => {
+      for (const url of urls) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) continue;
+          let svg = await res.text();
+          if (!svg.includes('<svg')) continue;
 
-      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
-      const blobUrl = URL.createObjectURL(blob);
-      const img = new Image();
+          svg = svg.replace(/\s*fill="[^"]*"/g, '');
+          svg = svg.replace(/<svg(\s|>)/i, `<svg fill="${ICON_COLOR}" $1`);
 
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = blobUrl;
-      });
+          const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+          const blobUrl = URL.createObjectURL(blob);
+          const img = new Image();
 
-      const canvas = document.createElement('canvas');
-      canvas.width = ICON_SIZE;
-      canvas.height = ICON_SIZE;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, ICON_SIZE, ICON_SIZE);
-      URL.revokeObjectURL(blobUrl);
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = blobUrl;
+          });
 
-      const imageData = ctx.getImageData(0, 0, ICON_SIZE, ICON_SIZE);
-      map.addImage('poi-' + poiType, imageData, { pixelRatio: 1 });
-      return true;
+          const canvas = document.createElement('canvas');
+          canvas.width = ICON_SIZE;
+          canvas.height = ICON_SIZE;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, ICON_SIZE, ICON_SIZE);
+          URL.revokeObjectURL(blobUrl);
 
-    } catch (e) {
-      continue;
-    }
+          return ctx.getImageData(0, 0, ICON_SIZE, ICON_SIZE);
+        } catch (e) {
+          continue;
+        }
+      }
+      return null;
+    })());
+  }
+
+  const imageData = await iconLoadingCache.get(cacheKey);
+  if (imageData) {
+    map.addImage('poi-' + poiType, imageData, { pixelRatio: 1 });
+    return true;
   }
   return false;
 }
@@ -76,24 +86,12 @@ export async function loadPoiIcon(map, poiType, localName, temakiName, makiName,
 /**
  * Construit l'expression MapLibre icon-image à partir de _meta.
  *
- * Résultat :
- *   ["coalesce",
- *     // special cases
- *     ["case", ["==", ["get","cuisine"], "friture"], ["image","poi-cuisine-friture"], ["image",""]],
- *     // pour chaque type_key
- *     ["image", ["concat", "poi-", ["get", "shop"]]],
- *     ["image", ["concat", "poi-", ["get", "amenity"]]],
- *     // fallback
- *     ["case", ["has","shop"], ["image","poi-shop"], ["image",""]]
- *   ]
- *
  * @param {object} meta - Objet { type_keys: string[], special_cases: Array }
  * @returns {Array} Expression MapLibre GL
  */
 export function buildIconImageExpression(meta) {
   const expr = ['coalesce'];
 
-  // 1. Special cases (cuisine=friture, etc.)
   for (const sc of (meta.special_cases || [])) {
     expr.push([
       'case',
@@ -103,12 +101,10 @@ export function buildIconImageExpression(meta) {
     ]);
   }
 
-  // 2. Chaque type_key détecté dans les données
   for (const key of (meta.type_keys || [])) {
     expr.push(['image', ['concat', 'poi-', ['get', key]]]);
   }
 
-  // 3. Fallback : icône générique "shop"
   expr.push([
     'case',
     ['has', 'shop'],
@@ -120,15 +116,16 @@ export function buildIconImageExpression(meta) {
 }
 
 /**
- * Charge poi-icons.json, construit l'expression icon-image,
- * puis charge toutes les icônes SVG.
+ * Charge un motif SVG hatch et l'ajoute comme image sur la carte.
  *
  * @param {object} map - MapLibre GL map instance
+ * @param {string} svgPath - Chemin vers le fichier SVG
+ * @param {string} imageName - Nom de l'image dans la carte
+ * @param {number} [size=20] - Taille du pattern en pixels
  */
-export async function loadAllPoiIcons(map) {
-  // Load military hatch pattern
+async function loadHatchPattern(map, svgPath, imageName, size = 20) {
   try {
-    const res = await fetch('./assets/military_hatch.svg');
+    const res = await fetch(svgPath);
     const svgText = await res.text();
     const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
     const blobUrl = URL.createObjectURL(blob);
@@ -138,7 +135,6 @@ export async function loadAllPoiIcons(map) {
       img.onerror = reject;
       img.src = blobUrl;
     });
-    const size = 20;
     const canvas = document.createElement('canvas');
     canvas.width = size;
     canvas.height = size;
@@ -146,11 +142,23 @@ export async function loadAllPoiIcons(map) {
     ctx.drawImage(img, 0, 0, size, size);
     URL.revokeObjectURL(blobUrl);
     const imageData = ctx.getImageData(0, 0, size, size);
-    if (!map.hasImage('military-hatch')) map.addImage('military-hatch', imageData, { pixelRatio: 1 });
-    console.log('Military hatch pattern loaded');
+    if (!map.hasImage(imageName)) map.addImage(imageName, imageData, { pixelRatio: 1 });
+    console.log(`${imageName} pattern loaded`);
   } catch (err) {
-    console.error('Impossible de charger le motif militaire:', err);
+    console.error(`Impossible de charger le motif ${imageName}:`, err);
   }
+}
+
+/**
+ * Charge poi-icons.json, construit l'expression icon-image,
+ * puis charge toutes les icônes SVG.
+ *
+ * @param {object} map - MapLibre GL map instance
+ */
+export async function loadAllPoiIcons(map) {
+  // Load hatch patterns
+  await loadHatchPattern(map, './assets/military_hatch.svg', 'military-hatch');
+  await loadHatchPattern(map, './assets/park_hatch.svg', 'park-hatch');
 
   let data;
   try {
@@ -161,17 +169,14 @@ export async function loadAllPoiIcons(map) {
     return;
   }
 
-  // Extraire les métadonnées et le mapping d'icônes
   const meta = data._meta || { type_keys: [], special_cases: [] };
   delete data._meta;
 
-  // Patcher l'expression icon-image du layer poi-icon
   const iconImageExpr = buildIconImageExpression(meta);
   map.setLayoutProperty('poi-icon', 'icon-image', iconImageExpr);
   if (map.getLayer('leisure-icon')) map.setLayoutProperty('leisure-icon', 'icon-image', iconImageExpr);
   console.log('POI icon-image expression built from _meta.type_keys:', meta.type_keys);
 
-  // Charger les icônes SVG
   const entries = Object.entries(data);
   const results = await Promise.allSettled(
     entries.map(([type, sources]) =>
