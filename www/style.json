@@ -498,7 +498,7 @@
             ],
             "private"
           ],
-          "#f1f8e9",
+          "#a4c775",
           "#cfeca8"
         ]
       }
@@ -618,6 +618,45 @@
           "#f3f9e0",
           "#e6f2c1"
         ]
+      }
+    },
+    {
+      "id": "green-hatch",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "leisure"
+            ],
+            "park"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "leisure"
+            ],
+            "garden"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "access"
+          ],
+          "private"
+        ]
+      ],
+      "paint": {
+        "fill-pattern": "green-hatch"
       }
     },
     {
