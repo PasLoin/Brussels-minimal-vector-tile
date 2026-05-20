@@ -459,35 +459,19 @@
         "park"
       ],
       "paint": {
-        "fill-color": "#a9ccac"
-      }
-    },
-    {
-      "id": "green-park-private-hatch",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "all",
-        [
-          "==",
+        "fill-color": [
+          "case",
           [
-            "get",
-            "leisure"
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
           ],
-          "park"
-        ],
-        [
-          "==",
-          [
-            "get",
-            "access"
-          ],
-          "private"
+          "#e8f8ed",
+          "#a9ccac"
         ]
-      ],
-      "paint": {
-        "fill-pattern": "park-hatch"
       }
     },
     {
@@ -514,7 +498,7 @@
             ],
             "private"
           ],
-          "#f1f8e9",
+          "#e8f8ed",
           "#cfeca8"
         ]
       }
@@ -634,6 +618,45 @@
           "#f3f9e0",
           "#e6f2c1"
         ]
+      }
+    },
+    {
+      "id": "green-hatch",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "leisure"
+            ],
+            "park"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "leisure"
+            ],
+            "garden"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "access"
+          ],
+          "private"
+        ]
+      ],
+      "paint": {
+        "fill-pattern": "green-hatch"
       }
     },
     {
