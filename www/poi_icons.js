@@ -152,6 +152,32 @@ export async function loadAllPoiIcons(map) {
     console.error('Impossible de charger le motif militaire:', err);
   }
 
+  // Load green hatch pattern for private parks/gardens
+  try {
+    const res = await fetch('./assets/military_hatch.svg');
+    let svgText = await res.text();
+    svgText = svgText.replace('#bd4a72', '#a9ccac');
+    const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+    const blobUrl = URL.createObjectURL(blob);
+    const img = new Image();
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = blobUrl;
+    });
+    const size = 20;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, size, size);
+    URL.revokeObjectURL(blobUrl);
+    const imageData = ctx.getImageData(0, 0, size, size);
+    if (!map.hasImage('green-hatch')) map.addImage('green-hatch', imageData, { pixelRatio: 1 });
+    console.log('Green hatch pattern loaded');
+  } catch (err) {
+    console.error('Impossible de charger le motif vert:', err);
+  }
   let data;
   try {
     const resp = await fetch('./poi-icons.json');
