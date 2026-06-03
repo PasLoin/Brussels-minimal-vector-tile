@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────
-# map.config.yaml  —  généré depuis www/style.json  par retro_style.py
+# map.config.yaml  —  généré depuis www/bright-test.json  par retro_style.py
 #
 # Champs disponibles par sous-type :
 #   tag            tag OSM du filtre (landuse, leisure, natural, highway...)
@@ -19,131 +19,27 @@ map:
   name: Map
   center: [4.3517, 50.8503]
   zoom: 13
-  background: "#f2efe9"
+  background: "#f8f4f0"
   font: "#734a08"
-  glyphs: "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf"
+  glyphs: "https://api.maptiler.com/fonts/{fontstack}/{range}.pbf?key={key}"
 
 
 layers:
 
   landuse:
     label: Occupation du sol
-    color: "#e0dfdf"
+    color: "#e0e4dd"
     appear_at: 10
-    subtypes:
-      allotments: { tag: landuse, color: "#9cad95", opacity: 0.9 }
-      brownfield: { tag: landuse, color: "#b3a392", opacity: 0.5 }
-      cemetery: { tag: landuse, color: "#576e5a", opacity: 0.9 }
-      commercial: { tag: landuse, color: "#f2dad9" }
-      construction: { tag: landuse, color: "#b3a392", opacity: 0.95 }
-      education: { tag: landuse, color: "#ffe894" }
-      farmland: { tag: landuse, color: "#add15a", opacity: 0.95 }
-      farmyard: { tag: landuse, color: "#f0d3ad", opacity: 0.95 }
-      greenfield: { tag: landuse, color: "#cfeca8", opacity: 0.5 }
-      industrial: { tag: landuse, color: "#ebdbe8" }
-      landfill: { tag: landuse, color: "#b3a392", opacity: 0.5 }
-      military: { tag: landuse, color: "#bd4a72", pattern: military-hatch, opacity: 0.1 }
-      railway: { tag: landuse, color: "#ebdbe8" }
-      residential: { tag: landuse }
-      retail: { tag: landuse, color: "#ffd6d1" }
 
   water:
     label: Eau
-    color: "#aad3df"
+    color: "#a0c8f0"
     appear_at: 10
-    subtypes:
-      canal: { tag: waterway }
-      ditch: { tag: waterway, appear_at: 14 }
-      river: { tag: waterway }
-      stream: { tag: waterway, appear_at: 13 }
-      wetland: { tag: natural, color: "#d4e2c6", opacity: 0.5 }
-
-  green:
-    label: Espaces verts
-    color: "#add19e"
-    appear_at: 10
-    subtypes:
-      flowerbed: { tag: landuse, color: "#e6f2c1", color_private: "#f3f9e0" }
-      forest: { tag: landuse, color_private: "#d9ecd2" }
-      garden: { tag: leisure, color: "#cfeca8", color_private: "#e8f8ed", pattern_private: green-hatch }
-      grass: { tag: landuse, color: "#cdebb0", color_private: "#eaf6df" }
-      meadow: { tag: landuse, color: "#cdebb0", color_private: "#eaf6df" }
-      park: { tag: leisure, color: "#a9ccac", color_private: "#e8f8ed", pattern_private: green-hatch }
-      scrub: { tag: natural, color: "#d6e6b8", opacity: 0.9 }
-      shrubbery: { tag: natural, color: "#6b9943", color_private: "#8cb36d", opacity: 0.5 }
-      wood: { tag: natural, color_private: "#d9ecd2" }
-
-  trees:
-    label: Arbres et haies
-    appear_at: 14
-    subtypes:
-      hedge: { tag: barrier, opacity: 0.85 }
-      tree: { tag: natural, appear_at: 17 }
-      tree_row: { tag: natural, appear_at: 16, opacity: 0.55 }
-
-  buildings:
-    label: Bâtiments
-    color: "#fce1c5"
-    appear_at: 13
-
-  leisure:
-    label: Loisirs
-    color: "#def3c0"
-    appear_at: 10
-    subtypes:
-      pitch: { tag: leisure, color: "#8ad3af", outline_color: "#6fb792", appear_at: 17 }
-
-  roads:
-    label: Routes
-    appear_at: 10
-    subtypes:
-      busway: { tag: highway, appear_at: 12, opacity: 0.5 }
-      living_street: { tag: highway, appear_at: 13, opacity: 0.5 }
-      motorway: { tag: highway, opacity: 0.5 }
-      motorway_link: { tag: highway, appear_at: 12 }
-      primary: { tag: highway, appear_at: 15, opacity: 0.5 }
-      primary_link: { tag: highway, appear_at: 13, opacity: 0.5 }
-      residential: { tag: highway, appear_at: 15, opacity: 0.5 }
-      secondary: { tag: highway, appear_at: 15, opacity: 0.5 }
-      secondary_link: { tag: highway, appear_at: 14, opacity: 0.5 }
-      service: { tag: highway, appear_at: 13, opacity: 0.5 }
-      tertiary: { tag: highway, appear_at: 15, opacity: 0.5 }
-      tertiary_link: { tag: highway, appear_at: 14, opacity: 0.5 }
-      track: { tag: highway, appear_at: 13, opacity: 0.5 }
-      trunk: { tag: highway, opacity: 0.5 }
-      trunk_link: { tag: highway, appear_at: 12, opacity: 0.5 }
-      unclassified: { tag: highway, appear_at: 13, opacity: 0.5 }
-
-  pedestrian:
-    label: Piétons
-    appear_at: 13
-    subtypes:
-      footway: { tag: highway, appear_at: 14 }
-      path: { tag: highway, appear_at: 14 }
-      pedestrian: { tag: highway }
-      steps: { tag: highway, appear_at: 14 }
-
-  cycleway:
-    label: Cyclable
-    appear_at: 12
 
   railway:
     label: Ferroviaire
     appear_at: 10
-    subtypes:
-      miniature: { tag: railway, appear_at: 14 }
-      rail: { tag: railway, appear_at: 13, opacity: 0.15 }
-      subway: { tag: railway, appear_at: 12, opacity: 0.15 }
-      tram: { tag: railway, appear_at: 13, opacity: 0.15 }
-
-  public_transport:
-    label: Transport STIB
-    appear_at: 10
-
-  boundaries:
-    label: Limites administratives
-    appear_at: 10
 
   poi:
     label: POI
-    appear_at: 14
+    appear_at: 13
