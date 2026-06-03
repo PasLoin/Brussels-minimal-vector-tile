@@ -1,0 +1,97 @@
+name: Retro-engineer config from style
+
+# Lance manuellement depuis l'onglet Actions → "Run workflow".
+# Cas d'usage :
+#   - Bootstrap initial : générer map.config.yaml depuis le style.json existant
+#   - Reverser un style externe : pointer --style vers un autre fichier
+#
+# Résultat : map.config.yaml commité dans le repo, prêt à éditer.
+
+on:
+  workflow_dispatch:
+    inputs:
+      style_path:
+        description: 'Chemin vers le style.json source (relatif à la racine du repo)'
+        required: false
+        default: 'www/style.json'
+      config_out:
+        description: 'Chemin de sortie du fichier YAML généré'
+        required: false
+        default: 'map.config.yaml'
+      overwrite:
+        description: 'Écraser map.config.yaml si il existe déjà ?'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+permissions:
+  contents: write
+
+jobs:
+  retro:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Check existing config
+        id: check
+        run: |
+          CONFIG="${{ github.event.inputs.config_out }}"
+          OVERWRITE="${{ github.event.inputs.overwrite }}"
+          if [ -f "$CONFIG" ] && [ "$OVERWRITE" = "false" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "⚠️  $CONFIG existe déjà."
+            echo "   Relancer avec overwrite=true pour l'écraser,"
+            echo "   ou choisir un autre config_out."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run retro_style.py
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          python3 retro_style.py \
+            --style "${{ github.event.inputs.style_path }}" \
+            --out   "${{ github.event.inputs.config_out }}"
+
+      - name: Show generated config
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          echo "=== ${{ github.event.inputs.config_out }} ==="
+          cat "${{ github.event.inputs.config_out }}"
+
+      - name: Commit config
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "${{ github.event.inputs.config_out }}"
+          if git diff --cached --quiet; then
+            echo "Aucun changement à commiter (config identique)"
+          else
+            git commit -m "chore: generate ${{ github.event.inputs.config_out }} from ${{ github.event.inputs.style_path }} [skip ci]"
+            git push
+            echo "✓ ${{ github.event.inputs.config_out }} commité"
+            echo ""
+            echo "→ Prochaine étape : éditer ${{ github.event.inputs.config_out }}"
+            echo "  puis pousser pour déclencher le workflow deploy"
+          fi
+
+      - name: Skipped notice
+        if: steps.check.outputs.exists == 'true'
+        run: |
+          echo "::warning::${{ github.event.inputs.config_out }} existe déjà et overwrite=false — rien n'a été fait."
+          exit 1
