@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────
-# map.config.yaml  —  généré depuis www/bright-test.json  par retro_style.py
+# map.config.yaml  —  généré depuis www/style.json  par retro_style.py
 #
 # Champs disponibles par sous-type :
 #   tag            tag OSM du filtre (landuse, leisure, natural, highway...)
@@ -26,18 +26,77 @@ map:
 
 layers:
 
-  landuse:
-    label: Occupation du sol
-    color: "#e0e4dd"
-    appear_at: 10
-
   water:
     label: Eau
     color: "#a0c8f0"
     appear_at: 10
+    subtypes:
+      canal: { tag: waterway }
+      ditch: { tag: waterway, appear_at: 14 }
+      river: { tag: waterway }
+      stream: { tag: waterway, appear_at: 13 }
+      wetland: { tag: natural, color: "#d4e2c6", opacity: 0.5 }
 
-  railway:
-    label: Ferroviaire
+  trees:
+    label: Arbres et haies
+    appear_at: 14
+    subtypes:
+      hedge: { tag: barrier, opacity: 0.85 }
+      tree: { tag: natural, appear_at: 17 }
+      tree_row: { tag: natural, appear_at: 16, opacity: 0.55 }
+
+  buildings:
+    label: Bâtiments
+    color: "#fce1c5"
+    appear_at: 10
+
+  leisure:
+    label: Loisirs
+    color: "#def3c0"
+    appear_at: 10
+    subtypes:
+      pitch: { tag: leisure, color: "#8ad3af", appear_at: 17 }
+
+  roads:
+    label: Routes
+    appear_at: 10
+    subtypes:
+      busway: { tag: highway, appear_at: 12, opacity: 0.5 }
+      living_street: { tag: highway, appear_at: 13, opacity: 0.5 }
+      motorway: { tag: highway, opacity: 0.5 }
+      motorway_link: { tag: highway, opacity: 0.5 }
+      primary: { tag: highway, appear_at: 13, opacity: 0.5 }
+      primary_link: { tag: highway, opacity: 0.5 }
+      residential: { tag: highway, appear_at: 13, opacity: 0.5 }
+      secondary: { tag: highway, appear_at: 13, opacity: 0.5 }
+      secondary_link: { tag: highway, opacity: 0.5 }
+      service: { tag: highway, appear_at: 13, opacity: 0.5 }
+      tertiary: { tag: highway, appear_at: 13, opacity: 0.5 }
+      tertiary_link: { tag: highway, appear_at: 11, opacity: 0.5 }
+      track: { tag: highway, appear_at: 13, opacity: 0.5 }
+      trunk: { tag: highway, opacity: 0.5 }
+      trunk_link: { tag: highway, opacity: 0.5 }
+      unclassified: { tag: highway, appear_at: 13, opacity: 0.5 }
+
+  pedestrian:
+    label: Piétons
+    appear_at: 13
+    subtypes:
+      footway: { tag: highway, appear_at: 14 }
+      path: { tag: highway, appear_at: 14 }
+      pedestrian: { tag: highway }
+      steps: { tag: highway, appear_at: 14 }
+
+  cycleway:
+    label: Cyclable
+    appear_at: 10
+
+  public_transport:
+    label: Transport STIB
+    appear_at: 10
+
+  boundaries:
+    label: Limites administratives
     appear_at: 10
 
   poi:
