@@ -1,20 +1,12 @@
-# ──────────────────────────────────────────────────────────────────────────────
-# map.config.yaml  —  source de vérité de la carte Brussels
+# ──────────────────────────────────────────────────────────────────────
+# map.config.yaml  —  généré depuis www/style.json  par retro_style.py
 #
-# On décrit CE QU'ON VEUT, pas comment le système doit le faire.
-# build_map.py génère style.json + granulometry.json + pmtiles_params.json.
-#
-# Workflow complet :
-#   (bootstrap)  python3 retro_style.py --style www/style.json   → ce fichier
-#   (itérer)     éditer ce fichier
-#                python3 build_map.py
-#                bash generate_json.bash
-#                python3 apply_granulometry.py
-#                bash generate_pmtiles.bash
-# ──────────────────────────────────────────────────────────────────────────────
+# Modifier CE fichier, pas style.json directement.
+# Regénérer avec :  python3 build_map.py
+# ──────────────────────────────────────────────────────────────────────
 
 map:
-  name: Bruxelles
+  name: Map
   center: [4.3517, 50.8503]
   zoom: 13
   background: "#f2efe9"
@@ -26,150 +18,119 @@ layers:
 
   landuse:
     label: Occupation du sol
+    color: "#e0dfdf"
     appear_at: 10
     subtypes:
-      residential:  { color: "#e0dfdf" }
-      industrial:   { color: "#ebdbe8" }
-      commercial:   { color: "#f2dad9" }
-      retail:       { color: "#ffd6d1" }
-      education:    { color: "#ffe894" }
-      military:     { color: "#bd4a72", opacity: 0.1 }
-      cemetery:     { color: "#576e5a" }
-      allotments:   { color: "#9cad95" }
-      farmland:     { color: "#add15a" }
-      farmyard:     { color: "#f0d3ad" }
-      construction: { color: "#b3a392", appear_at: 14 }
-      brownfield:   { color: "#b3a392", appear_at: 14, opacity: 0.5 }
-      greenfield:   { color: "#cfeca8", appear_at: 14, opacity: 0.5 }
-      landfill:     { color: "#b3a392", appear_at: 14, opacity: 0.5 }
-
+      allotments: { color: "#9cad95" }
+      brownfield: { color: "#b3a392" }
+      cemetery: { color: "#576e5a" }
+      commercial: { color: "#f2dad9" }
+      construction: { color: "#b3a392" }
+      education: { color: "#ffe894" }
+      farmland: { color: "#add15a" }
+      farmyard: { color: "#f0d3ad" }
+      greenfield: { color: "#cfeca8" }
+      industrial: { color: "#ebdbe8" }
+      landfill: { color: "#b3a392" }
+      military: { color: "#bd4a72" }
+      railway: { color: "#ebdbe8" }
+      retail: { color: "#ffd6d1" }
 
   water:
     label: Eau
     color: "#aad3df"
     appear_at: 10
     subtypes:
-      river:   { appear_at: 10 }
-      canal:   { appear_at: 10 }
-      stream:  { appear_at: 13 }
-      ditch:   { appear_at: 14 }
-      wetland: { color: "#d4e2c6", opacity: 0.5 }
-
+      ditch: { appear_at: 14 }
+      stream: { appear_at: 13 }
 
   green:
     label: Espaces verts
+    color: "#add19e"
     appear_at: 10
     subtypes:
-      forest:    { color: "#add19e" }
-      wood:      { color: "#add19e" }
-      park:      { color: "#a9ccac" }
-      garden:    { color: "#cfeca8", appear_at: 14 }
-      grass:     { color: "#cdebb0", appear_at: 14 }
-      meadow:    { color: "#cdebb0", appear_at: 14 }
-      scrub:     { color: "#d6e6b8", appear_at: 14, opacity: 0.9 }
-      shrubbery: { color: "#6b9943", appear_at: 14, opacity: 0.5 }
-      flowerbed: { color: "#e6f2c1", appear_at: 14 }
-
+      flowerbed: { color: "#e6f2c1" }
+      grass: { color: "#cdebb0" }
+      meadow: { color: "#cdebb0" }
 
   trees:
     label: Arbres et haies
-    color: "#6cae50"
+    color: "#6ba048"
     appear_at: 14
     subtypes:
-      hedge:    { appear_at: 14 }
-      tree_row: { appear_at: 15 }
-      tree:     { appear_at: 17 }
-
+      tree: { color: "#7eb36a", appear_at: 17 }
+      tree_row: { color: "#7eb36a", appear_at: 16 }
 
   buildings:
     label: Bâtiments
     color: "#fce1c5"
-    border_color: "#d4a574"
     appear_at: 13
-    labels_at: 17
-    extrusion_3d: true
-
 
   leisure:
     label: Loisirs
     color: "#def3c0"
     appear_at: 10
     subtypes:
-      pitch:           { color: "#8ad3af" }
-      playground:      { color: "#d5f0d5" }
-      dog_park:        { color: "#def3c0" }
-      fitness_station: { color: "#def3c0" }
-      outdoor_seating: { color: "#e6e1d9", appear_at: 15 }
-
+      pitch: { color: "#6fb792", appear_at: 17 }
 
   roads:
     label: Routes
-    color: white
-    appear_at: 12
-    labels_at: 15
+    color: "#bbb"
+    appear_at: 10
     subtypes:
-      motorway:  { color: "#e990a0", appear_at: 5 }
-      trunk:     { color: "#f9b29c", appear_at: 5 }
-      primary:   { color: "#fcd6a4", appear_at: 7 }
-      secondary: { color: "#f7fabf", appear_at: 9 }
-      tertiary:  { color: white,     appear_at: 11 }
-      local:     { color: white,     appear_at: 13 }
-      track:     { color: "#996633", appear_at: 13 }
-      busway:    { color: "#add19e", appear_at: 12 }
-
+      busway: { color: "#add19e", appear_at: 12 }
+      living_street: { color: "#ffffff", appear_at: 13 }
+      motorway: { color: "#e990a0" }
+      motorway_link: { color: "#e990a0", appear_at: 12 }
+      primary: { color: "#333", appear_at: 15 }
+      primary_link: { color: "#fcd6a4", appear_at: 13 }
+      residential: { color: "#333", appear_at: 15 }
+      secondary: { color: "#333", appear_at: 15 }
+      secondary_link: { color: "#f7fabf", appear_at: 14 }
+      service: { color: "#ffffff", appear_at: 13 }
+      tertiary: { color: "#333", appear_at: 15 }
+      tertiary_link: { color: "#ffffff", appear_at: 14 }
+      track: { color: "#996633", appear_at: 13 }
+      trunk: { color: "#f9b29c" }
+      trunk_link: { color: "#f9b29c", appear_at: 12 }
+      unclassified: { color: "#ffffff", appear_at: 13 }
 
   pedestrian:
     label: Piétons
-    color: "#97644c"
+    color: "#999"
     appear_at: 13
     subtypes:
-      pedestrian_street: { appear_at: 13 }
-      footway:           { appear_at: 14 }
-      path:              { appear_at: 14 }
-      steps:             { appear_at: 14 }
-
+      footway: { color: "#97644c", appear_at: 14 }
+      path: { color: "#97644c", appear_at: 14 }
+      pedestrian: { color: "#ededed" }
+      steps: { color: "#97644c", appear_at: 14 }
 
   cycleway:
     label: Cyclable
     color: "#0000ff"
     appear_at: 12
 
-
   railway:
     label: Ferroviaire
+    color: "#c0c0c0"
     appear_at: 10
     subtypes:
-      rail:      { color: "#787878", appear_at: 10 }
-      subway:    { color: "#999999", appear_at: 12 }
-      tram:      { color: "#444444", appear_at: 13 }
       miniature: { color: "#999999", appear_at: 14 }
-
+      rail: { color: "#787878", appear_at: 13 }
+      subway: { color: "#999999", appear_at: 12 }
+      tram: { color: "#444444", appear_at: 13 }
 
   public_transport:
-    label: Transport STIB
-    color: "#e3004f"
+    label: Transport public
+    color: "#ffffff"
     appear_at: 10
-    labels_at: 13
-
 
   boundaries:
     label: Limites administratives
     color: "#ac46ac"
     appear_at: 10
 
-
   poi:
     label: POI
     color: "#734a08"
-    appear_at: 15
-    labels_at: 16
-    subtypes:
-      hospital:     { appear_at: 12 }
-      fire_station: { appear_at: 12 }
-      police:       { appear_at: 12 }
-      school:       { appear_at: 14 }
-      university:   { appear_at: 14 }
-      restaurant:   { appear_at: 15 }
-      cafe:         { appear_at: 15 }
-      bar:          { appear_at: 15 }
-      shop:         { appear_at: 15 }
+    appear_at: 14
