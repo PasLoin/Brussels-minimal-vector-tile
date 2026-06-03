@@ -7,6 +7,7 @@ on:
       - 'www/*.pmtiles.gz'
       - 'sizepmtiles.md'
       - 'brussels_capital_region-latest.osm.pbf'
+      - 'granulometry_report.md'
   workflow_dispatch:
   schedule:
     - cron: '0 3 1 * *'
@@ -26,7 +27,15 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install pyyaml shapely --break-system-packages -q 2>/dev/null || pip install pyyaml shapely -q
 
       - name: Install osmium & tippecanoe
         run: |
@@ -35,6 +44,22 @@ jobs:
           git clone --depth 1 https://github.com/felt/tippecanoe.git /tmp/tippecanoe
           cd /tmp/tippecanoe && make -j$(nproc) && sudo make install
 
+      # ── Étape 1 : Compiler map.config.yaml → style.json + granulometry + pmtiles_params ──
+      - name: Build style and granulometry from config
+        run: |
+          if [ -f map.config.yaml ]; then
+            echo "→ map.config.yaml trouvé, compilation..."
+            python3 build_map.py \
+              --config      map.config.yaml \
+              --style-out   www/style.json \
+              --gran-out    granulometry.json \
+              --pmtiles-out pmtiles_params.json
+          else
+            echo "⚠️  map.config.yaml absent — style.json utilisé tel quel (mode legacy)"
+            echo "   Pour migrer : déclencher le workflow 'Retro-engineer config from style'"
+          fi
+
+      # ── Étape 2 : Télécharger les données OSM ──────────────────────────────────────────
       - name: Download Brussels OSM extract
         run: |
           set -e
@@ -61,60 +86,82 @@ jobs:
         run: |
           echo "=== Downloaded PBF ==="
           md5sum brussels_capital_region-latest.osm.pbf
-          ls -lh brussels_capital_region-latest.osm.pbf
-          echo "=== Repo PBF ==="
-          git show HEAD:brussels_capital_region-latest.osm.pbf | md5sum || echo "Not yet in repo"
-
-
-      - name: Check PBF freshness2
-        run: |
-          echo "=== Downloaded PBF ==="
-          md5sum brussels_capital_region-latest.osm.pbf
-          ls -lh brussels_capital_region-latest.osm.pbf
           osmium fileinfo brussels_capital_region-latest.osm.pbf
           echo "=== Repo PBF ==="
           git show HEAD:brussels_capital_region-latest.osm.pbf > /tmp/repo.pbf 2>/dev/null \
             && md5sum /tmp/repo.pbf \
             && osmium fileinfo /tmp/repo.pbf \
-            || echo "Not yet in repo2"
-          
+            || echo "Pas encore dans le repo"
 
+      # ── Étape 3 : Extraction GeoJSON ───────────────────────────────────────────────────
       - name: Extract GeoJSON layers
         run: bash generate_json.bash
 
+      # ── Étape 4 : POI icons ────────────────────────────────────────────────────────────
       - name: Generate POI icon mapping
         run: python3 generate_poi_icons.py
 
+      # ── Étape 5 : Fusionner les bâtiments ─────────────────────────────────────────────
       - name: Merge touching buildings
+        run: python3 merge_buildings.py
+
+      # ── Étape 6 : Granulométrie (LOD) ─────────────────────────────────────────────────
+      - name: Apply granulometry (LOD filtering)
         run: |
-          pip install shapely --break-system-packages -q
-          python3 merge_buildings.py
+          if [ -f granulometry.json ]; then
+            echo "→ Application des règles LOD..."
+            python3 apply_granulometry.py \
+              --gran   granulometry.json \
+              --report granulometry_report.md
+          else
+            echo "ℹ️  granulometry.json absent — étape LOD ignorée"
+          fi
 
+      # ── Étape 7 : Générer les PMTiles ─────────────────────────────────────────────────
       - name: Generate PMTiles
-        run: bash generate_pmtiles.bash
+        run: |
+          # Si pmtiles_params.json existe, injecter les zoom min/max dans le bash
+          if [ -f pmtiles_params.json ]; then
+            echo "→ Paramètres zoom lus depuis pmtiles_params.json"
+            export PMTILES_PARAMS="pmtiles_params.json"
+          fi
+          bash generate_pmtiles.bash
 
+      # ── Étape 8 : Appliquer les marquages terrains de sport ───────────────────────────
+      # (idempotent — n'écrase pas les couches si déjà présentes)
       - name: Ensure pitch sport layers in style
         run: python3 patch_style_pitches.py www/style.json
 
+      # ── Étape 9 : Commit des artefacts ────────────────────────────────────────────────
       - name: Commit artifacts to repo
         run: |
           cp *.pmtiles.gz www/
-          git config user.name "github-actions[bot]"
+          git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f www/*.pmtiles.gz www/style.json www/poi-icons.json missing-icons.txt sizepmtiles.md brussels_capital_region-latest.osm.pbf
+          git add -f \
+            www/*.pmtiles.gz \
+            www/style.json \
+            www/poi-icons.json \
+            missing-icons.txt \
+            sizepmtiles.md \
+            brussels_capital_region-latest.osm.pbf
+          # Optionnel : commiter aussi le rapport granulométrie
+          [ -f granulometry_report.md ] && git add granulometry_report.md || true
           if git diff --cached --quiet; then
             echo "Pas de changements à commiter"
           else
-            git commit -m "chore: update pmtiles, poi-icons and report [skip ci]"
+            git commit -m "chore: update pmtiles, style and reports [skip ci]"
             git push
           fi
 
+      # ── Étape 10 : Déploiement GitHub Pages ───────────────────────────────────────────
       - name: Prepare site
         run: |
           cp -r www/ _site/
-          cp -f *.geojson _site/ 2>/dev/null || true
+          cp -f *.geojson   _site/ 2>/dev/null || true
           cp -f sizepmtiles.md _site/ 2>/dev/null || true
-          echo "Site pret :"
+          [ -f granulometry_report.md ] && cp granulometry_report.md _site/ || true
+          echo "Site prêt :"
           ls -lh _site/
 
       - name: Upload Pages artifact
