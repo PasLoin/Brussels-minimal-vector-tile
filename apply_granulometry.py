@@ -86,12 +86,39 @@ def process(feat, rules):
     return out
 
 
+def load_geojson(path):
+    """
+    Charge un fichier GeoJSON en gérant deux formats :
+      - FeatureCollection standard  {"type":"FeatureCollection","features":[...]}
+      - Newline-delimited JSON       une Feature JSON par ligne (format extract_stib_routes.py)
+    Retourne (data, is_ndjson).
+    """
+    text = path.read_text()
+    # Tenter le parsing standard d'abord
+    try:
+        data = json.loads(text)
+        return data, False
+    except json.JSONDecodeError:
+        pass
+    # Fallback : NDJSON — une feature par ligne non vide
+    feats = []
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            feats.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    return {"type": "FeatureCollection", "features": feats}, True
+
+
 def process_layer(name, rules, dry_run):
     path = Path(f"{name}.json")
     if not path.exists():
         return {"error": f"{path} introuvable"}
 
-    data = json.loads(path.read_text())
+    data, was_ndjson = load_geojson(path)
     feats = data.get("features", [])
     out, dropped, expanded = [], 0, 0
 
@@ -105,7 +132,13 @@ def process_layer(name, rules, dry_run):
 
     if not dry_run:
         data["features"] = out
-        path.write_text(json.dumps(data, ensure_ascii=False))
+        if was_ndjson:
+            # Réécrire en NDJSON pour rester compatible avec tippecanoe
+            path.write_text(
+                "\n".join(json.dumps(f, ensure_ascii=False) for f in out) + "\n"
+            )
+        else:
+            path.write_text(json.dumps(data, ensure_ascii=False))
 
     return {"in": len(feats), "out": len(out),
             "dropped": dropped, "expanded": expanded}
