@@ -1,9 +1,9 @@
-# ──────────────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────────────
 # map.config.yaml  —  généré depuis www/style.json  par retro_style.py
 #
 # Modifier CE fichier, pas style.json directement.
-# Regénérer avec :  python3 build_map.py
-# ──────────────────────────────────────────────────────────────────────
+# Regénérer :  python3 build_map.py
+# ─────────────────────────────────────────────────────────────────────
 
 map:
   name: Map
@@ -21,45 +21,56 @@ layers:
     color: "#e0dfdf"
     appear_at: 10
     subtypes:
-      allotments: { color: "#9cad95" }
-      brownfield: { color: "#b3a392" }
-      cemetery: { color: "#576e5a" }
-      commercial: { color: "#f2dad9" }
-      construction: { color: "#b3a392" }
-      education: { color: "#ffe894" }
-      farmland: { color: "#add15a" }
-      farmyard: { color: "#f0d3ad" }
-      greenfield: { color: "#cfeca8" }
-      industrial: { color: "#ebdbe8" }
-      landfill: { color: "#b3a392" }
-      military: { color: "#bd4a72" }
-      railway: { color: "#ebdbe8" }
-      retail: { color: "#ffd6d1" }
+      allotments: { tag: landuse, color: "#9cad95" }
+      brownfield: { tag: landuse, color: "#b3a392" }
+      cemetery: { tag: landuse, color: "#576e5a" }
+      commercial: { tag: landuse, color: "#f2dad9" }
+      construction: { tag: landuse, color: "#b3a392" }
+      education: { tag: landuse, color: "#ffe894" }
+      farmland: { tag: landuse, color: "#add15a" }
+      farmyard: { tag: landuse, color: "#f0d3ad" }
+      greenfield: { tag: landuse, color: "#cfeca8" }
+      industrial: { tag: landuse, color: "#ebdbe8" }
+      landfill: { tag: landuse, color: "#b3a392" }
+      military: { tag: landuse, color: "#bd4a72" }
+      railway: { tag: landuse, color: "#ebdbe8" }
+      residential: { tag: landuse }
+      retail: { tag: landuse, color: "#ffd6d1" }
 
   water:
     label: Eau
     color: "#aad3df"
     appear_at: 10
     subtypes:
-      ditch: { appear_at: 14 }
-      stream: { appear_at: 13 }
+      canal: { tag: waterway }
+      ditch: { tag: waterway, appear_at: 14 }
+      river: { tag: waterway }
+      stream: { tag: waterway, appear_at: 13 }
+      wetland: { tag: natural, color: "#d4e2c6" }
 
   green:
     label: Espaces verts
     color: "#add19e"
     appear_at: 10
     subtypes:
-      flowerbed: { color: "#e6f2c1" }
-      grass: { color: "#cdebb0" }
-      meadow: { color: "#cdebb0" }
+      flowerbed: { tag: landuse, color: "#e6f2c1" }
+      forest: { tag: landuse }
+      garden: { tag: leisure, color: "#cfeca8" }
+      grass: { tag: landuse, color: "#cdebb0" }
+      meadow: { tag: landuse, color: "#cdebb0" }
+      park: { tag: leisure, color: "#a9ccac" }
+      scrub: { tag: natural, color: "#d6e6b8" }
+      shrubbery: { tag: natural, color: "#6b9943" }
+      wood: { tag: natural }
 
   trees:
     label: Arbres et haies
     color: "#6ba048"
     appear_at: 14
     subtypes:
-      tree: { color: "#7eb36a", appear_at: 17 }
-      tree_row: { color: "#7eb36a", appear_at: 16 }
+      hedge: { tag: barrier }
+      tree: { tag: natural, color: "#7eb36a", appear_at: 17 }
+      tree_row: { tag: natural, color: "#7eb36a", appear_at: 16 }
 
   buildings:
     label: Bâtiments
@@ -71,39 +82,39 @@ layers:
     color: "#def3c0"
     appear_at: 10
     subtypes:
-      pitch: { color: "#6fb792", appear_at: 17 }
+      pitch: { tag: leisure, color: "#6fb792", appear_at: 17 }
 
   roads:
     label: Routes
     color: "#bbb"
     appear_at: 10
     subtypes:
-      busway: { color: "#add19e", appear_at: 12 }
-      living_street: { color: "#ffffff", appear_at: 13 }
-      motorway: { color: "#e990a0" }
-      motorway_link: { color: "#e990a0", appear_at: 12 }
-      primary: { color: "#333", appear_at: 15 }
-      primary_link: { color: "#fcd6a4", appear_at: 13 }
-      residential: { color: "#333", appear_at: 15 }
-      secondary: { color: "#333", appear_at: 15 }
-      secondary_link: { color: "#f7fabf", appear_at: 14 }
-      service: { color: "#ffffff", appear_at: 13 }
-      tertiary: { color: "#333", appear_at: 15 }
-      tertiary_link: { color: "#ffffff", appear_at: 14 }
-      track: { color: "#996633", appear_at: 13 }
-      trunk: { color: "#f9b29c" }
-      trunk_link: { color: "#f9b29c", appear_at: 12 }
-      unclassified: { color: "#ffffff", appear_at: 13 }
+      busway: { tag: highway, color: "#add19e", appear_at: 12 }
+      living_street: { tag: highway, color: "#ffffff", appear_at: 13 }
+      motorway: { tag: highway, color: "#e990a0" }
+      motorway_link: { tag: highway, color: "#e990a0", appear_at: 12 }
+      primary: { tag: highway, color: "#333", appear_at: 15 }
+      primary_link: { tag: highway, color: "#fcd6a4", appear_at: 13 }
+      residential: { tag: highway, color: "#333", appear_at: 15 }
+      secondary: { tag: highway, color: "#333", appear_at: 15 }
+      secondary_link: { tag: highway, color: "#f7fabf", appear_at: 14 }
+      service: { tag: highway, color: "#ffffff", appear_at: 13 }
+      tertiary: { tag: highway, color: "#333", appear_at: 15 }
+      tertiary_link: { tag: highway, color: "#ffffff", appear_at: 14 }
+      track: { tag: highway, color: "#996633", appear_at: 13 }
+      trunk: { tag: highway, color: "#f9b29c" }
+      trunk_link: { tag: highway, color: "#f9b29c", appear_at: 12 }
+      unclassified: { tag: highway, color: "#ffffff", appear_at: 13 }
 
   pedestrian:
     label: Piétons
     color: "#999"
     appear_at: 13
     subtypes:
-      footway: { color: "#97644c", appear_at: 14 }
-      path: { color: "#97644c", appear_at: 14 }
-      pedestrian: { color: "#ededed" }
-      steps: { color: "#97644c", appear_at: 14 }
+      footway: { tag: highway, color: "#97644c", appear_at: 14 }
+      path: { tag: highway, color: "#97644c", appear_at: 14 }
+      pedestrian: { tag: highway, color: "#ededed" }
+      steps: { tag: highway, color: "#97644c", appear_at: 14 }
 
   cycleway:
     label: Cyclable
@@ -115,13 +126,13 @@ layers:
     color: "#c0c0c0"
     appear_at: 10
     subtypes:
-      miniature: { color: "#999999", appear_at: 14 }
-      rail: { color: "#787878", appear_at: 13 }
-      subway: { color: "#999999", appear_at: 12 }
-      tram: { color: "#444444", appear_at: 13 }
+      miniature: { tag: railway, color: "#999999", appear_at: 14 }
+      rail: { tag: railway, color: "#787878", appear_at: 13 }
+      subway: { tag: railway, color: "#999999", appear_at: 12 }
+      tram: { tag: railway, color: "#444444", appear_at: 13 }
 
   public_transport:
-    label: Transport public
+    label: Transport STIB
     color: "#ffffff"
     appear_at: 10
 
