@@ -21,7 +21,7 @@ Installez les outils suivants avant de régénérer les données :
 Dépendances Python utilisées par les scripts :
 
 ```bash
-pip install pyyaml shapely pytest
+pip install -r requirements.txt
 ```
 
 Dépendances Node :
@@ -34,6 +34,7 @@ npx playwright install chromium
 ## Vue d'ensemble du dépôt
 
 - `brussels_capital_region-latest.osm.pbf` : extrait source OpenStreetMap attendu par le pipeline.
+- `requirements.txt` : dépendances Python versionnées (`pyyaml`, `shapely`, `pytest`).
 - `map.config.yaml` : **source de vérité du style**. Modifier ce fichier, pas `www/style.json` directement.
 - `build_map.py` : compile `map.config.yaml` → `www/style.json` + `granulometry.json` + `pmtiles_params.json`.
 - `retro_style.py` : ingénierie inverse d'un `style.json` existant → `map.config.yaml` (bootstrap ou import).
@@ -348,6 +349,7 @@ npm test -- tests/unit/poi_icons.test.js
 
 | Commande | Description |
 | :--- | :--- |
+| `pip install -r requirements.txt` | Installe toutes les dépendances Python (pyyaml, shapely, pytest). |
 | `python3 build_map.py` | Compile `map.config.yaml` → `www/style.json` + granulométrie + params PMTiles. |
 | `python3 retro_style.py` | Ingénierie inverse `www/style.json` → `map.config.yaml`. |
 | `python3 apply_granulometry.py` | Applique les règles LOD aux GeoJSON. |
