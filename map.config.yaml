@@ -78,7 +78,7 @@ layers:
       garden: { tag: leisure, color: "#cfeca8", color_private: "#a4c775", pattern_private: green-hatch }
       grass: { tag: landuse, color: "#cdebb0", color_private: "#eaf6df" }
       meadow: { tag: landuse, color: "#cdebb0", color_private: "#eaf6df" }
-      park: { tag: leisure, color: "#a9ccac", color_private: "#e8f8ed", pattern_private: green-hatch }
+      park: { tag: leisure, color: "#a9ccac", color_private: "#94b597", pattern_private: green-hatch }
       scrub: { tag: natural, color: "#d6e6b8", opacity: 0.9 }
       shrubbery: { tag: natural, color: "#6b9943", color_private: "#8cb36d", opacity: 0.5 }
       wood: { tag: natural, color_private: "#d9ecd2" }
