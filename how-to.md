@@ -132,3 +132,15 @@ npm run test:validate
 ```
 
 Ces tests sont aussi lancés automatiquement sur chaque PR par le workflow `.github/workflows/tests.yml`.
+
+---
+
+## Installation de l'environnement Python
+
+Toutes les dépendances Python sont versionnées dans `requirements.txt` :
+
+```bash
+pip install -r requirements.txt
+```
+
+Cela installe `pyyaml` (build_map.py, retro_style.py), `shapely` (merge_buildings.py) et `pytest` (tests/test_roundtrip.py). Le CI utilise le même fichier — l'environnement local et le CI sont identiques.
