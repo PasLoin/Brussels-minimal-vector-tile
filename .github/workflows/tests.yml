@@ -109,7 +109,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python dependencies
-        run: pip install pyyaml pytest --break-system-packages -q 2>/dev/null || pip install pyyaml pytest -q
+        run: pip install -r requirements.txt --break-system-packages -q
 
       - name: Run round-trip tests
         run: python3 -m pytest tests/test_roundtrip.py -v --junit-xml=test-results/roundtrip-results.xml
