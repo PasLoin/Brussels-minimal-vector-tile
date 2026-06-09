@@ -1098,6 +1098,12 @@
     null,
     null
   ],
+  "cuisine-coffee;burger": [
+    null,
+    null,
+    null,
+    null
+  ],
   "cuisine-coffee_shop": [
     null,
     null,
@@ -1315,6 +1321,12 @@
     null
   ],
   "cuisine-fine_dining;french": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fine_dining;french;international;local": [
     null,
     null,
     null,
@@ -2418,6 +2430,12 @@
     null,
     null
   ],
+  "cuisine-salad;burger;cake;coffee;pancake": [
+    null,
+    null,
+    null,
+    null
+  ],
   "cuisine-salad;chicken;pasta": [
     null,
     null,
@@ -3348,12 +3366,6 @@
     null,
     null
   ],
-  "hvac": [
-    null,
-    null,
-    null,
-    null
-  ],
   "ice_cream": [
     null,
     null,
@@ -3834,6 +3846,12 @@
     null,
     null
   ],
+  "post_box": [
+    null,
+    "post_box",
+    null,
+    null
+  ],
   "post_office": [
     null,
     "post_box",
@@ -4212,6 +4230,12 @@
     null,
     null
   ],
+  "survey_point": [
+    null,
+    null,
+    null,
+    null
+  ],
   "swimming_pool": [
     null,
     null,
@@ -4335,6 +4359,12 @@
   "trophy": [
     null,
     null,
+    null,
+    null
+  ],
+  "truck": [
+    null,
+    "truck",
     null,
     null
   ],
