@@ -79,7 +79,7 @@ jobs:
             echo "::error::Impossible de télécharger le fichier OSM après 3 tentatives"
             exit 1
           fi
-          file01_01_2014_brussels_capital_region.pbf
+          file 01_01_2014_brussels_capital_region.pbf
           ls -lh 01_01_2014_brussels_capital_region.pbf
 
       - name: Check PBF freshness
@@ -88,7 +88,7 @@ jobs:
           md5sum 01_01_2014_brussels_capital_region.pbf
           osmium fileinfo 01_01_2014_brussels_capital_region.pbf
           echo "=== Repo PBF ==="
-          git show HEAD:01_01_2014_brussels_capital_region.pbf> /tmp/repo.pbf 2>/dev/null \
+          git show HEAD:01_01_2014_brussels_capital_region.pbf > /tmp/repo.pbf 2>/dev/null \
             && md5sum /tmp/repo.pbf \
             && osmium fileinfo /tmp/repo.pbf \
             || echo "Pas encore dans le repo"
