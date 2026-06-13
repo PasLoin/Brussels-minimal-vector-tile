@@ -2,6 +2,7 @@
   "_meta": {
     "type_keys": [
       "amenity",
+      "historic",
       "leisure",
       "shop",
       "tourism"
@@ -14,7 +15,31 @@
       }
     ]
   },
-  "Fruits & vegetables": [
+  "Brico Plani't": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "GB EXPRESS": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "allergy friendly food": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "antiques": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "art": [
     null,
     null,
     null,
@@ -44,10 +69,46 @@
     "bar",
     null
   ],
+  "beauty": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "bedding": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "betting": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "beverages": [
+    null,
+    null,
+    null,
+    null
+  ],
   "bicycle": [
     null,
     null,
     "bicycle",
+    null
+  ],
+  "books": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "butcher": [
+    "butcher",
+    null,
+    null,
     null
   ],
   "cafe": [
@@ -68,6 +129,12 @@
     "car",
     null
   ],
+  "chocolate": [
+    null,
+    "chocolate",
+    null,
+    null
+  ],
   "chocolatier": [
     null,
     null,
@@ -80,10 +147,34 @@
     "cinema",
     null
   ],
+  "clinic": [
+    null,
+    null,
+    "doctor",
+    null
+  ],
+  "clothes": [
+    null,
+    null,
+    "clothing-store",
+    null
+  ],
+  "computer": [
+    null,
+    null,
+    null,
+    null
+  ],
   "convenience": [
     null,
     null,
     "grocery",
+    null
+  ],
+  "copyshop": [
+    null,
+    null,
+    null,
     null
   ],
   "courthouse": [
@@ -92,7 +183,37 @@
     null,
     null
   ],
+  "cuisine-Belgian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-French": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-Japanese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-african": [
+    null,
+    null,
+    null,
+    null
+  ],
   "cuisine-asian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-belgian": [
     null,
     null,
     null,
@@ -104,13 +225,37 @@
     null,
     null
   ],
+  "cuisine-cake": [
+    null,
+    null,
+    null,
+    null
+  ],
   "cuisine-chinese": [
     null,
     null,
     null,
     null
   ],
+  "cuisine-french": [
+    null,
+    null,
+    null,
+    null
+  ],
   "cuisine-greek": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-ice_cream": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-indian": [
     null,
     null,
     null,
@@ -134,7 +279,61 @@
     null,
     null
   ],
+  "cuisine-lebanese": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-philippine": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-pizza": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-portuguese": [
+    null,
+    null,
+    null,
+    null
+  ],
   "cuisine-regional": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sandwich": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-seafood": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-spanish": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-steak_house": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-sushi": [
     null,
     null,
     null,
@@ -146,13 +345,55 @@
     null,
     null
   ],
+  "cuisine-thai": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-tunisian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-turkish": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-vietnamese": [
+    null,
+    null,
+    null,
+    null
+  ],
   "cuisine-world": [
     null,
     null,
     null,
     null
   ],
+  "deli;confectionery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "dentist": [
+    null,
+    null,
+    null,
+    null
+  ],
   "department_store": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "diy": [
     null,
     null,
     null,
@@ -170,6 +411,18 @@
     null,
     null
   ],
+  "estate_agent": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "fabric": [
+    null,
+    null,
+    null,
+    null
+  ],
   "fast_food": [
     null,
     null,
@@ -182,10 +435,70 @@
     "fire-station",
     null
   ],
+  "fish": [
+    null,
+    null,
+    null,
+    null
+  ],
   "florist": [
     null,
     "florist",
     "florist",
+    null
+  ],
+  "frozen_food": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "fuel": [
+    null,
+    null,
+    "fuel",
+    null
+  ],
+  "funeral_directors": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "furniture": [
+    null,
+    "furniture",
+    "furniture",
+    null
+  ],
+  "garden_centre": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "general": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "gift": [
+    null,
+    null,
+    "gift",
+    null
+  ],
+  "glassware": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "greengrocer": [
+    null,
+    null,
+    null,
     null
   ],
   "hairdresser": [
@@ -198,6 +511,18 @@
     null,
     null,
     "hardware",
+    null
+  ],
+  "hifi": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "home_cleaning": [
+    null,
+    null,
+    null,
     null
   ],
   "hospital": [
@@ -224,6 +549,30 @@
     "information",
     null
   ],
+  "insurance": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "international_phone": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "ironingshop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "jewelry": [
+    null,
+    null,
+    "jewelry-store",
+    null
+  ],
   "kindergarten": [
     null,
     null,
@@ -242,9 +591,39 @@
     "library",
     null
   ],
+  "locksmith": [
+    null,
+    null,
+    null,
+    null
+  ],
   "mall": [
     null,
     null,
+    null,
+    null
+  ],
+  "minerals": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "monument": [
+    null,
+    null,
+    "monument",
+    null
+  ],
+  "moto": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "motorcycle": [
+    null,
+    "motorcycle",
     null,
     null
   ],
@@ -260,10 +639,40 @@
     null,
     null
   ],
+  "optician": [
+    null,
+    null,
+    "optician",
+    null
+  ],
+  "paint": [
+    null,
+    null,
+    "paint",
+    null
+  ],
+  "parking": [
+    null,
+    null,
+    "parking",
+    null
+  ],
+  "pet": [
+    null,
+    null,
+    null,
+    null
+  ],
   "pharmacy": [
     null,
     "pharmacy",
     "pharmacy",
+    null
+  ],
+  "photo": [
+    null,
+    null,
+    null,
     null
   ],
   "place_of_worship": [
@@ -278,6 +687,12 @@
     "playground",
     null
   ],
+  "plumber": [
+    null,
+    "plumber",
+    null,
+    null
+  ],
   "police": [
     null,
     null,
@@ -288,6 +703,12 @@
     null,
     "post_box",
     "post",
+    null
+  ],
+  "print shop": [
+    null,
+    null,
+    null,
     null
   ],
   "pub": [
@@ -338,6 +759,30 @@
     "school",
     null
   ],
+  "seafood": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "second_hand": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "sewing": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "shoes": [
+    "shoes",
+    null,
+    null,
+    null
+  ],
   "shop": [
     null,
     null,
@@ -356,10 +801,22 @@
     "square",
     null
   ],
+  "stationery": [
+    null,
+    null,
+    null,
+    null
+  ],
   "supermarket": [
     null,
     null,
     "grocery",
+    null
+  ],
+  "tattoo": [
+    null,
+    null,
+    null,
     null
   ],
   "theatre": [
@@ -374,16 +831,46 @@
     "town-hall",
     null
   ],
+  "toys": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "traiteur": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "travel_agency": [
+    null,
+    null,
+    null,
+    null
+  ],
   "university": [
     null,
     null,
     "college",
     null
   ],
+  "video": [
+    null,
+    null,
+    null,
+    null
+  ],
   "viewpoint": [
     null,
     "binoculars",
     "viewpoint",
+    null
+  ],
+  "yes": [
+    null,
+    null,
+    null,
     null
   ]
 }
