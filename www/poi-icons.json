@@ -2,19 +2,11 @@
   "_meta": {
     "type_keys": [
       "amenity",
-      "craft",
-      "emergency",
-      "historic",
       "leisure",
       "shop",
       "tourism"
     ],
     "special_cases": [
-      {
-        "key": "cuisine",
-        "value": "friture",
-        "icon_key": "cuisine-friture"
-      },
       {
         "key": "religion",
         "value": "muslim",
@@ -22,31 +14,7 @@
       }
     ]
   },
-  "alcohol": [
-    "alcohol",
-    null,
-    "alcohol-shop",
-    null
-  ],
-  "antiques": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "art": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "art_center": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "arts_centre": [
+  "Fruits & vegetables": [
     null,
     null,
     null,
@@ -76,46 +44,10 @@
     "bar",
     null
   ],
-  "beauty": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "bed": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "bedding": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "betting": [
-    null,
-    null,
-    null,
-    null
-  ],
   "bicycle": [
     null,
     null,
     "bicycle",
-    null
-  ],
-  "books": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "butcher": [
-    "butcher",
-    null,
-    null,
     null
   ],
   "cafe": [
@@ -130,28 +62,10 @@
     "car",
     null
   ],
-  "car_parts": [
-    null,
-    null,
-    null,
-    null
-  ],
   "car_repair": [
     null,
     null,
     "car",
-    null
-  ],
-  "castle": [
-    null,
-    null,
-    "castle",
-    null
-  ],
-  "chocolate": [
-    null,
-    "chocolate",
-    null,
     null
   ],
   "chocolatier": [
@@ -166,40 +80,10 @@
     "cinema",
     null
   ],
-  "clinic": [
-    null,
-    null,
-    "doctor",
-    null
-  ],
-  "clothes": [
-    null,
-    null,
-    "clothing-store",
-    null
-  ],
-  "community_centre": [
-    null,
-    null,
-    null,
-    null
-  ],
   "convenience": [
     null,
     null,
     "grocery",
-    null
-  ],
-  "convenience;fair_trade": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "copyshop": [
-    null,
-    null,
-    null,
     null
   ],
   "courthouse": [
@@ -208,49 +92,7 @@
     null,
     null
   ],
-  "cuisine-Belgian": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-Sino-cambodgien": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-african": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-american": [
-    null,
-    null,
-    null,
-    null
-  ],
   "cuisine-asian": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-balkan": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-belgian": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-brasilian": [
     null,
     null,
     null,
@@ -262,97 +104,13 @@
     null,
     null
   ],
-  "cuisine-cake": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-chicken": [
-    null,
-    null,
-    null,
-    null
-  ],
   "cuisine-chinese": [
     null,
     null,
     null,
     null
   ],
-  "cuisine-coffee_shop": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-congolese": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-ethiopian": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-fish": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-fish_and_chips": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-french": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-frites, burger, spécialités grecques": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-friture": [
-    "cuisine_friture",
-    null,
-    null,
-    null
-  ],
-  "cuisine-german": [
-    null,
-    null,
-    null,
-    null
-  ],
   "cuisine-greek": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-ice_cream": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-indian": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-international": [
     null,
     null,
     null,
@@ -376,103 +134,7 @@
     null,
     null
   ],
-  "cuisine-lebanese": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-maroean": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-noodle": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-organic": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-philippine": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-pizza": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-polish": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-portuguese": [
-    null,
-    null,
-    null,
-    null
-  ],
   "cuisine-regional": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-regional;french": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-sandwich": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-seafood": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-slavic": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-spanish": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-steak_house": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-steaks": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-sushi": [
     null,
     null,
     null,
@@ -484,79 +146,7 @@
     null,
     null
   ],
-  "cuisine-thai": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-tunisian": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-turkish": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-turkish;halal": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-vegetarian": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-vietnam": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-vietnamese": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-vietnamese;thai": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-waffle": [
-    null,
-    null,
-    null,
-    null
-  ],
   "cuisine-world": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "deli": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "deli;confectionery": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "dentist": [
     null,
     null,
     null,
@@ -574,49 +164,7 @@
     null,
     null
   ],
-  "dry_cleaning": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "electro": [
-    null,
-    null,
-    null,
-    null
-  ],
   "electronics": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "erotic": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "estate_agency": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "estate_agent": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "fab_lab": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "fabric": [
     null,
     null,
     null,
@@ -634,70 +182,10 @@
     "fire-station",
     null
   ],
-  "fish": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "fishmonger": [
-    null,
-    null,
-    null,
-    null
-  ],
   "florist": [
     null,
     "florist",
     "florist",
-    null
-  ],
-  "frozen_food": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "fuel": [
-    null,
-    null,
-    "fuel",
-    null
-  ],
-  "funeral_directors": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "furniture": [
-    null,
-    "furniture",
-    "furniture",
-    null
-  ],
-  "garden_centre": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "general": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "glassware": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "greengrocer": [
-    null,
-    null,
-    null,
     null
   ],
   "hairdresser": [
@@ -710,18 +198,6 @@
     null,
     null,
     "hardware",
-    null
-  ],
-  "hifi": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "home_cleaning": [
-    null,
-    null,
-    null,
     null
   ],
   "hospital": [
@@ -742,55 +218,13 @@
     "lodging",
     null
   ],
-  "house": [
-    null,
-    null,
-    null,
-    null
-  ],
   "information": [
     null,
     null,
     "information",
     null
   ],
-  "insurance": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "international_phone": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "ironingshop": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "jewelry": [
-    null,
-    null,
-    "jewelry-store",
-    null
-  ],
   "kindergarten": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "kiosk": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "kitchen": [
     null,
     null,
     null,
@@ -814,103 +248,13 @@
     null,
     null
   ],
-  "manor": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "minerals": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "mobile_phone": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "monument": [
-    null,
-    null,
-    "monument",
-    null
-  ],
-  "moto": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "motorcycle": [
-    null,
-    "motorcycle",
-    null,
-    null
-  ],
   "museum": [
     null,
     "museum",
     "museum",
     null
   ],
-  "music": [
-    null,
-    null,
-    "music",
-    null
-  ],
   "newsagent": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "newsagents": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "no": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "optician": [
-    null,
-    null,
-    "optician",
-    null
-  ],
-  "organic": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "outdoor": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "paint": [
-    null,
-    null,
-    "paint",
-    null
-  ],
-  "parking_entrance": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "pet": [
     null,
     null,
     null,
@@ -920,18 +264,6 @@
     null,
     "pharmacy",
     "pharmacy",
-    null
-  ],
-  "photo": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "pitch": [
-    null,
-    null,
-    "pitch",
     null
   ],
   "place_of_worship": [
@@ -1000,40 +332,10 @@
     "restaurant",
     null
   ],
-  "ruins": [
-    null,
-    "ruins",
-    null,
-    null
-  ],
   "school": [
     null,
     "school",
     "school",
-    null
-  ],
-  "seafood": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "second_hand": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "sewing": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "shoes": [
-    "shoes",
-    null,
-    null,
     null
   ],
   "shop": [
@@ -1048,28 +350,16 @@
     null,
     null
   ],
-  "stationery": [
+  "square": [
     null,
     null,
-    null,
+    "square",
     null
   ],
   "supermarket": [
     null,
     null,
     "grocery",
-    null
-  ],
-  "tailor": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "tattoo": [
-    null,
-    null,
-    null,
     null
   ],
   "theatre": [
@@ -1084,58 +374,16 @@
     "town-hall",
     null
   ],
-  "toys": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "traiteur": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "travel_agency": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "tyres": [
-    null,
-    null,
-    null,
-    null
-  ],
   "university": [
     null,
     null,
     "college",
     null
   ],
-  "veterinary": [
-    null,
-    null,
-    "veterinary",
-    null
-  ],
-  "video": [
-    null,
-    null,
-    null,
-    null
-  ],
   "viewpoint": [
     null,
     "binoculars",
     "viewpoint",
-    null
-  ],
-  "yes": [
-    null,
-    null,
-    null,
     null
   ]
 }
