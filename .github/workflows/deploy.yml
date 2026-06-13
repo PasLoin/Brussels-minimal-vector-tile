@@ -72,23 +72,23 @@ jobs:
               break
             fi
             echo "Échec, nouvelle tentative dans 10s..."
-            rm -f brussels_capital_region-latest.osm.pbf
+            rm -f 01_01_2014_brussels_capital_region.pbf
             sleep 10
           done
           if [ "$success" = false ]; then
             echo "::error::Impossible de télécharger le fichier OSM après 3 tentatives"
             exit 1
           fi
-          file brussels_capital_region-latest.osm.pbf
-          ls -lh brussels_capital_region-latest.osm.pbf
+          file01_01_2014_brussels_capital_region.pbf
+          ls -lh 01_01_2014_brussels_capital_region.pbf
 
       - name: Check PBF freshness
         run: |
           echo "=== Downloaded PBF ==="
-          md5sum brussels_capital_region-latest.osm.pbf
-          osmium fileinfo brussels_capital_region-latest.osm.pbf
+          md5sum 01_01_2014_brussels_capital_region.pbf
+          osmium fileinfo 01_01_2014_brussels_capital_region.pbf
           echo "=== Repo PBF ==="
-          git show HEAD:brussels_capital_region-latest.osm.pbf > /tmp/repo.pbf 2>/dev/null \
+          git show HEAD:01_01_2014_brussels_capital_region.pbf> /tmp/repo.pbf 2>/dev/null \
             && md5sum /tmp/repo.pbf \
             && osmium fileinfo /tmp/repo.pbf \
             || echo "Pas encore dans le repo"
