@@ -55,7 +55,22 @@ extract trees \
   nwr/natural=tree nwr/natural=tree_row nwr/barrier=hedge  
 
 extract landuse \
-  nwr/landuse=residential,industrial,commercial,retail,railway,education,construction,brownfield,greenfield,landfill,military,cemetery,allotments,farmland,farmyard
+  nwr/landuse=residential,industrial,commercial,retail,railway,education,construction,brownfield,greenfield,landfill,military,cemetery,allotments,farmland,farmyard,garages,religious,recreation_ground,village_green,quarry,depot
+
+# ── Vérification de couverture landuse (issue #37) ───────
+# Extraction large landuse=* (toutes valeurs) pour comparer ce qui
+# existe vraiment dans Bxl vs le wiki OSM et map.config.yaml.
+# Fichier temporaire uniquement — pas utilisé pour le rendu, afin
+# de ne pas dupliquer les features déjà couvertes par green/water.
+echo "→ landuse coverage check (vs wiki + map.config.yaml)"
+osmium tags-filter "$SRC" nwr/landuse=* -o "_tmp_landuse_all.osm.pbf" --overwrite
+osmium export "_tmp_landuse_all.osm.pbf" -o "_tmp_landuse_all.json" --overwrite
+python3 check_landuse_coverage.py \
+  --all-json _tmp_landuse_all.json \
+  --config   map.config.yaml \
+  --report   landuse_report.md \
+  || echo "⚠  landuse coverage check en échec (non bloquant)"
+rm -f _tmp_landuse_all.osm.pbf _tmp_landuse_all.json
 
 extract boundaries \
   nwr/boundary=administrative
