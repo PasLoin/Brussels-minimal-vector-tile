@@ -604,6 +604,23 @@
       }
     },
     {
+      "id": "landuse-depot",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "depot"
+      ],
+      "paint": {
+        "fill-color": "#ebdbe8"
+      }
+    },
+    {
       "id": "landuse-education",
       "type": "fill",
       "source": "landuse",
@@ -654,6 +671,23 @@
       "paint": {
         "fill-color": "#f0d3ad",
         "fill-opacity": 0.95
+      }
+    },
+    {
+      "id": "landuse-garages",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "garages"
+      ],
+      "paint": {
+        "fill-color": "#dfddce"
       }
     },
     {
@@ -746,6 +780,41 @@
       }
     },
     {
+      "id": "landuse-quarry",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "quarry"
+      ],
+      "paint": {
+        "fill-color": "#c5c3c3"
+      }
+    },
+    {
+      "id": "landuse-quarry-outline",
+      "type": "line",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "quarry"
+      ],
+      "paint": {
+        "line-color": "#b0aeae",
+        "line-width": 0.5
+      }
+    },
+    {
       "id": "landuse-railway",
       "type": "fill",
       "source": "landuse",
@@ -760,6 +829,58 @@
       ],
       "paint": {
         "fill-color": "#ebdbe8"
+      }
+    },
+    {
+      "id": "landuse-recreation_ground",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "recreation_ground"
+      ],
+      "paint": {
+        "fill-color": "#c8facc"
+      }
+    },
+    {
+      "id": "landuse-religious",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "religious"
+      ],
+      "paint": {
+        "fill-color": "#d0d0d0"
+      }
+    },
+    {
+      "id": "landuse-religious-outline",
+      "type": "line",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "religious"
+      ],
+      "paint": {
+        "line-color": "#919191",
+        "line-width": 0.5
       }
     },
     {
@@ -794,6 +915,23 @@
       ],
       "paint": {
         "fill-color": "#ffd6d1"
+      }
+    },
+    {
+      "id": "landuse-village_green",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "village_green"
+      ],
+      "paint": {
+        "fill-color": "#cdebb0"
       }
     },
     {
