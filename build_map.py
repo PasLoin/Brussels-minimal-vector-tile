@@ -539,6 +539,10 @@ def cycleway(cfg):
     # Pas de flèche -> bidirectionnelle (convention standard).
     # "oneway" est déjà conservé par apply_granulometry (couche
     # cycleway sans sous-types -> keep_properties: "ALL").
+    #
+    # Rendu : flèche blanche + halo dans la couleur de la piste, plutôt
+    # que flèche colorée semi-transparente (invisible sur la ligne
+    # bleue en pointillés de même couleur).
     out.append({"id":"cycleway-oneway-arrows","type":"symbol",
         "source":"cycleway","source-layer":"cycleway","minzoom":16,
         "filter":["==",["get","oneway"],"yes"],
@@ -547,14 +551,14 @@ def cycleway(cfg):
             "symbol-spacing":zoom([(16,100),(18,60)]),
             "text-field":"→",
             "text-font":["Noto Sans Regular"],
-            "text-size":zoom([(16,9),(18,12)]),
+            "text-size":zoom([(16,10),(18,13)]),
             "text-rotation-alignment":"map",
             "text-pitch-alignment":"map",
             "text-keep-upright":False,
             "text-allow-overlap":True,
             "text-ignore-placement":True},
-        "paint":{"text-color":col,"text-opacity":0.6,
-                 "text-halo-color":"rgba(255,255,255,0.6)","text-halo-width":1}})
+        "paint":{"text-color":"#ffffff","text-opacity":0.95,
+                 "text-halo-color":col,"text-halo-width":1.5}})
 
     return out
 
