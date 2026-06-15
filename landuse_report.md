@@ -3,7 +3,7 @@
 Comparaison entre les `landuse=*` présents dans l'extrait Bruxelles et ceux rendus par `map.config.yaml` (cf. issue #37).
 
 - ✓ rendus : 20
-- ⚠ manquants (présents mais sans style) : 9
+- ⚠ manquants (présents mais sans style) : 8
 - ↪ gérés par une autre couche : 5
 - · sans donnée dans le pbf Bxl : 7
 
@@ -21,7 +21,6 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.landus
 | `vineyard` | 6 |
 | `greenhouse_horticulture` | 4 |
 | `institutional` | 4 |
-| `park` | 1 |
 
 ## ✓ Rendus
 
@@ -29,7 +28,7 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.landus
 | :--- | ---: |
 | `residential` | 2283 |
 | `commercial` | 447 |
-| `construction` | 343 |
+| `construction` | 339 |
 | `industrial` | 315 |
 | `allotments` | 290 |
 | `farmland` | 240 |

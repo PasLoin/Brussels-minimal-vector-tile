@@ -644,6 +644,23 @@
       }
     },
     {
+      "id": "green-heath",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "natural"
+        ],
+        "heath"
+      ],
+      "paint": {
+        "fill-color": "#d6d99f"
+      }
+    },
+    {
       "id": "green-grass",
       "type": "fill",
       "source": "green",
@@ -665,6 +682,14 @@
             "landuse"
           ],
           "meadow"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "grassland"
         ]
       ],
       "paint": {
@@ -844,7 +869,7 @@
             "get",
             "tunnel"
           ],
-          "culvert"
+          "yes"
         ],
         [
           "!=",
@@ -852,7 +877,7 @@
             "get",
             "tunnel"
           ],
-          "yes"
+          "culvert"
         ],
         [
           "==",
@@ -901,7 +926,7 @@
             "get",
             "tunnel"
           ],
-          "culvert"
+          "yes"
         ],
         [
           "!=",
@@ -909,7 +934,7 @@
             "get",
             "tunnel"
           ],
-          "yes"
+          "culvert"
         ],
         [
           "==",
@@ -958,7 +983,7 @@
             "get",
             "tunnel"
           ],
-          "culvert"
+          "yes"
         ],
         [
           "!=",
@@ -966,7 +991,7 @@
             "get",
             "tunnel"
           ],
-          "yes"
+          "culvert"
         ],
         [
           "==",
@@ -1015,7 +1040,7 @@
             "get",
             "tunnel"
           ],
-          "culvert"
+          "yes"
         ],
         [
           "!=",
@@ -1023,7 +1048,7 @@
             "get",
             "tunnel"
           ],
-          "yes"
+          "culvert"
         ],
         [
           "==",
