@@ -46,16 +46,31 @@ layers:
       cemetery: { tag: landuse, color: "#576e5a", opacity: 0.9 }
       commercial: { tag: landuse, color: "#f2dad9" }
       construction: { tag: landuse, color: "#b3a392", opacity: 0.95 }
+      # depot : pas de rendu dédié dans osm-carto -> on reprend la teinte
+      # "industriel" déjà utilisée pour railway/industrial (dépôts STIB/SNCB)
+      depot: { tag: landuse, color: "#ebdbe8" }
       education: { tag: landuse, color: "#ffe894" }
       farmland: { tag: landuse, color: "#add15a", opacity: 0.95 }
       farmyard: { tag: landuse, color: "#f0d3ad", opacity: 0.95 }
+      # garages : couleur osm-carto @garages
+      garages: { tag: landuse, color: "#dfddce" }
       greenfield: { tag: landuse, color: "#cfeca8", opacity: 0.5 }
       industrial: { tag: landuse, color: "#ebdbe8" }
       landfill: { tag: landuse, color: "#b3a392", opacity: 0.5 }
       military: { tag: landuse, color: "#bd4a72", pattern: military-hatch, opacity: 0.1 }
+      # quarry : couleur osm-carto @quarry + contour (darken 10%)
+      quarry: { tag: landuse, color: "#c5c3c3", outline_color: "#b0aeae" }
       railway: { tag: landuse, color: "#ebdbe8" }
+      # recreation_ground : osm-carto le rend comme @leisure (vert clair
+      # proche de @park) -> teinte "loisirs" claire
+      recreation_ground: { tag: landuse, color: "#c8facc" }
+      # religious : couleur osm-carto @place_of_worship + contour (darken 30%)
+      religious: { tag: landuse, color: "#d0d0d0", outline_color: "#919191" }
       residential: { tag: landuse }
       retail: { tag: landuse, color: "#ffd6d1" }
+      # village_green : osm-carto le rend comme @grass -> même teinte que
+      # green-grass dans cette app
+      village_green: { tag: landuse, color: "#cdebb0" }
 
   water:
     label: Eau
