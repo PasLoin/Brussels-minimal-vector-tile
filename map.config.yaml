@@ -92,6 +92,8 @@ layers:
       forest: { tag: landuse, color_private: "#d9ecd2" }
       garden: { tag: leisure, color: "#cfeca8", color_private: "#a4c775", pattern_private: green-hatch }
       grass: { tag: landuse, color: "#cdebb0", color_private: "#eaf6df" }
+      # heath (natural=heath) : couleur osm-carto @heath
+      heath: { tag: natural, color: "#d6d99f" }
       meadow: { tag: landuse, color: "#cdebb0", color_private: "#eaf6df" }
       park: { tag: leisure, color: "#a9ccac", color_private: "#94b597", pattern_private: green-hatch }
       scrub: { tag: natural, color: "#d6e6b8", opacity: 0.9 }

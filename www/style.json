@@ -844,6 +844,14 @@
             "get",
             "tunnel"
           ],
+          "culvert"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
           "yes"
         ],
         [
@@ -886,6 +894,14 @@
             "waterway"
           ],
           "canal"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "culvert"
         ],
         [
           "!=",
@@ -942,6 +958,14 @@
             "get",
             "tunnel"
           ],
+          "culvert"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
           "yes"
         ],
         [
@@ -984,6 +1008,14 @@
             "waterway"
           ],
           "ditch"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "culvert"
         ],
         [
           "!=",

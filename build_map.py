@@ -122,9 +122,10 @@ def landuse(cfg):
 
 # Ordre de rendu des sous-types green : "park" et "garden" sont souvent de
 # grandes zones (parcs publics) qui CONTIENNENT des inclusions plus
-# spécifiques (forêt, pelouse/meadow, broussailles, massifs de fleurs).
-# On dessine donc park/garden en premier (fond), puis les inclusions
-# par-dessus, pour qu'elles restent visibles à l'intérieur d'un park.
+# spécifiques (forêt, pelouse/meadow/grassland, lande, broussailles, massifs
+# de fleurs). On dessine donc park/garden en premier (fond), puis les
+# inclusions par-dessus, pour qu'elles restent visibles à l'intérieur d'un
+# park.
 FILTERS = {
     # — fonds (souvent de grandes zones, ex: parcs publics) —
     "park":      ["==", ["get","leisure"], "park"],
@@ -133,7 +134,10 @@ FILTERS = {
     "forest":    ["any", ["==",["get","landuse"],"forest"], ["==",["get","natural"],"wood"]],
     "scrub":     ["==", ["get","natural"], "scrub"],
     "shrubbery": ["==", ["get","natural"], "shrubbery"],
-    "grass":     ["any", ["==",["get","landuse"],"grass"],  ["==",["get","landuse"],"meadow"]],
+    "heath":     ["==", ["get","natural"], "heath"],
+    # grass : couvre aussi natural=grassland (même rendu qu'osm-carto @grass)
+    "grass":     ["any", ["==",["get","landuse"],"grass"],  ["==",["get","landuse"],"meadow"],
+                          ["==",["get","natural"],"grassland"]],
     "flowerbed": ["==", ["get","landuse"], "flowerbed"],
     "wood":      None,  # couvert par forest
 }
@@ -204,6 +208,11 @@ def water(cfg):
                         ["==",["geometry-type"],"Polygon"]],
         "paint":{"fill-color": c(wetland.get("color","#d4e2c6")),
                  "fill-opacity": wetland.get("opacity", 0.5)}})
+    # waterway=river/canal/stream/ditch : un tronçon en tunnel=culvert
+    # doit avoir le MÊME rendu qu'un tronçon en tunnel=yes (hachuré, cf.
+    # water-tunnel-casing/core ci-dessous, qui couvrent déjà yes ET
+    # culvert) — on l'exclut donc ici pour éviter le double-rendu
+    # (ligne pleine + hachures superposées).
     for ww,(w,dz) in {"river":([(10,1),(18,12)],10),"canal":([(10,1),(18,10)],10),
                        "stream":([(13,.5),(18,3)],13),"ditch":([(14,.3),(18,2)],14)}.items():
         az = (st.get(ww) or {}).get("appear_at", dz)
@@ -211,6 +220,7 @@ def water(cfg):
             "source":"water","source-layer":"water","minzoom":az,
             "filter":["all",["==",["get","waterway"],ww],
                             ["!=",["get","tunnel"],"yes"],
+                            ["!=",["get","tunnel"],"culvert"],
                             ["==",["geometry-type"],"LineString"]],
             "paint":{"line-color":col,"line-width":zoom(w)}})
     # Contour polygones eau + tunnels eau

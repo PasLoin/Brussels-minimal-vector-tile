@@ -49,7 +49,8 @@ extract water \
 
 extract green \
   nwr/landuse=flowerbed nwr/natural=shrubbery nwr/natural=scrub \
-  nwr/leisure=park,garden nwr/landuse=forest,meadow,grass nwr/natural=wood
+  nwr/leisure=park,garden nwr/landuse=forest,meadow,grass nwr/natural=wood \
+  nwr/natural=grassland,heath
 
 extract trees \
   nwr/natural=tree nwr/natural=tree_row nwr/barrier=hedge  
