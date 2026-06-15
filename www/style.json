@@ -1,0 +1,5933 @@
+{
+  "version": 8,
+  "name": "Map",
+  "sources": {
+    "landuse": {
+      "type": "vector",
+      "url": "./landuse.pmtiles.gz",
+      "attribution": "© OpenStreetMap contributors"
+    },
+    "roads": {
+      "type": "vector",
+      "url": "./roads.pmtiles.gz",
+      "attribution": "© OpenStreetMap contributors"
+    },
+    "buildings": {
+      "type": "vector",
+      "url": "./buildings.pmtiles.gz",
+      "attribution": "© OpenStreetMap contributors"
+    },
+    "water": {
+      "type": "vector",
+      "url": "./water.pmtiles.gz",
+      "attribution": "© OpenStreetMap contributors"
+    },
+    "green": {
+      "type": "vector",
+      "url": "./green.pmtiles.gz",
+      "attribution": "© OpenStreetMap contributors"
+    },
+    "trees": {
+      "type": "vector",
+      "url": "./trees.pmtiles.gz",
+      "attribution": "© OpenStreetMap contributors"
+    },
+    "boundaries": {
+      "type": "vector",
+      "url": "./boundaries.pmtiles.gz",
+      "attribution": "© OpenStreetMap contributors"
+    },
+    "poi": {
+      "type": "vector",
+      "url": "./poi.pmtiles.gz",
+      "attribution": "© OpenStreetMap contributors"
+    },
+    "pedestrian": {
+      "type": "vector",
+      "url": "./pedestrian.pmtiles.gz",
+      "attribution": "© OpenStreetMap contributors"
+    },
+    "cycleway": {
+      "type": "vector",
+      "url": "./cycleway.pmtiles.gz",
+      "attribution": "© OpenStreetMap contributors"
+    },
+    "railway": {
+      "type": "vector",
+      "url": "./railway.pmtiles.gz",
+      "attribution": "© OpenStreetMap contributors"
+    },
+    "public_transport": {
+      "type": "vector",
+      "url": "./public_transport.pmtiles.gz",
+      "attribution": "© OpenStreetMap contributors"
+    },
+    "leisure": {
+      "type": "vector",
+      "url": "./leisure.pmtiles.gz",
+      "attribution": "© OpenStreetMap contributors"
+    }
+  },
+  "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#f2efe9"
+      }
+    },
+    {
+      "id": "water-fill",
+      "type": "fill",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "all",
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "culvert"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "covered"
+          ],
+          "yes"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Polygon"
+        ]
+      ],
+      "paint": {
+        "fill-color": "#aad3df"
+      }
+    },
+    {
+      "id": "water-wetland",
+      "type": "fill",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "wetland"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Polygon"
+        ]
+      ],
+      "paint": {
+        "fill-color": "#d4e2c6",
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "waterway-river",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "waterway"
+          ],
+          "river"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ]
+      ],
+      "paint": {
+        "line-color": "#aad3df",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          1,
+          18,
+          12
+        ]
+      }
+    },
+    {
+      "id": "waterway-canal",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "waterway"
+          ],
+          "canal"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ]
+      ],
+      "paint": {
+        "line-color": "#aad3df",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          1,
+          18,
+          10
+        ]
+      }
+    },
+    {
+      "id": "waterway-stream",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "waterway"
+          ],
+          "stream"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ]
+      ],
+      "paint": {
+        "line-color": "#aad3df",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          3
+        ]
+      }
+    },
+    {
+      "id": "waterway-ditch",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "minzoom": 14,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "waterway"
+          ],
+          "ditch"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ]
+      ],
+      "paint": {
+        "line-color": "#aad3df",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          0.3,
+          18,
+          2
+        ]
+      }
+    },
+    {
+      "id": "water-line",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "all",
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "culvert"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "covered"
+          ],
+          "yes"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Polygon"
+        ],
+        [
+          "!",
+          [
+            "has",
+            "waterway"
+          ]
+        ]
+      ],
+      "paint": {
+        "line-color": "#aad3df",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          1,
+          18,
+          10
+        ]
+      }
+    },
+    {
+      "id": "water-tunnel-casing",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "culvert"
+          ]
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ]
+      ],
+      "paint": {
+        "line-color": "#aad3df",
+        "line-dasharray": [
+          2,
+          2
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          1.5,
+          18,
+          5
+        ]
+      }
+    },
+    {
+      "id": "water-tunnel-core",
+      "type": "line",
+      "source": "water",
+      "source-layer": "water",
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "culvert"
+          ]
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ]
+      ],
+      "paint": {
+        "line-color": "#e6faf9",
+        "line-opacity": 0.4,
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          1,
+          18,
+          4
+        ]
+      }
+    },
+    {
+      "id": "landuse-allotments",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "allotments"
+      ],
+      "paint": {
+        "fill-color": "#9cad95",
+        "fill-opacity": 0.9
+      }
+    },
+    {
+      "id": "landuse-brownfield",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "brownfield"
+      ],
+      "paint": {
+        "fill-color": "#b3a392",
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "landuse-cemetery",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "cemetery"
+      ],
+      "paint": {
+        "fill-color": "#576e5a",
+        "fill-opacity": 0.9
+      }
+    },
+    {
+      "id": "landuse-commercial",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "commercial"
+      ],
+      "paint": {
+        "fill-color": "#f2dad9"
+      }
+    },
+    {
+      "id": "landuse-construction",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "construction"
+      ],
+      "paint": {
+        "fill-color": "#b3a392",
+        "fill-opacity": 0.95
+      }
+    },
+    {
+      "id": "landuse-education",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "education"
+      ],
+      "paint": {
+        "fill-color": "#ffe894"
+      }
+    },
+    {
+      "id": "landuse-farmland",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "farmland"
+      ],
+      "paint": {
+        "fill-color": "#add15a",
+        "fill-opacity": 0.95
+      }
+    },
+    {
+      "id": "landuse-farmyard",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "farmyard"
+      ],
+      "paint": {
+        "fill-color": "#f0d3ad",
+        "fill-opacity": 0.95
+      }
+    },
+    {
+      "id": "landuse-greenfield",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "greenfield"
+      ],
+      "paint": {
+        "fill-color": "#cfeca8",
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "landuse-industrial",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "industrial"
+      ],
+      "paint": {
+        "fill-color": "#ebdbe8"
+      }
+    },
+    {
+      "id": "landuse-landfill",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "landfill"
+      ],
+      "paint": {
+        "fill-color": "#b3a392",
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "landuse-military",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "military"
+      ],
+      "paint": {
+        "fill-color": "#bd4a72",
+        "fill-opacity": 0.1
+      }
+    },
+    {
+      "id": "landuse-military-hatch",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "minzoom": 10,
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "military"
+      ],
+      "paint": {
+        "fill-pattern": "military-hatch"
+      }
+    },
+    {
+      "id": "landuse-railway",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "railway"
+      ],
+      "paint": {
+        "fill-color": "#ebdbe8"
+      }
+    },
+    {
+      "id": "landuse-residential",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "residential"
+      ],
+      "paint": {
+        "fill-color": "#e0dfdf"
+      }
+    },
+    {
+      "id": "landuse-retail",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "retail"
+      ],
+      "paint": {
+        "fill-color": "#ffd6d1"
+      }
+    },
+    {
+      "id": "green-forest",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "any",
+        [
+          "==",
+          [
+            "get",
+            "landuse"
+          ],
+          "forest"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "wood"
+        ]
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#d9ecd2",
+          "#add19e"
+        ]
+      }
+    },
+    {
+      "id": "green-grass",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "any",
+        [
+          "==",
+          [
+            "get",
+            "landuse"
+          ],
+          "grass"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "landuse"
+          ],
+          "meadow"
+        ]
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#eaf6df",
+          "#cdebb0"
+        ]
+      }
+    },
+    {
+      "id": "green-flowerbed",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "flowerbed"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#f3f9e0",
+          "#e6f2c1"
+        ]
+      }
+    },
+    {
+      "id": "green-scrub",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "natural"
+        ],
+        "scrub"
+      ],
+      "paint": {
+        "fill-color": "#d6e6b8",
+        "fill-opacity": 0.9
+      }
+    },
+    {
+      "id": "green-shrubbery",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "natural"
+        ],
+        "shrubbery"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#8cb36d",
+          "#6b9943"
+        ],
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "green-park",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "leisure"
+        ],
+        "park"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#94b597",
+          "#a9ccac"
+        ]
+      }
+    },
+    {
+      "id": "green-garden",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "leisure"
+        ],
+        "garden"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#a4c775",
+          "#cfeca8"
+        ]
+      }
+    },
+    {
+      "id": "green-hatch-green_hatch",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "leisure"
+            ],
+            "park"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "leisure"
+            ],
+            "garden"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "access"
+          ],
+          "private"
+        ]
+      ],
+      "paint": {
+        "fill-pattern": "green-hatch"
+      }
+    },
+    {
+      "id": "leisure-fill",
+      "type": "fill",
+      "source": "leisure",
+      "source-layer": "leisure",
+      "filter": [
+        "==",
+        [
+          "geometry-type"
+        ],
+        "Polygon"
+      ],
+      "paint": {
+        "fill-color": [
+          "match",
+          [
+            "get",
+            "leisure"
+          ],
+          "dog_park",
+          "#def3c0",
+          "fitness_station",
+          "#def3c0",
+          "outdoor_seating",
+          "#e6e1d9",
+          "pitch",
+          "#6fb792",
+          "playground",
+          "#c2e1c2",
+          "#def3c0"
+        ],
+        "fill-opacity": 1.0
+      }
+    },
+    {
+      "id": "leisure-outline",
+      "type": "line",
+      "source": "leisure",
+      "source-layer": "leisure",
+      "filter": [
+        "==",
+        [
+          "geometry-type"
+        ],
+        "Polygon"
+      ],
+      "paint": {
+        "line-color": [
+          "match",
+          [
+            "get",
+            "leisure"
+          ],
+          "pitch",
+          "#6fb792",
+          "#adadad"
+        ],
+        "line-width": 0.5
+      }
+    },
+    {
+      "id": "pitch-sport-fill",
+      "type": "fill",
+      "source": "leisure",
+      "source-layer": "leisure",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "leisure"
+          ],
+          "pitch"
+        ],
+        [
+          "has",
+          "sport_render"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Polygon"
+        ]
+      ],
+      "paint": {
+        "fill-color": [
+          "match",
+          [
+            "get",
+            "sport_render"
+          ],
+          "soccer",
+          "#5a9e4b",
+          "tennis",
+          "#4a7c3f",
+          "basketball",
+          "#c47a4a",
+          "boules",
+          "#c4a86a",
+          "#8ad3af"
+        ],
+        "fill-opacity": 1.0
+      }
+    },
+    {
+      "id": "pitch-sport-outline",
+      "type": "line",
+      "source": "leisure",
+      "source-layer": "leisure",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "leisure"
+          ],
+          "pitch"
+        ],
+        [
+          "has",
+          "sport_render"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Polygon"
+        ]
+      ],
+      "paint": {
+        "line-color": [
+          "match",
+          [
+            "get",
+            "sport_render"
+          ],
+          "soccer",
+          "#3d7a32",
+          "tennis",
+          "#3a6530",
+          "basketball",
+          "#9e5e33",
+          "boules",
+          "#9e8a4e",
+          "#6fb792"
+        ],
+        "line-width": 0.8
+      }
+    },
+    {
+      "id": "buildings-fill",
+      "type": "fill",
+      "source": "buildings",
+      "source-layer": "buildings",
+      "minzoom": 13,
+      "paint": {
+        "fill-color": "#fce1c5"
+      }
+    },
+    {
+      "id": "buildings-3d",
+      "type": "fill-extrusion",
+      "source": "buildings",
+      "source-layer": "buildings",
+      "minzoom": 13,
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {
+        "fill-extrusion-color": "#fce1c5",
+        "fill-extrusion-height": [
+          "case",
+          [
+            "has",
+            "height"
+          ],
+          [
+            "to-number",
+            [
+              "get",
+              "height"
+            ],
+            6
+          ],
+          [
+            "has",
+            "building:levels"
+          ],
+          [
+            "*",
+            [
+              "to-number",
+              [
+                "get",
+                "building:levels"
+              ],
+              2
+            ],
+            3
+          ],
+          7.5
+        ],
+        "fill-extrusion-base": 0,
+        "fill-extrusion-opacity": 0.75
+      }
+    },
+    {
+      "id": "buildings-outline",
+      "type": "line",
+      "source": "buildings",
+      "source-layer": "buildings",
+      "minzoom": 13,
+      "paint": {
+        "line-color": "#d4a574",
+        "line-width": 0.5
+      }
+    },
+    {
+      "id": "trees-hedge",
+      "type": "line",
+      "source": "trees",
+      "source-layer": "trees",
+      "minzoom": 14,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "barrier"
+          ],
+          "hedge"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#6ba048",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          0.8,
+          18,
+          3.5
+        ],
+        "line-opacity": 0.85
+      }
+    },
+    {
+      "id": "trees-row-line",
+      "type": "line",
+      "source": "trees",
+      "source-layer": "trees",
+      "minzoom": 16,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree_row"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#8fbc77",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          16,
+          0.5,
+          18,
+          1.5
+        ],
+        "line-opacity": 0.55
+      }
+    },
+    {
+      "id": "trees-row-broadleaved",
+      "type": "symbol",
+      "source": "trees",
+      "source-layer": "trees",
+      "minzoom": 17,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree_row"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "leaf_type"
+          ],
+          "broadleaved"
+        ]
+      ],
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          48,
+          18,
+          32
+        ],
+        "text-field": "●",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          9,
+          18,
+          13
+        ],
+        "text-rotation-alignment": "map",
+        "text-allow-overlap": false
+      },
+      "paint": {
+        "text-color": "#6cae50",
+        "text-halo-color": "#f2efe9",
+        "text-halo-width": 0.8
+      }
+    },
+    {
+      "id": "trees-row-needleleaved",
+      "type": "symbol",
+      "source": "trees",
+      "source-layer": "trees",
+      "minzoom": 17,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree_row"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "leaf_type"
+          ],
+          "needleleaved"
+        ]
+      ],
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          48,
+          18,
+          32
+        ],
+        "text-field": "▲",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          9,
+          18,
+          13
+        ],
+        "text-rotation-alignment": "map",
+        "text-allow-overlap": false
+      },
+      "paint": {
+        "text-color": "#5f9f50",
+        "text-halo-color": "#f2efe9",
+        "text-halo-width": 0.8
+      }
+    },
+    {
+      "id": "trees-row-default",
+      "type": "symbol",
+      "source": "trees",
+      "source-layer": "trees",
+      "minzoom": 17,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree_row"
+        ],
+        [
+          "!",
+          [
+            "in",
+            [
+              "get",
+              "leaf_type"
+            ],
+            [
+              "literal",
+              [
+                "broadleaved",
+                "needleleaved"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          48,
+          18,
+          32
+        ],
+        "text-field": "●",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          8,
+          18,
+          12
+        ],
+        "text-rotation-alignment": "map",
+        "text-allow-overlap": false
+      },
+      "paint": {
+        "text-color": "#7eb36a",
+        "text-halo-color": "#f2efe9",
+        "text-halo-width": 0.8
+      }
+    },
+    {
+      "id": "trees-tree-broadleaved",
+      "type": "symbol",
+      "source": "trees",
+      "source-layer": "trees",
+      "minzoom": 17,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Point"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "leaf_type"
+          ],
+          "broadleaved"
+        ]
+      ],
+      "layout": {
+        "text-field": "●",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          10,
+          18,
+          14
+        ],
+        "text-allow-overlap": false
+      },
+      "paint": {
+        "text-color": "#6cae50",
+        "text-halo-color": "#f2efe9",
+        "text-halo-width": 0.9
+      }
+    },
+    {
+      "id": "trees-tree-needleleaved",
+      "type": "symbol",
+      "source": "trees",
+      "source-layer": "trees",
+      "minzoom": 17,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Point"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "leaf_type"
+          ],
+          "needleleaved"
+        ]
+      ],
+      "layout": {
+        "text-field": "▲",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          10,
+          18,
+          14
+        ],
+        "text-allow-overlap": false
+      },
+      "paint": {
+        "text-color": "#5f9f50",
+        "text-halo-color": "#f2efe9",
+        "text-halo-width": 0.9
+      }
+    },
+    {
+      "id": "trees-tree-default",
+      "type": "symbol",
+      "source": "trees",
+      "source-layer": "trees",
+      "minzoom": 17,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Point"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "tree"
+        ],
+        [
+          "!",
+          [
+            "in",
+            [
+              "get",
+              "leaf_type"
+            ],
+            [
+              "literal",
+              [
+                "broadleaved",
+                "needleleaved"
+              ]
+            ]
+          ]
+        ]
+      ],
+      "layout": {
+        "text-field": "●",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          9,
+          18,
+          13
+        ],
+        "text-allow-overlap": false
+      },
+      "paint": {
+        "text-color": "#7eb36a",
+        "text-halo-color": "#f2efe9",
+        "text-halo-width": 0.9
+      }
+    },
+    {
+      "id": "railway-tunnel-rail-casing",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "rail"
+        ],
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "building_passage"
+          ]
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#c0c0c0",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          3,
+          18,
+          7
+        ],
+        "line-dasharray": [
+          0.2,
+          4
+        ],
+        "line-opacity": 0.4
+      }
+    },
+    {
+      "id": "railway-tunnel-rail-core",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "rail"
+        ],
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "building_passage"
+          ]
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#c0c0c0",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.8,
+          18,
+          2
+        ],
+        "line-dasharray": [
+          5,
+          3
+        ],
+        "line-opacity": 0.5
+      }
+    },
+    {
+      "id": "railway-tunnel-subway",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 12,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "subway"
+        ],
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "building_passage"
+          ]
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#b0b0b0",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          0.8,
+          18,
+          2
+        ],
+        "line-dasharray": [
+          5,
+          3
+        ],
+        "line-opacity": 0.5
+      }
+    },
+    {
+      "id": "railway-tunnel-tram",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "tram"
+        ],
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "building_passage"
+          ]
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#b0b0b0",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          1.5
+        ],
+        "line-dasharray": [
+          5,
+          3
+        ],
+        "line-opacity": 0.4
+      }
+    },
+    {
+      "id": "railway-rail-ties",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "rail"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "building_passage"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#787878",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          2,
+          18,
+          7
+        ],
+        "line-dasharray": [
+          0.2,
+          4
+        ]
+      }
+    },
+    {
+      "id": "railway-rail-core",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "rail"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "building_passage"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#787878",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          0.8,
+          18,
+          2
+        ]
+      }
+    },
+    {
+      "id": "railway-bridge-casing",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "railway"
+            ],
+            "rail"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "railway"
+            ],
+            "tram"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "railway"
+            ],
+            "subway"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#000000",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          4,
+          18,
+          9
+        ],
+        "line-opacity": 0.15
+      }
+    },
+    {
+      "id": "railway-rail-bridge-ties",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "rail"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#787878",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          2,
+          18,
+          7
+        ],
+        "line-dasharray": [
+          0.2,
+          4
+        ]
+      }
+    },
+    {
+      "id": "railway-rail-bridge-core",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "rail"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#787878",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          0.8,
+          18,
+          2
+        ]
+      }
+    },
+    {
+      "id": "railway-subway",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 12,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "subway"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "building_passage"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#999999",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          0.8,
+          18,
+          2
+        ]
+      }
+    },
+    {
+      "id": "railway-subway-bridge",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 12,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "subway"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#999999",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          0.8,
+          18,
+          2
+        ]
+      }
+    },
+    {
+      "id": "railway-tram",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "tram"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "building_passage"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#444444",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          1.5
+        ]
+      }
+    },
+    {
+      "id": "railway-tram-bridge",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "tram"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#444444",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          1.5
+        ]
+      }
+    },
+    {
+      "id": "railway-miniature",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 14,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "miniature"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "building_passage"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#999999",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          0.3,
+          18,
+          1
+        ]
+      }
+    },
+    {
+      "id": "railway-miniature-bridge",
+      "type": "line",
+      "source": "railway",
+      "source-layer": "railway",
+      "minzoom": 14,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "railway"
+          ],
+          "miniature"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "bridge"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#999999",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          0.3,
+          18,
+          1
+        ]
+      }
+    },
+    {
+      "id": "public_transport-casing",
+      "type": "line",
+      "source": "public_transport",
+      "source-layer": "public_transport",
+      "minzoom": 10,
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#ffffff",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          3,
+          18,
+          9
+        ],
+        "line-opacity": 0.6
+      }
+    },
+    {
+      "id": "public_transport-line",
+      "type": "line",
+      "source": "public_transport",
+      "source-layer": "public_transport",
+      "minzoom": 10,
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": [
+          "coalesce",
+          [
+            "get",
+            "colour"
+          ],
+          "#ffffff"
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          10,
+          1.5,
+          18,
+          5
+        ],
+        "line-opacity": 0.85
+      }
+    },
+    {
+      "id": "public_transport-label",
+      "type": "symbol",
+      "source": "public_transport",
+      "source-layer": "public_transport",
+      "minzoom": 13,
+      "layout": {
+        "text-field": [
+          "get",
+          "ref"
+        ],
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": 11,
+        "symbol-placement": "line",
+        "text-max-angle": 30
+      },
+      "paint": {
+        "text-color": [
+          "coalesce",
+          [
+            "get",
+            "colour:text"
+          ],
+          "#000000"
+        ],
+        "text-halo-color": "rgba(255,255,255,0.85)",
+        "text-halo-width": 1.5
+      }
+    },
+    {
+      "id": "man_made-tunnel-fill",
+      "type": "fill",
+      "source": "roads",
+      "source-layer": "roads",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "man_made"
+          ],
+          "tunnel"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Polygon"
+        ]
+      ],
+      "layout": {
+        "fill-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "fill-color": "#adadad",
+        "fill-opacity": 0.1
+      }
+    },
+    {
+      "id": "man_made-tunnel-outline",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "filter": [
+        "==",
+        [
+          "get",
+          "man_made"
+        ],
+        "tunnel"
+      ],
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#ffc0cb",
+        "line-width": 2,
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "man_made-tunnel-line-fill",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "man_made"
+          ],
+          "tunnel"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ]
+      ],
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#adadad",
+        "line-opacity": 0.3,
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          2,
+          16,
+          10,
+          18,
+          20
+        ]
+      }
+    },
+    {
+      "id": "man_made-bridge-fill",
+      "type": "fill",
+      "source": "roads",
+      "source-layer": "roads",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "man_made"
+          ],
+          "bridge"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Polygon"
+        ]
+      ],
+      "layout": {
+        "fill-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "fill-color": "#ffebee",
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "man_made-bridge-outline",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "filter": [
+        "==",
+        [
+          "get",
+          "man_made"
+        ],
+        "bridge"
+      ],
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#adadad",
+        "line-width": 2
+      }
+    },
+    {
+      "id": "roads-casing-motorway-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "motorway"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "motorway_link"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#dc2a67",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          5,
+          1,
+          18,
+          20
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-fill-motorway-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "motorway"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "motorway_link"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#e990a0",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          5,
+          0.5,
+          18,
+          18
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-casing-motorway-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "motorway"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "motorway_link"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#dc2a67",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          5,
+          1,
+          18,
+          20
+        ],
+        "line-opacity": 0.5,
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "roads-fill-motorway-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "motorway"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "motorway_link"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#e990a0",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          5,
+          0.5,
+          18,
+          18
+        ],
+        "line-opacity": 0.5
+      }
+    },
+    {
+      "id": "roads-casing-trunk-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "trunk"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "trunk_link"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#c84e2f",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          5,
+          1,
+          18,
+          18
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-fill-trunk-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "trunk"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "trunk_link"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#f9b29c",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          5,
+          0.5,
+          18,
+          16
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-casing-trunk-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "trunk"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "trunk_link"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#c84e2f",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          5,
+          1,
+          18,
+          18
+        ],
+        "line-opacity": 0.5,
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "roads-fill-trunk-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "trunk"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "trunk_link"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#f9b29c",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          5,
+          0.5,
+          18,
+          16
+        ],
+        "line-opacity": 0.5
+      }
+    },
+    {
+      "id": "roads-casing-primary-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "primary"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "primary_link"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#a06b00",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          7,
+          1,
+          18,
+          16
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-fill-primary-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "primary"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "primary_link"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#fcd6a4",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          7,
+          0.5,
+          18,
+          14
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-casing-primary-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "primary"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "primary_link"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#a06b00",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          7,
+          1,
+          18,
+          16
+        ],
+        "line-opacity": 0.5,
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "roads-fill-primary-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "primary"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "primary_link"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#fcd6a4",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          7,
+          0.5,
+          18,
+          14
+        ],
+        "line-opacity": 0.5
+      }
+    },
+    {
+      "id": "roads-casing-secondary-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "secondary"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "secondary_link"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#707d05",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          9,
+          1,
+          18,
+          14
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-fill-secondary-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "secondary"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "secondary_link"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#f7fabf",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          9,
+          0.5,
+          18,
+          12
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-casing-secondary-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "secondary"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "secondary_link"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#707d05",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          9,
+          1,
+          18,
+          14
+        ],
+        "line-opacity": 0.5,
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "roads-fill-secondary-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "secondary"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "secondary_link"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#f7fabf",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          9,
+          0.5,
+          18,
+          12
+        ],
+        "line-opacity": 0.5
+      }
+    },
+    {
+      "id": "roads-casing-tertiary-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "tertiary"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "tertiary_link"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#8f8f8f",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          11,
+          1,
+          18,
+          12
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-fill-tertiary-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "tertiary"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "tertiary_link"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#ffffff",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          11,
+          0.5,
+          18,
+          10
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-casing-tertiary-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "tertiary"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "tertiary_link"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#8f8f8f",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          11,
+          1,
+          18,
+          12
+        ],
+        "line-opacity": 0.5,
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "roads-fill-tertiary-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "tertiary"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "tertiary_link"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#ffffff",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          11,
+          0.5,
+          18,
+          10
+        ],
+        "line-opacity": 0.5
+      }
+    },
+    {
+      "id": "roads-casing-local-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "residential"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "unclassified"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "service"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "living_street"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#bbbbbb",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          1,
+          18,
+          10
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-fill-local-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "residential"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "unclassified"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "service"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "living_street"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#adadad",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          8
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-casing-local-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "residential"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "unclassified"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "service"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "living_street"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#bbbbbb",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          1,
+          18,
+          10
+        ],
+        "line-opacity": 0.5,
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "roads-fill-local-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 10,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "residential"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "unclassified"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "service"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "living_street"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#adadad",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          8
+        ],
+        "line-opacity": 0.5
+      }
+    },
+    {
+      "id": "roads-casing-track-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "track"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#886622",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          3
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-fill-track-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "track"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#996633",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          2
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-casing-track-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "track"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#886622",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          3
+        ],
+        "line-opacity": 0.5,
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "roads-fill-track-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 13,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "track"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#996633",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.5,
+          18,
+          2
+        ],
+        "line-opacity": 0.5
+      }
+    },
+    {
+      "id": "roads-casing-busway-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 12,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "busway"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#bbbbbb",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          1.2,
+          18,
+          11
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-fill-busway-surface",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 12,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "busway"
+          ]
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#add19e",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          0.8,
+          18,
+          9
+        ],
+        "line-opacity": 1.0
+      }
+    },
+    {
+      "id": "roads-casing-busway-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 12,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "busway"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#bbbbbb",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          1.2,
+          18,
+          11
+        ],
+        "line-opacity": 0.5,
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "roads-fill-busway-tunnel",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 12,
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "highway"
+            ],
+            "busway"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "tunnel"
+          ],
+          "yes"
+        ]
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#add19e",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          0.8,
+          18,
+          9
+        ],
+        "line-opacity": 0.5
+      }
+    },
+    {
+      "id": "roads-center-busway",
+      "type": "line",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 12,
+      "filter": [
+        "==",
+        [
+          "get",
+          "highway"
+        ],
+        "busway"
+      ],
+      "layout": {
+        "line-cap": "butt",
+        "line-join": "round",
+        "line-sort-key": [
+          "coalesce",
+          [
+            "to-number",
+            [
+              "get",
+              "layer"
+            ]
+          ],
+          0
+        ]
+      },
+      "paint": {
+        "line-color": "#add19e",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          0.4,
+          18,
+          2
+        ],
+        "line-dasharray": [
+          2,
+          2
+        ],
+        "line-opacity": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "tunnel"
+            ],
+            "yes"
+          ],
+          0.5,
+          1.0
+        ]
+      }
+    },
+    {
+      "id": "road-labels",
+      "type": "symbol",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "any",
+        [
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "primary"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "secondary"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "tertiary"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "highway"
+          ],
+          "residential"
+        ]
+      ],
+      "layout": {
+        "text-field": [
+          "get",
+          "name"
+        ],
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": 11,
+        "symbol-placement": "line",
+        "text-max-angle": 30
+      },
+      "paint": {
+        "text-color": "#333",
+        "text-halo-color": "rgba(255,255,255,0.6)",
+        "text-halo-width": 1.5
+      }
+    },
+    {
+      "id": "pedestrian-street-casing",
+      "type": "line",
+      "source": "pedestrian",
+      "source-layer": "pedestrian",
+      "minzoom": 13,
+      "filter": [
+        "==",
+        [
+          "get",
+          "highway"
+        ],
+        "pedestrian"
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#999",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          1.2,
+          18,
+          6
+        ]
+      }
+    },
+    {
+      "id": "pedestrian-street-fill",
+      "type": "line",
+      "source": "pedestrian",
+      "source-layer": "pedestrian",
+      "minzoom": 13,
+      "filter": [
+        "==",
+        [
+          "get",
+          "highway"
+        ],
+        "pedestrian"
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#ededed",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.8,
+          18,
+          4
+        ]
+      }
+    },
+    {
+      "id": "pedestrian-footway",
+      "type": "line",
+      "source": "pedestrian",
+      "source-layer": "pedestrian",
+      "minzoom": 14,
+      "filter": [
+        "==",
+        [
+          "get",
+          "highway"
+        ],
+        "footway"
+      ],
+      "paint": {
+        "line-color": "#999",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          0.5,
+          18,
+          1.5
+        ],
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "pedestrian-path",
+      "type": "line",
+      "source": "pedestrian",
+      "source-layer": "pedestrian",
+      "minzoom": 14,
+      "filter": [
+        "==",
+        [
+          "get",
+          "highway"
+        ],
+        "path"
+      ],
+      "paint": {
+        "line-color": "#999",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          0.5,
+          18,
+          1.5
+        ],
+        "line-dasharray": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "pedestrian-steps",
+      "type": "line",
+      "source": "pedestrian",
+      "source-layer": "pedestrian",
+      "minzoom": 14,
+      "filter": [
+        "==",
+        [
+          "get",
+          "highway"
+        ],
+        "steps"
+      ],
+      "paint": {
+        "line-color": "#999",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          1.5,
+          18,
+          4
+        ],
+        "line-dasharray": [
+          0.2,
+          0.5
+        ]
+      }
+    },
+    {
+      "id": "cycleway",
+      "type": "line",
+      "source": "cycleway",
+      "source-layer": "cycleway",
+      "minzoom": 12,
+      "paint": {
+        "line-color": "#0000ff",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          12,
+          0.8,
+          18,
+          2
+        ],
+        "line-dasharray": [
+          3,
+          3
+        ]
+      }
+    },
+    {
+      "id": "boundaries",
+      "type": "line",
+      "source": "boundaries",
+      "source-layer": "boundaries",
+      "minzoom": 10,
+      "paint": {
+        "line-color": "#ac46ac",
+        "line-width": 1,
+        "line-dasharray": [
+          5,
+          5
+        ],
+        "line-opacity": 0.7
+      }
+    },
+    {
+      "id": "pitch-markings",
+      "type": "symbol",
+      "source": "leisure",
+      "source-layer": "leisure",
+      "minzoom": 17,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "leisure"
+          ],
+          "pitch"
+        ],
+        [
+          "has",
+          "sport_render"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "Point"
+        ]
+      ],
+      "layout": {
+        "icon-image": [
+          "concat",
+          "sport-markings-",
+          [
+            "get",
+            "sport_render"
+          ]
+        ],
+        "icon-rotation-alignment": "map",
+        "icon-pitch-alignment": "map",
+        "icon-rotate": [
+          "coalesce",
+          [
+            "get",
+            "bearing"
+          ],
+          0
+        ],
+        "icon-size": [
+          "interpolate",
+          [
+            "exponential",
+            2
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          [
+            "*",
+            [
+              "case",
+              [
+                "has",
+                "pitch_length"
+              ],
+              [
+                "get",
+                "pitch_length"
+              ],
+              [
+                "match",
+                [
+                  "get",
+                  "sport_render"
+                ],
+                "tennis",
+                24,
+                "soccer",
+                105,
+                "basketball",
+                28,
+                "boules",
+                15,
+                50
+              ]
+            ],
+            0.0122
+          ],
+          18,
+          [
+            "*",
+            [
+              "case",
+              [
+                "has",
+                "pitch_length"
+              ],
+              [
+                "get",
+                "pitch_length"
+              ],
+              [
+                "match",
+                [
+                  "get",
+                  "sport_render"
+                ],
+                "tennis",
+                24,
+                "soccer",
+                105,
+                "basketball",
+                28,
+                "boules",
+                15,
+                50
+              ]
+            ],
+            0.02442
+          ]
+        ],
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "symbol-placement": "point"
+      },
+      "paint": {
+        "icon-opacity": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          0.7,
+          18,
+          0.95
+        ]
+      }
+    },
+    {
+      "id": "poi-circle",
+      "type": "circle",
+      "source": "poi",
+      "source-layer": "poi",
+      "minzoom": 14,
+      "paint": {
+        "circle-radius": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          2,
+          18,
+          4
+        ],
+        "circle-color": "#734a08",
+        "circle-stroke-color": "#fff",
+        "circle-stroke-width": 0.8,
+        "circle-opacity": 0.85
+      }
+    },
+    {
+      "id": "poi-icon",
+      "type": "symbol",
+      "source": "poi",
+      "source-layer": "poi",
+      "minzoom": 14,
+      "layout": {
+        "icon-image": [
+          "coalesce",
+          [
+            "case",
+            [
+              "==",
+              [
+                "get",
+                "cuisine"
+              ],
+              "friture"
+            ],
+            [
+              "image",
+              "poi-cuisine-friture"
+            ],
+            [
+              "image",
+              ""
+            ]
+          ],
+          [
+            "image",
+            [
+              "concat",
+              "poi-",
+              [
+                "get",
+                "shop"
+              ]
+            ]
+          ],
+          [
+            "image",
+            [
+              "concat",
+              "poi-",
+              [
+                "get",
+                "amenity"
+              ]
+            ]
+          ],
+          [
+            "image",
+            [
+              "concat",
+              "poi-",
+              [
+                "get",
+                "tourism"
+              ]
+            ]
+          ],
+          [
+            "case",
+            [
+              "has",
+              "shop"
+            ],
+            [
+              "image",
+              "poi-shop"
+            ],
+            [
+              "image",
+              ""
+            ]
+          ]
+        ],
+        "icon-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          0.7,
+          18,
+          1.0
+        ],
+        "icon-allow-overlap": true,
+        "icon-padding": 2,
+        "icon-anchor": "center",
+        "text-field": [
+          "step",
+          [
+            "zoom"
+          ],
+          "",
+          15,
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": 10,
+        "text-offset": [
+          0,
+          1.2
+        ],
+        "text-anchor": "top",
+        "text-optional": true
+      },
+      "paint": {
+        "icon-opacity": 0.9,
+        "text-color": "#734a08",
+        "text-halo-color": "rgba(255,255,255,0.8)",
+        "text-halo-width": 1.2
+      }
+    },
+    {
+      "id": "leisure-icon",
+      "type": "symbol",
+      "source": "leisure",
+      "source-layer": "leisure",
+      "minzoom": 14,
+      "filter": [
+        "!=",
+        [
+          "get",
+          "leisure"
+        ],
+        "playground"
+      ],
+      "layout": {
+        "icon-padding": 50,
+        "symbol-placement": "point",
+        "icon-allow-overlap": false,
+        "icon-image": [
+          "coalesce",
+          [
+            "case",
+            [
+              "==",
+              [
+                "get",
+                "cuisine"
+              ],
+              "friture"
+            ],
+            [
+              "image",
+              "poi-cuisine-friture"
+            ],
+            [
+              "image",
+              ""
+            ]
+          ],
+          [
+            "image",
+            [
+              "concat",
+              "poi-",
+              [
+                "get",
+                "shop"
+              ]
+            ]
+          ],
+          [
+            "image",
+            [
+              "concat",
+              "poi-",
+              [
+                "get",
+                "amenity"
+              ]
+            ]
+          ],
+          [
+            "image",
+            [
+              "concat",
+              "poi-",
+              [
+                "get",
+                "tourism"
+              ]
+            ]
+          ],
+          [
+            "case",
+            [
+              "has",
+              "shop"
+            ],
+            [
+              "image",
+              "poi-shop"
+            ],
+            [
+              "image",
+              ""
+            ]
+          ]
+        ],
+        "icon-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          14,
+          0.7,
+          18,
+          1.0
+        ],
+        "icon-ignore-placement": false,
+        "icon-anchor": "center",
+        "text-field": [
+          "step",
+          [
+            "zoom"
+          ],
+          "",
+          15,
+          [
+            "get",
+            "name"
+          ]
+        ],
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": 10,
+        "text-offset": [
+          0,
+          1.2
+        ],
+        "text-anchor": "top",
+        "text-optional": true
+      },
+      "paint": {
+        "icon-opacity": 0.9,
+        "text-color": "#734a08",
+        "text-halo-color": "rgba(255,255,255,0.8)",
+        "text-halo-width": 1.2
+      }
+    }
+  ]
+}
