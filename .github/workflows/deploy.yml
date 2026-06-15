@@ -8,6 +8,7 @@ on:
       - 'sizepmtiles.md'
       - 'brussels_capital_region-latest.osm.pbf'
       - 'granulometry_report.md'
+      - 'landuse_report.md'
   workflow_dispatch:
   schedule:
     - cron: '0 3 1 * *'
@@ -149,8 +150,9 @@ jobs:
             missing-icons.txt \
             sizepmtiles.md \
             brussels_capital_region-latest.osm.pbf
-          # Optionnel : commiter aussi le rapport granulométrie
+          # Optionnel : commiter aussi les rapports
           [ -f granulometry_report.md ] && git add granulometry_report.md || true
+          [ -f landuse_report.md ] && git add landuse_report.md || true
           if git diff --cached --quiet; then
             echo "Pas de changements à commiter"
           else
@@ -165,6 +167,7 @@ jobs:
           cp -f *.geojson   _site/ 2>/dev/null || true
           cp -f sizepmtiles.md _site/ 2>/dev/null || true
           [ -f granulometry_report.md ] && cp granulometry_report.md _site/ || true
+          [ -f landuse_report.md ] && cp landuse_report.md _site/ || true
           echo "Site prêt :"
           ls -lh _site/
 
