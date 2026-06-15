@@ -60,7 +60,6 @@ def color_or_case(col, col_private):
         return ["case", ["==", ["get", "access"], "private"], col_private, col]
     return col
 
-
 # ── LANDUSE ───────────────────────────────────────────────────────────────────
 
 def landuse(cfg):
@@ -85,6 +84,14 @@ def landuse(cfg):
                 "filter": ["==", ["get", tag], val],
                 "paint": {"fill-pattern": s["pattern"]}
             })
+        # Contour (ex: religious, quarry — façon osm-carto)
+        if s["outline_color"]:
+            ol = {"id": f"landuse-{val}-outline", "type": "line",
+                  "source": "landuse", "source-layer": "landuse",
+                  "filter": ["==", ["get", tag], val],
+                  "paint": {"line-color": s["outline_color"], "line-width": 0.5}}
+            if s["appear_at"] > 10: ol["minzoom"] = s["appear_at"]
+            out.append(ol)
     return out
 
 
