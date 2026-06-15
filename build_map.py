@@ -63,9 +63,31 @@ def color_or_case(col, col_private):
 
 # ── LANDUSE ───────────────────────────────────────────────────────────────────
 
+# Ordre de rendu des sous-types landuse : les zones "de fond" (larges,
+# souvent étendues sur tout un quartier) sont dessinées en premier, les
+# zones "d'inclusion" plus ponctuelles (brownfield, greenfield, allotments,
+# garages, etc.) sont dessinées PAR-DESSUS, pour rester visibles même
+# lorsqu'elles sont entièrement entourées par un grand polygone
+# landuse=residential/industrial/... (suite issue #37).
+LANDUSE_RENDER_ORDER = [
+    # — fonds larges —
+    "residential", "industrial", "commercial", "retail",
+    "railway", "education", "farmland", "farmyard",
+    # — inclusions ponctuelles, dessinées par-dessus —
+    "brownfield", "greenfield", "construction", "landfill",
+    "allotments", "cemetery", "garages", "depot", "quarry",
+    "religious", "recreation_ground", "village_green", "military",
+]
+
 def landuse(cfg):
     out = []
-    for val in cfg["subtypes"]:
+    # Ordre explicite : fonds larges d'abord, inclusions ponctuelles
+    # par-dessus. Les sous-types non listés (extensions futures du
+    # config) sont ajoutés en dernier, par sécurité.
+    order = [v for v in LANDUSE_RENDER_ORDER if v in cfg["subtypes"]]
+    order += [v for v in cfg["subtypes"] if v not in order]
+
+    for val in order:
         s = sc(cfg, val)
         if not s["color"]: continue
         tag = s["tag"] or "landuse"
@@ -85,25 +107,40 @@ def landuse(cfg):
                 "filter": ["==", ["get", tag], val],
                 "paint": {"fill-pattern": s["pattern"]}
             })
+        # Contour (ex: religious, quarry — façon osm-carto)
+        if s["outline_color"]:
+            ol = {"id": f"landuse-{val}-outline", "type": "line",
+                  "source": "landuse", "source-layer": "landuse",
+                  "filter": ["==", ["get", tag], val],
+                  "paint": {"line-color": s["outline_color"], "line-width": 0.5}}
+            if s["appear_at"] > 10: ol["minzoom"] = s["appear_at"]
+            out.append(ol)
     return out
 
 
 # ── GREEN ─────────────────────────────────────────────────────────────────────
 
+# Ordre de rendu des sous-types green : "park" et "garden" sont souvent de
+# grandes zones (parcs publics) qui CONTIENNENT des inclusions plus
+# spécifiques (forêt, pelouse/meadow, broussailles, massifs de fleurs).
+# On dessine donc park/garden en premier (fond), puis les inclusions
+# par-dessus, pour qu'elles restent visibles à l'intérieur d'un park.
+FILTERS = {
+    # — fonds (souvent de grandes zones, ex: parcs publics) —
+    "park":      ["==", ["get","leisure"], "park"],
+    "garden":    ["==", ["get","leisure"], "garden"],
+    # — inclusions, dessinées par-dessus —
+    "forest":    ["any", ["==",["get","landuse"],"forest"], ["==",["get","natural"],"wood"]],
+    "scrub":     ["==", ["get","natural"], "scrub"],
+    "shrubbery": ["==", ["get","natural"], "shrubbery"],
+    "grass":     ["any", ["==",["get","landuse"],"grass"],  ["==",["get","landuse"],"meadow"]],
+    "flowerbed": ["==", ["get","landuse"], "flowerbed"],
+    "wood":      None,  # couvert par forest
+}
+
 def green(cfg):
     out = []
     st = cfg["subtypes"]
-
-    FILTERS = {
-        "forest":    ["any", ["==",["get","landuse"],"forest"], ["==",["get","natural"],"wood"]],
-        "grass":     ["any", ["==",["get","landuse"],"grass"],  ["==",["get","landuse"],"meadow"]],
-        "flowerbed": ["==", ["get","landuse"], "flowerbed"],
-        "wood":      None,  # couvert par forest
-        "scrub":     ["==", ["get","natural"], "scrub"],
-        "shrubbery": ["==", ["get","natural"], "shrubbery"],
-        "park":      ["==", ["get","leisure"], "park"],
-        "garden":    ["==", ["get","leisure"], "garden"],
-    }
 
     # Collecter les sous-types qui ont un pattern_private pour le layer composite
     hatch_vals = []
@@ -645,9 +682,9 @@ def build_style(config):
         "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf")
 
     layers = [{"id":"background","type":"background","paint":{"background-color":bgc}}]
-    layers += water(lc(L,"water"))
     layers += landuse(lc(L,"landuse"))
     layers += green(lc(L,"green"))
+    layers += water(lc(L,"water"))
     layers += leisure(lc(L,"leisure"))
     layers += buildings(lc(L,"buildings"))
     layers += trees(lc(L,"trees"))

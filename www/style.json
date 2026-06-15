@@ -78,6 +78,680 @@
       }
     },
     {
+      "id": "landuse-residential",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "residential"
+      ],
+      "paint": {
+        "fill-color": "#e0dfdf"
+      }
+    },
+    {
+      "id": "landuse-industrial",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "industrial"
+      ],
+      "paint": {
+        "fill-color": "#ebdbe8"
+      }
+    },
+    {
+      "id": "landuse-commercial",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "commercial"
+      ],
+      "paint": {
+        "fill-color": "#f2dad9"
+      }
+    },
+    {
+      "id": "landuse-retail",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "retail"
+      ],
+      "paint": {
+        "fill-color": "#ffd6d1"
+      }
+    },
+    {
+      "id": "landuse-railway",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "railway"
+      ],
+      "paint": {
+        "fill-color": "#ebdbe8"
+      }
+    },
+    {
+      "id": "landuse-education",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "education"
+      ],
+      "paint": {
+        "fill-color": "#ffe894"
+      }
+    },
+    {
+      "id": "landuse-farmland",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "farmland"
+      ],
+      "paint": {
+        "fill-color": "#add15a",
+        "fill-opacity": 0.95
+      }
+    },
+    {
+      "id": "landuse-farmyard",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "farmyard"
+      ],
+      "paint": {
+        "fill-color": "#f0d3ad",
+        "fill-opacity": 0.95
+      }
+    },
+    {
+      "id": "landuse-brownfield",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "brownfield"
+      ],
+      "paint": {
+        "fill-color": "#b3a392",
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "landuse-greenfield",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "greenfield"
+      ],
+      "paint": {
+        "fill-color": "#cfeca8",
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "landuse-construction",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "construction"
+      ],
+      "paint": {
+        "fill-color": "#b3a392",
+        "fill-opacity": 0.95
+      }
+    },
+    {
+      "id": "landuse-landfill",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "landfill"
+      ],
+      "paint": {
+        "fill-color": "#b3a392",
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "landuse-allotments",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "allotments"
+      ],
+      "paint": {
+        "fill-color": "#9cad95",
+        "fill-opacity": 0.9
+      }
+    },
+    {
+      "id": "landuse-cemetery",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "cemetery"
+      ],
+      "paint": {
+        "fill-color": "#576e5a",
+        "fill-opacity": 0.9
+      }
+    },
+    {
+      "id": "landuse-garages",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "garages"
+      ],
+      "paint": {
+        "fill-color": "#dfddce"
+      }
+    },
+    {
+      "id": "landuse-depot",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "depot"
+      ],
+      "paint": {
+        "fill-color": "#ebdbe8"
+      }
+    },
+    {
+      "id": "landuse-quarry",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "quarry"
+      ],
+      "paint": {
+        "fill-color": "#c5c3c3"
+      }
+    },
+    {
+      "id": "landuse-quarry-outline",
+      "type": "line",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "quarry"
+      ],
+      "paint": {
+        "line-color": "#b0aeae",
+        "line-width": 0.5
+      }
+    },
+    {
+      "id": "landuse-religious",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "religious"
+      ],
+      "paint": {
+        "fill-color": "#d0d0d0"
+      }
+    },
+    {
+      "id": "landuse-religious-outline",
+      "type": "line",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "religious"
+      ],
+      "paint": {
+        "line-color": "#919191",
+        "line-width": 0.5
+      }
+    },
+    {
+      "id": "landuse-recreation_ground",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "recreation_ground"
+      ],
+      "paint": {
+        "fill-color": "#c8facc"
+      }
+    },
+    {
+      "id": "landuse-village_green",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "village_green"
+      ],
+      "paint": {
+        "fill-color": "#cdebb0"
+      }
+    },
+    {
+      "id": "landuse-military",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "military"
+      ],
+      "paint": {
+        "fill-color": "#bd4a72",
+        "fill-opacity": 0.1
+      }
+    },
+    {
+      "id": "landuse-military-hatch",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "minzoom": 10,
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "military"
+      ],
+      "paint": {
+        "fill-pattern": "military-hatch"
+      }
+    },
+    {
+      "id": "green-park",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "leisure"
+        ],
+        "park"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#94b597",
+          "#a9ccac"
+        ]
+      }
+    },
+    {
+      "id": "green-garden",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "leisure"
+        ],
+        "garden"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#a4c775",
+          "#cfeca8"
+        ]
+      }
+    },
+    {
+      "id": "green-forest",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "any",
+        [
+          "==",
+          [
+            "get",
+            "landuse"
+          ],
+          "forest"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "wood"
+        ]
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#d9ecd2",
+          "#add19e"
+        ]
+      }
+    },
+    {
+      "id": "green-scrub",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "natural"
+        ],
+        "scrub"
+      ],
+      "paint": {
+        "fill-color": "#d6e6b8",
+        "fill-opacity": 0.9
+      }
+    },
+    {
+      "id": "green-shrubbery",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "natural"
+        ],
+        "shrubbery"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#8cb36d",
+          "#6b9943"
+        ],
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "green-grass",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "any",
+        [
+          "==",
+          [
+            "get",
+            "landuse"
+          ],
+          "grass"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "landuse"
+          ],
+          "meadow"
+        ]
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#eaf6df",
+          "#cdebb0"
+        ]
+      }
+    },
+    {
+      "id": "green-flowerbed",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "flowerbed"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#f3f9e0",
+          "#e6f2c1"
+        ]
+      }
+    },
+    {
+      "id": "green-hatch-green_hatch",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "leisure"
+            ],
+            "park"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "leisure"
+            ],
+            "garden"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "access"
+          ],
+          "private"
+        ]
+      ],
+      "paint": {
+        "fill-pattern": "green-hatch"
+      }
+    },
+    {
       "id": "water-fill",
       "type": "fill",
       "source": "water",
@@ -512,542 +1186,6 @@
           18,
           4
         ]
-      }
-    },
-    {
-      "id": "landuse-allotments",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "allotments"
-      ],
-      "paint": {
-        "fill-color": "#9cad95",
-        "fill-opacity": 0.9
-      }
-    },
-    {
-      "id": "landuse-brownfield",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "brownfield"
-      ],
-      "paint": {
-        "fill-color": "#b3a392",
-        "fill-opacity": 0.5
-      }
-    },
-    {
-      "id": "landuse-cemetery",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "cemetery"
-      ],
-      "paint": {
-        "fill-color": "#576e5a",
-        "fill-opacity": 0.9
-      }
-    },
-    {
-      "id": "landuse-commercial",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "commercial"
-      ],
-      "paint": {
-        "fill-color": "#f2dad9"
-      }
-    },
-    {
-      "id": "landuse-construction",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "construction"
-      ],
-      "paint": {
-        "fill-color": "#b3a392",
-        "fill-opacity": 0.95
-      }
-    },
-    {
-      "id": "landuse-education",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "education"
-      ],
-      "paint": {
-        "fill-color": "#ffe894"
-      }
-    },
-    {
-      "id": "landuse-farmland",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "farmland"
-      ],
-      "paint": {
-        "fill-color": "#add15a",
-        "fill-opacity": 0.95
-      }
-    },
-    {
-      "id": "landuse-farmyard",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "farmyard"
-      ],
-      "paint": {
-        "fill-color": "#f0d3ad",
-        "fill-opacity": 0.95
-      }
-    },
-    {
-      "id": "landuse-greenfield",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "greenfield"
-      ],
-      "paint": {
-        "fill-color": "#cfeca8",
-        "fill-opacity": 0.5
-      }
-    },
-    {
-      "id": "landuse-industrial",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "industrial"
-      ],
-      "paint": {
-        "fill-color": "#ebdbe8"
-      }
-    },
-    {
-      "id": "landuse-landfill",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "landfill"
-      ],
-      "paint": {
-        "fill-color": "#b3a392",
-        "fill-opacity": 0.5
-      }
-    },
-    {
-      "id": "landuse-military",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "military"
-      ],
-      "paint": {
-        "fill-color": "#bd4a72",
-        "fill-opacity": 0.1
-      }
-    },
-    {
-      "id": "landuse-military-hatch",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "minzoom": 10,
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "military"
-      ],
-      "paint": {
-        "fill-pattern": "military-hatch"
-      }
-    },
-    {
-      "id": "landuse-railway",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "railway"
-      ],
-      "paint": {
-        "fill-color": "#ebdbe8"
-      }
-    },
-    {
-      "id": "landuse-residential",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "residential"
-      ],
-      "paint": {
-        "fill-color": "#e0dfdf"
-      }
-    },
-    {
-      "id": "landuse-retail",
-      "type": "fill",
-      "source": "landuse",
-      "source-layer": "landuse",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "retail"
-      ],
-      "paint": {
-        "fill-color": "#ffd6d1"
-      }
-    },
-    {
-      "id": "green-forest",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "any",
-        [
-          "==",
-          [
-            "get",
-            "landuse"
-          ],
-          "forest"
-        ],
-        [
-          "==",
-          [
-            "get",
-            "natural"
-          ],
-          "wood"
-        ]
-      ],
-      "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#d9ecd2",
-          "#add19e"
-        ]
-      }
-    },
-    {
-      "id": "green-grass",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "any",
-        [
-          "==",
-          [
-            "get",
-            "landuse"
-          ],
-          "grass"
-        ],
-        [
-          "==",
-          [
-            "get",
-            "landuse"
-          ],
-          "meadow"
-        ]
-      ],
-      "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#eaf6df",
-          "#cdebb0"
-        ]
-      }
-    },
-    {
-      "id": "green-flowerbed",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "flowerbed"
-      ],
-      "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#f3f9e0",
-          "#e6f2c1"
-        ]
-      }
-    },
-    {
-      "id": "green-scrub",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "==",
-        [
-          "get",
-          "natural"
-        ],
-        "scrub"
-      ],
-      "paint": {
-        "fill-color": "#d6e6b8",
-        "fill-opacity": 0.9
-      }
-    },
-    {
-      "id": "green-shrubbery",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "==",
-        [
-          "get",
-          "natural"
-        ],
-        "shrubbery"
-      ],
-      "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#8cb36d",
-          "#6b9943"
-        ],
-        "fill-opacity": 0.5
-      }
-    },
-    {
-      "id": "green-park",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "==",
-        [
-          "get",
-          "leisure"
-        ],
-        "park"
-      ],
-      "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#94b597",
-          "#a9ccac"
-        ]
-      }
-    },
-    {
-      "id": "green-garden",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "==",
-        [
-          "get",
-          "leisure"
-        ],
-        "garden"
-      ],
-      "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#a4c775",
-          "#cfeca8"
-        ]
-      }
-    },
-    {
-      "id": "green-hatch-green_hatch",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "all",
-        [
-          "any",
-          [
-            "==",
-            [
-              "get",
-              "leisure"
-            ],
-            "park"
-          ],
-          [
-            "==",
-            [
-              "get",
-              "leisure"
-            ],
-            "garden"
-          ]
-        ],
-        [
-          "==",
-          [
-            "get",
-            "access"
-          ],
-          "private"
-        ]
-      ],
-      "paint": {
-        "fill-pattern": "green-hatch"
       }
     },
     {
