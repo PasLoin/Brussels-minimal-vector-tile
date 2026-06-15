@@ -120,20 +120,27 @@ def landuse(cfg):
 
 # ── GREEN ─────────────────────────────────────────────────────────────────────
 
+# Ordre de rendu des sous-types green : "park" et "garden" sont souvent de
+# grandes zones (parcs publics) qui CONTIENNENT des inclusions plus
+# spécifiques (forêt, pelouse/meadow, broussailles, massifs de fleurs).
+# On dessine donc park/garden en premier (fond), puis les inclusions
+# par-dessus, pour qu'elles restent visibles à l'intérieur d'un park.
+FILTERS = {
+    # — fonds (souvent de grandes zones, ex: parcs publics) —
+    "park":      ["==", ["get","leisure"], "park"],
+    "garden":    ["==", ["get","leisure"], "garden"],
+    # — inclusions, dessinées par-dessus —
+    "forest":    ["any", ["==",["get","landuse"],"forest"], ["==",["get","natural"],"wood"]],
+    "scrub":     ["==", ["get","natural"], "scrub"],
+    "shrubbery": ["==", ["get","natural"], "shrubbery"],
+    "grass":     ["any", ["==",["get","landuse"],"grass"],  ["==",["get","landuse"],"meadow"]],
+    "flowerbed": ["==", ["get","landuse"], "flowerbed"],
+    "wood":      None,  # couvert par forest
+}
+
 def green(cfg):
     out = []
     st = cfg["subtypes"]
-
-    FILTERS = {
-        "forest":    ["any", ["==",["get","landuse"],"forest"], ["==",["get","natural"],"wood"]],
-        "grass":     ["any", ["==",["get","landuse"],"grass"],  ["==",["get","landuse"],"meadow"]],
-        "flowerbed": ["==", ["get","landuse"], "flowerbed"],
-        "wood":      None,  # couvert par forest
-        "scrub":     ["==", ["get","natural"], "scrub"],
-        "shrubbery": ["==", ["get","natural"], "shrubbery"],
-        "park":      ["==", ["get","leisure"], "park"],
-        "garden":    ["==", ["get","leisure"], "garden"],
-    }
 
     # Collecter les sous-types qui ont un pattern_private pour le layer composite
     hatch_vals = []
@@ -676,8 +683,8 @@ def build_style(config):
 
     layers = [{"id":"background","type":"background","paint":{"background-color":bgc}}]
     layers += landuse(lc(L,"landuse"))
-    layers += water(lc(L,"water"))
     layers += green(lc(L,"green"))
+    layers += water(lc(L,"water"))
     layers += leisure(lc(L,"leisure"))
     layers += buildings(lc(L,"buildings"))
     layers += trees(lc(L,"trees"))
