@@ -122,9 +122,10 @@ def landuse(cfg):
 
 # Ordre de rendu des sous-types green : "park" et "garden" sont souvent de
 # grandes zones (parcs publics) qui CONTIENNENT des inclusions plus
-# spécifiques (forêt, pelouse/meadow, broussailles, massifs de fleurs).
-# On dessine donc park/garden en premier (fond), puis les inclusions
-# par-dessus, pour qu'elles restent visibles à l'intérieur d'un park.
+# spécifiques (forêt, pelouse/meadow/grassland, lande, broussailles, massifs
+# de fleurs). On dessine donc park/garden en premier (fond), puis les
+# inclusions par-dessus, pour qu'elles restent visibles à l'intérieur d'un
+# park.
 FILTERS = {
     # — fonds (souvent de grandes zones, ex: parcs publics) —
     "park":      ["==", ["get","leisure"], "park"],
@@ -133,7 +134,10 @@ FILTERS = {
     "forest":    ["any", ["==",["get","landuse"],"forest"], ["==",["get","natural"],"wood"]],
     "scrub":     ["==", ["get","natural"], "scrub"],
     "shrubbery": ["==", ["get","natural"], "shrubbery"],
-    "grass":     ["any", ["==",["get","landuse"],"grass"],  ["==",["get","landuse"],"meadow"]],
+    "heath":     ["==", ["get","natural"], "heath"],
+    # grass : couvre aussi natural=grassland (même rendu qu'osm-carto @grass)
+    "grass":     ["any", ["==",["get","landuse"],"grass"],  ["==",["get","landuse"],"meadow"],
+                          ["==",["get","natural"],"grassland"]],
     "flowerbed": ["==", ["get","landuse"], "flowerbed"],
     "wood":      None,  # couvert par forest
 }
