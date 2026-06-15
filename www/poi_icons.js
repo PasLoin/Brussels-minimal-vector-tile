@@ -16,6 +16,43 @@ export const LIBERTY = 'https://raw.githubusercontent.com/maputnik/osm-liberty/g
 export const MAKI    = 'https://cdn.jsdelivr.net/npm/@mapbox/maki/icons/';
 
 /**
+ * Normalise un SVG pour qu'il s'affiche avec ICON_COLOR,
+ * quelle que soit la façon dont la couleur est définie dans la source :
+ *   - attribut fill="..." / stroke="..."
+ *   - style="fill:..." / style="stroke:..."
+ *   - currentColor (local ou CDN bien conçus)
+ *   - couleurs nommées (black, #000, #000000, rgb(0,0,0)…)
+ *
+ * Les valeurs "none", "transparent" et les fills structurels sont préservés.
+ *
+ * @param {string} svg  - Texte SVG brut
+ * @param {string} color - Couleur cible (ex: '#734a08')
+ * @returns {string} SVG retravaillé
+ */
+function recolorSvg(svg, color) {
+  // 1. currentColor → couleur cible (pattern le plus propre, local et Temaki)
+  svg = svg.replace(/currentColor/g, color);
+
+  // 2. Attributs fill="..." — préserver fill="none" et fill="transparent"
+  svg = svg.replace(/\bfill="(?!none|transparent)([^"]*)"/g, `fill="${color}"`);
+
+  // 3. Attributs stroke="..." — préserver stroke="none"
+  svg = svg.replace(/\bstroke="(?!none)([^"]*)"/g, `stroke="${color}"`);
+
+  // 4. style inline : fill: ... et stroke: ... (avec ou sans espace, hex/named/rgb)
+  //    Préserver fill: none et stroke: none
+  svg = svg.replace(/(fill\s*:\s*)(?!none|transparent)([^;}"']+)/g, `$1${color}`);
+  svg = svg.replace(/(stroke\s*:\s*)(?!none)([^;}"']+)/g,           `$1${color}`);
+
+  // 5. Si aucun fill n'est présent sur <svg>, en ajouter un comme filet de sécurité
+  if (!/<svg[^>]+\bfill=/.test(svg)) {
+    svg = svg.replace(/<svg(\s|>)/i, `<svg fill="${color}" $1`);
+  }
+
+  return svg;
+}
+
+/**
  * Fetch SVG, recolor, render to canvas, add to map.
  * Tries sources in order: local → temaki → maki → liberty
  *
@@ -41,9 +78,7 @@ export async function loadPoiIcon(map, poiType, localName, temakiName, makiName,
       let svg = await res.text();
       if (!svg.includes('<svg')) continue;
 
-      // Recolorer le SVG
-      svg = svg.replace(/\s*fill="[^"]*"/g, '');
-      svg = svg.replace(/<svg(\s|>)/i, `<svg fill="${ICON_COLOR}" $1`);
+      svg = recolorSvg(svg, ICON_COLOR);
 
       const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
       const blobUrl = URL.createObjectURL(blob);
@@ -178,6 +213,7 @@ export async function loadAllPoiIcons(map) {
   } catch (err) {
     console.error('Impossible de charger le motif vert:', err);
   }
+
   let data;
   try {
     const resp = await fetch('./poi-icons.json');

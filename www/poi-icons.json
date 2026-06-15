@@ -145,7 +145,7 @@
     null
   ],
   "bakery": [
-    null,
+    "bakery",
     null,
     "bakery",
     null
@@ -912,12 +912,6 @@
     null,
     null
   ],
-  "cuisine-burger;brasserie": [
-    null,
-    null,
-    null,
-    null
-  ],
   "cuisine-burger;breakfast": [
     null,
     null,
@@ -1093,6 +1087,12 @@
     null
   ],
   "cuisine-coffee;bakery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-coffee;burger": [
     null,
     null,
     null,
@@ -1284,12 +1284,6 @@
     null,
     null
   ],
-  "cuisine-european": [
-    null,
-    null,
-    null,
-    null
-  ],
   "cuisine-falafel": [
     null,
     null,
@@ -1315,6 +1309,12 @@
     null
   ],
   "cuisine-fine_dining;french": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-fine_dining;french;international;local": [
     null,
     null,
     null,
@@ -2412,7 +2412,19 @@
     null,
     null
   ],
+  "cuisine-romanian;belgian": [
+    null,
+    null,
+    null,
+    null
+  ],
   "cuisine-salad": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-salad;burger;cake;coffee;pancake": [
     null,
     null,
     null,
@@ -2743,12 +2755,6 @@
     null
   ],
   "cuisine-thai": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-thai;chinese": [
     null,
     null,
     null,
@@ -3126,12 +3132,6 @@
     null,
     null
   ],
-  "freemasonry": [
-    null,
-    null,
-    null,
-    null
-  ],
   "frozen_food": [
     null,
     null,
@@ -3343,12 +3343,6 @@
     null
   ],
   "houseware": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "hvac": [
     null,
     null,
     null,
@@ -3577,12 +3571,6 @@
     null
   ],
   "mobile_phone_accessories": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "mobility_hub": [
     null,
     null,
     null,
@@ -3831,6 +3819,12 @@
   "popup": [
     null,
     null,
+    null,
+    null
+  ],
+  "post_box": [
+    null,
+    "post_box",
     null,
     null
   ],
@@ -4212,6 +4206,12 @@
     null,
     null
   ],
+  "survey_point": [
+    null,
+    null,
+    null,
+    null
+  ],
   "swimming_pool": [
     null,
     null,
@@ -4263,12 +4263,6 @@
   "ticket": [
     null,
     "ticket",
-    null,
-    null
-  ],
-  "tiles": [
-    null,
-    null,
     null,
     null
   ],
@@ -4326,15 +4320,15 @@
     null,
     null
   ],
-  "tree": [
+  "trophy": [
     null,
     null,
     null,
     null
   ],
-  "trophy": [
+  "truck": [
     null,
-    null,
+    "truck",
     null,
     null
   ],
@@ -4357,7 +4351,7 @@
     null
   ],
   "vacant": [
-    null,
+    "vacant",
     null,
     null,
     null
@@ -4420,6 +4414,12 @@
     null,
     null,
     null,
+    null
+  ],
+  "water": [
+    null,
+    "water",
+    "water",
     null
   ],
   "wayside_shrine": [
