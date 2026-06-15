@@ -498,6 +498,260 @@
       }
     },
     {
+      "id": "green-park",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "leisure"
+        ],
+        "park"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#94b597",
+          "#a9ccac"
+        ]
+      }
+    },
+    {
+      "id": "green-garden",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "leisure"
+        ],
+        "garden"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#a4c775",
+          "#cfeca8"
+        ]
+      }
+    },
+    {
+      "id": "green-forest",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "any",
+        [
+          "==",
+          [
+            "get",
+            "landuse"
+          ],
+          "forest"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "natural"
+          ],
+          "wood"
+        ]
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#d9ecd2",
+          "#add19e"
+        ]
+      }
+    },
+    {
+      "id": "green-scrub",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "natural"
+        ],
+        "scrub"
+      ],
+      "paint": {
+        "fill-color": "#d6e6b8",
+        "fill-opacity": 0.9
+      }
+    },
+    {
+      "id": "green-shrubbery",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "natural"
+        ],
+        "shrubbery"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#8cb36d",
+          "#6b9943"
+        ],
+        "fill-opacity": 0.5
+      }
+    },
+    {
+      "id": "green-grass",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "any",
+        [
+          "==",
+          [
+            "get",
+            "landuse"
+          ],
+          "grass"
+        ],
+        [
+          "==",
+          [
+            "get",
+            "landuse"
+          ],
+          "meadow"
+        ]
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#eaf6df",
+          "#cdebb0"
+        ]
+      }
+    },
+    {
+      "id": "green-flowerbed",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "flowerbed"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#f3f9e0",
+          "#e6f2c1"
+        ]
+      }
+    },
+    {
+      "id": "green-hatch-green_hatch",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "all",
+        [
+          "any",
+          [
+            "==",
+            [
+              "get",
+              "leisure"
+            ],
+            "park"
+          ],
+          [
+            "==",
+            [
+              "get",
+              "leisure"
+            ],
+            "garden"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "access"
+          ],
+          "private"
+        ]
+      ],
+      "paint": {
+        "fill-pattern": "green-hatch"
+      }
+    },
+    {
       "id": "water-fill",
       "type": "fill",
       "source": "water",
@@ -932,260 +1186,6 @@
           18,
           4
         ]
-      }
-    },
-    {
-      "id": "green-forest",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "any",
-        [
-          "==",
-          [
-            "get",
-            "landuse"
-          ],
-          "forest"
-        ],
-        [
-          "==",
-          [
-            "get",
-            "natural"
-          ],
-          "wood"
-        ]
-      ],
-      "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#d9ecd2",
-          "#add19e"
-        ]
-      }
-    },
-    {
-      "id": "green-grass",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "any",
-        [
-          "==",
-          [
-            "get",
-            "landuse"
-          ],
-          "grass"
-        ],
-        [
-          "==",
-          [
-            "get",
-            "landuse"
-          ],
-          "meadow"
-        ]
-      ],
-      "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#eaf6df",
-          "#cdebb0"
-        ]
-      }
-    },
-    {
-      "id": "green-flowerbed",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "==",
-        [
-          "get",
-          "landuse"
-        ],
-        "flowerbed"
-      ],
-      "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#f3f9e0",
-          "#e6f2c1"
-        ]
-      }
-    },
-    {
-      "id": "green-scrub",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "==",
-        [
-          "get",
-          "natural"
-        ],
-        "scrub"
-      ],
-      "paint": {
-        "fill-color": "#d6e6b8",
-        "fill-opacity": 0.9
-      }
-    },
-    {
-      "id": "green-shrubbery",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "==",
-        [
-          "get",
-          "natural"
-        ],
-        "shrubbery"
-      ],
-      "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#8cb36d",
-          "#6b9943"
-        ],
-        "fill-opacity": 0.5
-      }
-    },
-    {
-      "id": "green-park",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "==",
-        [
-          "get",
-          "leisure"
-        ],
-        "park"
-      ],
-      "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#94b597",
-          "#a9ccac"
-        ]
-      }
-    },
-    {
-      "id": "green-garden",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "==",
-        [
-          "get",
-          "leisure"
-        ],
-        "garden"
-      ],
-      "paint": {
-        "fill-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "access"
-            ],
-            "private"
-          ],
-          "#a4c775",
-          "#cfeca8"
-        ]
-      }
-    },
-    {
-      "id": "green-hatch-green_hatch",
-      "type": "fill",
-      "source": "green",
-      "source-layer": "green",
-      "filter": [
-        "all",
-        [
-          "any",
-          [
-            "==",
-            [
-              "get",
-              "leisure"
-            ],
-            "park"
-          ],
-          [
-            "==",
-            [
-              "get",
-              "leisure"
-            ],
-            "garden"
-          ]
-        ],
-        [
-          "==",
-          [
-            "get",
-            "access"
-          ],
-          "private"
-        ]
-      ],
-      "paint": {
-        "fill-pattern": "green-hatch"
       }
     },
     {
