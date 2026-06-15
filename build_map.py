@@ -60,11 +60,34 @@ def color_or_case(col, col_private):
         return ["case", ["==", ["get", "access"], "private"], col_private, col]
     return col
 
+
 # ── LANDUSE ───────────────────────────────────────────────────────────────────
+
+# Ordre de rendu des sous-types landuse : les zones "de fond" (larges,
+# souvent étendues sur tout un quartier) sont dessinées en premier, les
+# zones "d'inclusion" plus ponctuelles (brownfield, greenfield, allotments,
+# garages, etc.) sont dessinées PAR-DESSUS, pour rester visibles même
+# lorsqu'elles sont entièrement entourées par un grand polygone
+# landuse=residential/industrial/... (suite issue #37).
+LANDUSE_RENDER_ORDER = [
+    # — fonds larges —
+    "residential", "industrial", "commercial", "retail",
+    "railway", "education", "farmland", "farmyard",
+    # — inclusions ponctuelles, dessinées par-dessus —
+    "brownfield", "greenfield", "construction", "landfill",
+    "allotments", "cemetery", "garages", "depot", "quarry",
+    "religious", "recreation_ground", "village_green", "military",
+]
 
 def landuse(cfg):
     out = []
-    for val in cfg["subtypes"]:
+    # Ordre explicite : fonds larges d'abord, inclusions ponctuelles
+    # par-dessus. Les sous-types non listés (extensions futures du
+    # config) sont ajoutés en dernier, par sécurité.
+    order = [v for v in LANDUSE_RENDER_ORDER if v in cfg["subtypes"]]
+    order += [v for v in cfg["subtypes"] if v not in order]
+
+    for val in order:
         s = sc(cfg, val)
         if not s["color"]: continue
         tag = s["tag"] or "landuse"
@@ -652,8 +675,8 @@ def build_style(config):
         "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf")
 
     layers = [{"id":"background","type":"background","paint":{"background-color":bgc}}]
-    layers += water(lc(L,"water"))
     layers += landuse(lc(L,"landuse"))
+    layers += water(lc(L,"water"))
     layers += green(lc(L,"green"))
     layers += leisure(lc(L,"leisure"))
     layers += buildings(lc(L,"buildings"))
