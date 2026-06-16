@@ -323,6 +323,17 @@ def buildings(cfg):
     col = cfg["color"] or "#fce1c5"
     bc  = cfg["border_color"] or "#d4a574"
     ap  = cfg["appear_at"]
+
+    # Base de l'extrusion : 0 normalement, mais un bâtiment peut être
+    # surélevé directement (passage carrossable / allée vers
+    # l'intérieur d'îlot — quelques cas réels à Bxl), sans passer par
+    # un building:part. Même logique que pour building-parts-3d
+    # (cf. www/index.html), appliquée ici au bâtiment simple lui-même.
+    base_expr = ["case",
+        ["has", "min_height"], ["to-number", ["get", "min_height"], 0],
+        ["has", "building:min_level"], ["*", ["to-number", ["get", "building:min_level"], 0], 3],
+        0]
+
     out = [{"id":"buildings-fill","type":"fill",
              "source":"buildings","source-layer":"buildings","minzoom":ap,
              "paint":{"fill-color":col}}]
@@ -330,12 +341,23 @@ def buildings(cfg):
         out.append({"id":"buildings-3d","type":"fill-extrusion",
             "source":"buildings","source-layer":"buildings","minzoom":ap,
             "layout":{"visibility":"none"},
+            # issue #40 : un bâtiment entièrement recouvert par ses
+            # building:part (détecté par compute_building_coverage.py
+            # — relation type=building explicite, ou heuristique
+            # géométrique ≥90%) ne doit pas être extrudé ici, sous
+            # peine de silhouette dédoublée avec building-parts-3d
+            # (chargé dynamiquement, cf. www/index.html). Le rendu 2D
+            # (buildings-fill/buildings-outline) reste, lui, inchangé
+            # pour tous les bâtiments, couverts ou non.
+            "filter": ["!=", ["get", "covered_by_parts"], "yes"],
             "paint":{"fill-extrusion-color":col,
+                     "fill-extrusion-base": base_expr,
                      "fill-extrusion-height":["case",
                          ["has","height"],["to-number",["get","height"],6],
-                         ["has","building:levels"],["*",["to-number",["get","building:levels"],2],3],
-                         7.5],
-                     "fill-extrusion-base":0,"fill-extrusion-opacity":.75}})
+                         ["has","building:levels"],["+", base_expr,
+                             ["*",["to-number",["get","building:levels"],2],3]],
+                         ["+", base_expr, 7.5]],
+                     "fill-extrusion-opacity":.75}})
     out.append({"id":"buildings-outline","type":"line",
         "source":"buildings","source-layer":"buildings","minzoom":ap,
         "paint":{"line-color":bc,"line-width":.5}})
