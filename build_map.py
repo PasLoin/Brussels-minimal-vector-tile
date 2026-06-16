@@ -337,23 +337,31 @@ def buildings(cfg):
         ["has", "height"], ["has", "min_height"],
         ["has", "building:levels"], ["has", "building:min_level"]]
 
-    # building=roof (auvents, marquises…) : souvent taggé SEULEMENT
-    # building=roof + layer=1 (un simple indice d'empilement 2D, pas
-    # une mesure verticale) — sans aucune hauteur exploitable. Dans ce
-    # cas précis -> dalle plate fine flottant à une hauteur de
-    # dégagement "raisonnable" (valeur arbitraire mais explicite,
-    # ajustable), plutôt que la boîte pleine par défaut qui ferait
-    # passer un auvent pour un immeuble. Si le mappeur a quand même
-    # renseigné une vraie hauteur, on la respecte normalement.
-    is_untagged_roof = ["all",
-        ["==", ["get", "building"], "roof"],
-        ["!", has_height_info]]
+    is_roof = ["==", ["get", "building"], "roof"]
+
+    # building=roof sans AUCUNE info exploitable (souvent juste
+    # layer=1) -> dalle plate fine flottant à une hauteur de
+    # dégagement "raisonnable" plutôt que la boîte pleine par défaut.
+    is_untagged_roof = ["all", is_roof, ["!", has_height_info]]
 
     normal_height_expr = ["case",
         ["has", "height"], ["to-number", ["get", "height"], 6],
         ["has", "building:levels"], ["+", base_expr,
             ["*", ["to-number", ["get", "building:levels"], 2], 3]],
         ["+", base_expr, 7.5]]
+
+    # Différenciation visuelle des auvents/verrières (building=roof) :
+    # il arrive qu'un building=roof soit posé exactement à la même
+    # position qu'un AUTRE bâtiment OSM distinct en dessous (le vrai
+    # support, souvent sans aucune hauteur taguée -> boîte pleine du
+    # sol par défaut). Les deux features sont rendues CORRECTEMENT
+    # selon leurs propres tags respectifs, mais avec la même couleur
+    # pleine elles fusionnent visuellement en un seul bloc, rendant
+    # invisible la fine dalle de l'auvent qui devrait se distinguer.
+    # On donne donc à TOUT building=roof une teinte et une opacité
+    # distinctes (gris-taupe semi-transparent, façon verrière), pour
+    # qu'il reste identifiable même superposé à un autre volume.
+    roof_color = "#b3a89c"
 
     out = [{"id":"buildings-fill","type":"fill",
              "source":"buildings","source-layer":"buildings","minzoom":ap,
@@ -362,18 +370,26 @@ def buildings(cfg):
         out.append({"id":"buildings-3d","type":"fill-extrusion",
             "source":"buildings","source-layer":"buildings","minzoom":ap,
             "layout":{"visibility":"none"},
-            # issue #40 : un bâtiment entièrement recouvert par ses
-            # building:part (relation explicite ou heuristique
-            # géométrique ≥90%, cf. compute_building_coverage.py) ne
-            # doit pas être extrudé ici, sous peine de silhouette
-            # dédoublée avec building-parts-3d. Le rendu 2D
-            # (buildings-fill/buildings-outline) reste inchangé pour
-            # tous les bâtiments, couverts ou non.
-            "filter": ["!=", ["get", "covered_by_parts"], "yes"],
-            "paint":{"fill-extrusion-color":col,
+            # lod="detail" (issue z15-18 leak) : exclut explicitement
+            # les features du palier fusionné (lod=merged, ajouté par
+            # merge_buildings.py), au cas où tippecanoe en laisserait
+            # fuiter au-delà de leur tranche de zoom prévue z10-12 —
+            # filtre robuste, indépendant des réglages tippecanoe.
+            # covered_by_parts!=yes (issue #40) : un bâtiment
+            # entièrement recouvert par ses building:part (relation
+            # explicite ou heuristique géométrique ≥90%, cf.
+            # compute_building_coverage.py) ne doit pas être extrudé
+            # ici, sous peine de silhouette dédoublée avec
+            # building-parts-3d. Le rendu 2D (buildings-fill/
+            # buildings-outline) reste inchangé pour tous les
+            # bâtiments, quels que soient lod/covered_by_parts.
+            "filter": ["all",
+                ["==", ["get", "lod"], "detail"],
+                ["!=", ["get", "covered_by_parts"], "yes"]],
+            "paint":{"fill-extrusion-color": ["case", is_roof, roof_color, col],
                      "fill-extrusion-base": ["case", is_untagged_roof, 2.5, base_expr],
                      "fill-extrusion-height": ["case", is_untagged_roof, 2.8, normal_height_expr],
-                     "fill-extrusion-opacity":.75}})
+                     "fill-extrusion-opacity": ["case", is_roof, 0.55, .75]}})
     out.append({"id":"buildings-outline","type":"line",
         "source":"buildings","source-layer":"buildings","minzoom":ap,
         "paint":{"line-color":bc,"line-width":.5}})
