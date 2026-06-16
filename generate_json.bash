@@ -1,935 +1,275 @@
-#!/usr/bin/env python3
-"""
-build_map.py  —  map.config.yaml → style.json + granulometry.json + pmtiles_params.json
-"""
-import argparse, json, sys
-from pathlib import Path
+#!/usr/bin/env bash
+# ─────────────────────────────────────────────────────────
+# Extraction minimaliste — 11 couches essentielles
+# Pré-requis : osmium-tool, jq
+# ─────────────────────────────────────────────────────────
+set -euo pipefail
 
-try:
-    import yaml
-except ImportError:
-    print("✗  pip install pyyaml", file=sys.stderr); sys.exit(1)
+SRC="brussels_capital_region-latest.osm.pbf"
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+# Vérifier que le fichier source existe et est un PBF valide
+if [ ! -f "$SRC" ]; then
+  echo "✗ Fichier $SRC introuvable" >&2; exit 1
+fi
 
-COLORS = {"white":"#ffffff","black":"#000000","transparent":"rgba(0,0,0,0)"}
+FILESIZE=$(stat -c%s "$SRC" 2>/dev/null || stat -f%z "$SRC")
+if [ "$FILESIZE" -lt 1000000 ]; then
+  echo "✗ $SRC trop petit (${FILESIZE} octets) — téléchargement probablement échoué" >&2; exit 1
+fi
 
-def c(v):
-    if v is None: return None
-    s = str(v).strip().lower()
-    return COLORS.get(s, str(v))
+# Vérifier que c'est bien un PBF et pas une page HTML
+FILETYPE=$(file -b "$SRC")
+if [[ "$FILETYPE" != *"OpenStreetMap"* ]]; then
+  echo "✗ $SRC n'est pas un fichier PBF valide" >&2
+  echo "  Détecté : $FILETYPE" >&2
+  exit 1
+fi
 
-def lc(layers, name):
-    r = layers.get(name) or {}
-    ap = r.get("appear_at", 10)
-    return {
-        "label":        r.get("label", name.capitalize()),
-        "color":        c(r.get("color")),
-        "border_color": c(r.get("border_color")),
-        "visible":      r.get("visible", True),
-        "appear_at":    ap,
-        "labels_at":    r.get("labels_at", ap + 3),
-        "opacity":      r.get("opacity", 1.0),
-        "subtypes":     r.get("subtypes") or {},
-        "extrusion_3d": r.get("extrusion_3d", False),
-    }
+echo "✓ Source valide : $SRC ($(numfmt --to=iec "$FILESIZE"))"
 
-def sc(cfg, key):
-    """Config d'un sous-type avec tous les champs optionnels."""
-    s = cfg["subtypes"].get(key) or {}
-    return {
-        "tag":           s.get("tag"),
-        "color":         c(s.get("color", cfg["color"])),
-        "color_private": c(s.get("color_private")),
-        "pattern":       s.get("pattern"),
-        "pattern_private": s.get("pattern_private"),
-        "outline_color": c(s.get("outline_color")),
-        "appear_at":     s.get("appear_at", cfg["appear_at"]),
-        "opacity":       s.get("opacity",   cfg["opacity"]),
-    }
-
-def zoom(pairs):
-    if len(pairs) == 1: return pairs[0][1]
-    e = ["interpolate",["linear"],["zoom"]]
-    for z,v in pairs: e += [z,v]
-    return e
-
-def color_or_case(col, col_private):
-    """Retourne une expression MapLibre color ou case access=private."""
-    if col_private:
-        return ["case", ["==", ["get", "access"], "private"], col_private, col]
-    return col
-
-
-# ── LANDUSE ───────────────────────────────────────────────────────────────────
-
-# Ordre de rendu des sous-types landuse : les zones "de fond" (larges,
-# souvent étendues sur tout un quartier) sont dessinées en premier, les
-# zones "d'inclusion" plus ponctuelles (brownfield, greenfield, allotments,
-# garages, etc.) sont dessinées PAR-DESSUS, pour rester visibles même
-# lorsqu'elles sont entièrement entourées par un grand polygone
-# landuse=residential/industrial/... (suite issue #37).
-LANDUSE_RENDER_ORDER = [
-    # — fonds larges —
-    "residential", "industrial", "commercial", "retail",
-    "railway", "education", "farmland", "farmyard",
-    # — inclusions ponctuelles, dessinées par-dessus —
-    "brownfield", "greenfield", "construction", "landfill",
-    "allotments", "cemetery", "garages", "depot", "quarry",
-    "religious", "recreation_ground", "village_green", "military",
-]
-
-def landuse(cfg):
-    out = []
-    # Ordre explicite : fonds larges d'abord, inclusions ponctuelles
-    # par-dessus. Les sous-types non listés (extensions futures du
-    # config) sont ajoutés en dernier, par sécurité.
-    order = [v for v in LANDUSE_RENDER_ORDER if v in cfg["subtypes"]]
-    order += [v for v in cfg["subtypes"] if v not in order]
-
-    for val in order:
-        s = sc(cfg, val)
-        if not s["color"]: continue
-        tag = s["tag"] or "landuse"
-        l = {"id": f"landuse-{val}", "type": "fill",
-             "source": "landuse", "source-layer": "landuse",
-             "filter": ["==", ["get", tag], val],
-             "paint": {"fill-color": s["color"]}}
-        if s["appear_at"] > 10: l["minzoom"] = s["appear_at"]
-        if abs(s["opacity"] - 1.0) > 0.01: l["paint"]["fill-opacity"] = s["opacity"]
-        out.append(l)
-        # Pattern par-dessus (ex: military-hatch)
-        if s["pattern"]:
-            out.append({
-                "id": f"landuse-{val}-hatch", "type": "fill",
-                "source": "landuse", "source-layer": "landuse",
-                "minzoom": s["appear_at"],
-                "filter": ["==", ["get", tag], val],
-                "paint": {"fill-pattern": s["pattern"]}
-            })
-        # Contour (ex: religious, quarry — façon osm-carto)
-        if s["outline_color"]:
-            ol = {"id": f"landuse-{val}-outline", "type": "line",
-                  "source": "landuse", "source-layer": "landuse",
-                  "filter": ["==", ["get", tag], val],
-                  "paint": {"line-color": s["outline_color"], "line-width": 0.5}}
-            if s["appear_at"] > 10: ol["minzoom"] = s["appear_at"]
-            out.append(ol)
-    return out
-
-
-# ── GREEN ─────────────────────────────────────────────────────────────────────
-
-# Ordre de rendu des sous-types green : "park" et "garden" sont souvent de
-# grandes zones (parcs publics) qui CONTIENNENT des inclusions plus
-# spécifiques (forêt, pelouse/meadow/grassland, lande, broussailles, massifs
-# de fleurs). On dessine donc park/garden en premier (fond), puis les
-# inclusions par-dessus, pour qu'elles restent visibles à l'intérieur d'un
-# park.
-FILTERS = {
-    # — fonds (souvent de grandes zones, ex: parcs publics) —
-    "park":      ["==", ["get","leisure"], "park"],
-    "garden":    ["==", ["get","leisure"], "garden"],
-    # — inclusions, dessinées par-dessus —
-    "forest":    ["any", ["==",["get","landuse"],"forest"], ["==",["get","natural"],"wood"]],
-    "scrub":     ["==", ["get","natural"], "scrub"],
-    "shrubbery": ["==", ["get","natural"], "shrubbery"],
-    "heath":     ["==", ["get","natural"], "heath"],
-    # grass : couvre aussi natural=grassland (même rendu qu'osm-carto @grass)
-    "grass":     ["any", ["==",["get","landuse"],"grass"],  ["==",["get","landuse"],"meadow"],
-                          ["==",["get","natural"],"grassland"]],
-    "flowerbed": ["==", ["get","landuse"], "flowerbed"],
-    "wood":      None,  # couvert par forest
+extract() {
+  local name="$1"; shift
+  echo "→ $name"
+  osmium tags-filter "$SRC" "$@" -o "_tmp_${name}.osm.pbf" --overwrite
+  osmium export "_tmp_${name}.osm.pbf" -o "${name}.json" --overwrite
+  rm -f "_tmp_${name}.osm.pbf"
+  echo "  $(wc -l < "${name}.json") lignes"
 }
 
-def green(cfg):
-    out = []
-    st = cfg["subtypes"]
-
-    # Collecter les sous-types qui ont un pattern_private pour le layer composite
-    hatch_vals = []
-
-    for val, filt in FILTERS.items():
-        if filt is None: continue   # wood couvert par forest
-        s = sc(cfg, val)
-        if not s["color"]: continue
-
-        col_expr = color_or_case(s["color"], s["color_private"])
-        l = {"id": f"green-{val}", "type": "fill",
-             "source": "green", "source-layer": "green",
-             "filter": filt,
-             "paint": {"fill-color": col_expr}}
-        if s["appear_at"] > 10: l["minzoom"] = s["appear_at"]
-        if abs(s["opacity"] - 1.0) > 0.01: l["paint"]["fill-opacity"] = s["opacity"]
-        out.append(l)
-
-        if s["pattern_private"]:
-            hatch_vals.append((val, s["pattern_private"], s["appear_at"]))
-
-    # Layer pattern_private composite — un seul layer par pattern regroupant tous les sous-types
-    from collections import defaultdict
-    by_pattern = defaultdict(list)
-    for val, pat, _ap in hatch_vals:
-        by_pattern[pat].append(val)
-
-    for pat, vals in by_pattern.items():
-        tag_val_filters = []
-        for val in vals:
-            tag = (st.get(val) or {}).get("tag", "leisure")
-            tag_val_filters.append(["==", ["get", tag], val])
-        out.append({
-            "id": f"green-hatch-{pat.replace('-','_')}", "type": "fill",
-            "source": "green", "source-layer": "green",
-            "filter": ["all", ["any"] + tag_val_filters,
-                              ["==", ["get", "access"], "private"]],
-            "paint": {"fill-pattern": pat}
-        })
-
-    return out
-
-
-# ── WATER ─────────────────────────────────────────────────────────────────────
-
-def water(cfg):
-    col = cfg["color"] or "#aad3df"
-    st  = cfg["subtypes"]
-    out = []
-    out.append({"id":"water-fill","type":"fill",
-        "source":"water","source-layer":"water",
-        "filter":["all",["!=",["get","tunnel"],"culvert"],
-                        ["!=",["get","tunnel"],"yes"],
-                        ["!=",["get","covered"],"yes"],
-                        ["==",["geometry-type"],"Polygon"]],
-        "paint":{"fill-color":col}})
-    wetland = st.get("wetland") or {}
-    out.append({"id":"water-wetland","type":"fill",
-        "source":"water","source-layer":"water",
-        "filter":["all",["==",["get","natural"],"wetland"],
-                        ["==",["geometry-type"],"Polygon"]],
-        "paint":{"fill-color": c(wetland.get("color","#d4e2c6")),
-                 "fill-opacity": wetland.get("opacity", 0.5)}})
-    # waterway=river/canal/stream/ditch : un tronçon en tunnel=culvert
-    # doit avoir le MÊME rendu qu'un tronçon en tunnel=yes (hachuré, cf.
-    # water-tunnel-casing/core ci-dessous, qui couvrent déjà yes ET
-    # culvert) — on l'exclut donc ici pour éviter le double-rendu
-    # (ligne pleine + hachures superposées).
-    for ww,(w,dz) in {"river":([(10,1),(18,12)],10),"canal":([(10,1),(18,10)],10),
-                       "stream":([(13,.5),(18,3)],13),"ditch":([(14,.3),(18,2)],14)}.items():
-        az = (st.get(ww) or {}).get("appear_at", dz)
-        out.append({"id":f"waterway-{ww}","type":"line",
-            "source":"water","source-layer":"water","minzoom":az,
-            "filter":["all",["==",["get","waterway"],ww],
-                            ["!=",["get","tunnel"],"yes"],
-                            ["!=",["get","tunnel"],"culvert"],
-                            ["==",["geometry-type"],"LineString"]],
-            "paint":{"line-color":col,"line-width":zoom(w)}})
-    # Contour polygones eau + tunnels eau
-    out.append({"id":"water-line","type":"line",
-        "source":"water","source-layer":"water",
-        "filter":["all",["!=",["get","tunnel"],"culvert"],["!=",["get","tunnel"],"yes"],
-                        ["!=",["get","covered"],"yes"],["==",["geometry-type"],"Polygon"],
-                        ["!",["has","waterway"]]],
-        "paint":{"line-color":col,"line-width":zoom([(13,1),(18,10)])}})
-    out.append({"id":"water-tunnel-casing","type":"line",
-        "source":"water","source-layer":"water",
-        "filter":["all",["any",["==",["get","tunnel"],"yes"],["==",["get","tunnel"],"culvert"]],
-                        ["==",["geometry-type"],"LineString"]],
-        "paint":{"line-color":col,"line-dasharray":[2,2],
-                 "line-width":zoom([(13,1.5),(18,5)])}})
-    out.append({"id":"water-tunnel-core","type":"line",
-        "source":"water","source-layer":"water",
-        "filter":["all",["any",["==",["get","tunnel"],"yes"],["==",["get","tunnel"],"culvert"]],
-                        ["==",["geometry-type"],"LineString"]],
-        "paint":{"line-color":"#e6faf9","line-opacity":0.4,
-                 "line-width":zoom([(13,1),(18,4)])}})
-    return out
-
-
-# ── TREES ─────────────────────────────────────────────────────────────────────
-
-def trees(cfg):
-    col = cfg["color"] or "#6cae50"
-    st  = cfg["subtypes"]
-    ha  = (st.get("hedge")    or {}).get("appear_at", 14)
-    ra  = (st.get("tree_row") or {}).get("appear_at", 15)
-    ta  = (st.get("tree")     or {}).get("appear_at", 17)
-    return [
-        {"id":"trees-hedge","type":"line",
-         "source":"trees","source-layer":"trees","minzoom":ha,
-         "filter":["all",["==",["geometry-type"],"LineString"],["==",["get","barrier"],"hedge"]],
-         "layout":{"line-cap":"round","line-join":"round"},
-         "paint":{"line-color":"#6ba048","line-width":zoom([(ha,.8),(18,3.5)]),"line-opacity":0.85}},
-        # tree_row : line de fond + symboles par leaf_type
-        {"id":"trees-row-line","type":"line",
-         "source":"trees","source-layer":"trees","minzoom":ra,
-         "filter":["all",["==",["geometry-type"],"LineString"],["==",["get","natural"],"tree_row"]],
-         "layout":{"line-cap":"round","line-join":"round"},
-         "paint":{"line-color":"#8fbc77","line-width":zoom([(ra,.5),(18,1.5)]),"line-opacity":0.55}},
-        {"id":"trees-row-broadleaved","type":"symbol",
-         "source":"trees","source-layer":"trees","minzoom":ra+1,
-         "filter":["all",["==",["geometry-type"],"LineString"],["==",["get","natural"],"tree_row"],
-                         ["==",["get","leaf_type"],"broadleaved"]],
-         "layout":{"symbol-placement":"line","symbol-spacing":zoom([(ra+1,48),(18,32)]),
-                   "text-field":"●","text-font":["Noto Sans Regular"],
-                   "text-size":zoom([(ra+1,9),(18,13)]),
-                   "text-rotation-alignment":"map","text-allow-overlap":False},
-         "paint":{"text-color":"#6cae50","text-halo-color":"#f2efe9","text-halo-width":.8}},
-        {"id":"trees-row-needleleaved","type":"symbol",
-         "source":"trees","source-layer":"trees","minzoom":ra+1,
-         "filter":["all",["==",["geometry-type"],"LineString"],["==",["get","natural"],"tree_row"],
-                         ["==",["get","leaf_type"],"needleleaved"]],
-         "layout":{"symbol-placement":"line","symbol-spacing":zoom([(ra+1,48),(18,32)]),
-                   "text-field":"▲","text-font":["Noto Sans Regular"],
-                   "text-size":zoom([(ra+1,9),(18,13)]),
-                   "text-rotation-alignment":"map","text-allow-overlap":False},
-         "paint":{"text-color":"#5f9f50","text-halo-color":"#f2efe9","text-halo-width":.8}},
-        {"id":"trees-row-default","type":"symbol",
-         "source":"trees","source-layer":"trees","minzoom":ra+1,
-         "filter":["all",["==",["geometry-type"],"LineString"],["==",["get","natural"],"tree_row"],
-                         ["!",["in",["get","leaf_type"],["literal",["broadleaved","needleleaved"]]]]],
-         "layout":{"symbol-placement":"line","symbol-spacing":zoom([(ra+1,48),(18,32)]),
-                   "text-field":"●","text-font":["Noto Sans Regular"],
-                   "text-size":zoom([(ra+1,8),(18,12)]),
-                   "text-rotation-alignment":"map","text-allow-overlap":False},
-         "paint":{"text-color":"#7eb36a","text-halo-color":"#f2efe9","text-halo-width":.8}},
-        # Arbres individuels par leaf_type
-        {"id":"trees-tree-broadleaved","type":"symbol",
-         "source":"trees","source-layer":"trees","minzoom":ta,
-         "filter":["all",["==",["geometry-type"],"Point"],["==",["get","natural"],"tree"],
-                         ["==",["get","leaf_type"],"broadleaved"]],
-         "layout":{"text-field":"●","text-font":["Noto Sans Regular"],
-                   "text-size":zoom([(ta,10),(18,14)]),"text-allow-overlap":False},
-         "paint":{"text-color":"#6cae50","text-halo-color":"#f2efe9","text-halo-width":.9}},
-        {"id":"trees-tree-needleleaved","type":"symbol",
-         "source":"trees","source-layer":"trees","minzoom":ta,
-         "filter":["all",["==",["geometry-type"],"Point"],["==",["get","natural"],"tree"],
-                         ["==",["get","leaf_type"],"needleleaved"]],
-         "layout":{"text-field":"▲","text-font":["Noto Sans Regular"],
-                   "text-size":zoom([(ta,10),(18,14)]),"text-allow-overlap":False},
-         "paint":{"text-color":"#5f9f50","text-halo-color":"#f2efe9","text-halo-width":.9}},
-        {"id":"trees-tree-default","type":"symbol",
-         "source":"trees","source-layer":"trees","minzoom":ta,
-         "filter":["all",["==",["geometry-type"],"Point"],["==",["get","natural"],"tree"],
-                         ["!",["in",["get","leaf_type"],["literal",["broadleaved","needleleaved"]]]]],
-         "layout":{"text-field":"●","text-font":["Noto Sans Regular"],
-                   "text-size":zoom([(ta,9),(18,13)]),"text-allow-overlap":False},
-         "paint":{"text-color":"#7eb36a","text-halo-color":"#f2efe9","text-halo-width":.9}},
-    ]
-
-
-# ── BUILDINGS ─────────────────────────────────────────────────────────────────
-
-def buildings(cfg):
-    col = cfg["color"] or "#fce1c5"
-    bc  = cfg["border_color"] or "#d4a574"
-    ap  = cfg["appear_at"]
-
-    # Base de l'extrusion : 0 normalement, sauf bâtiment surélevé
-    # (passage carrossable / allée vers l'intérieur d'îlot) taggé
-    # directement min_height/building:min_level, sans building:part.
-    base_expr = ["case",
-        ["has", "min_height"], ["to-number", ["get", "min_height"], 0],
-        ["has", "building:min_level"], ["*", ["to-number", ["get", "building:min_level"], 0], 3],
-        0]
-
-    # Le bâtiment porte-t-il une info de hauteur exploitable quelconque ?
-    has_height_info = ["any",
-        ["has", "height"], ["has", "min_height"],
-        ["has", "building:levels"], ["has", "building:min_level"]]
-
-    is_roof = ["==", ["get", "building"], "roof"]
-
-    # building=roof sans AUCUNE info exploitable (souvent juste
-    # layer=1) -> dalle plate fine flottant à une hauteur de
-    # dégagement "raisonnable" plutôt que la boîte pleine par défaut.
-    is_untagged_roof = ["all", is_roof, ["!", has_height_info]]
-
-    normal_height_expr = ["case",
-        ["has", "height"], ["to-number", ["get", "height"], 6],
-        ["has", "building:levels"], ["+", base_expr,
-            ["*", ["to-number", ["get", "building:levels"], 2], 3]],
-        ["+", base_expr, 7.5]]
-
-    # Différenciation visuelle des auvents/verrières (building=roof) :
-    # il arrive qu'un building=roof soit posé exactement à la même
-    # position qu'un AUTRE bâtiment OSM distinct en dessous (le vrai
-    # support, souvent sans aucune hauteur taguée -> boîte pleine du
-    # sol par défaut). Les deux features sont rendues CORRECTEMENT
-    # selon leurs propres tags respectifs, mais avec la même couleur
-    # pleine elles fusionnent visuellement en un seul bloc, rendant
-    # invisible la fine dalle de l'auvent qui devrait se distinguer.
-    # On donne donc à TOUT building=roof une teinte et une opacité
-    # distinctes (gris-taupe semi-transparent, façon verrière), pour
-    # qu'il reste identifiable même superposé à un autre volume.
-    roof_color = "#b3a89c"
-
-    out = [{"id":"buildings-fill","type":"fill",
-             "source":"buildings","source-layer":"buildings","minzoom":ap,
-             "paint":{"fill-color":col}}]
-    if cfg["extrusion_3d"]:
-        out.append({"id":"buildings-3d","type":"fill-extrusion",
-            "source":"buildings","source-layer":"buildings","minzoom":ap,
-            "layout":{"visibility":"none"},
-            # lod="detail" (issue z15-18 leak) : exclut explicitement
-            # les features du palier fusionné (lod=merged, ajouté par
-            # merge_buildings.py), au cas où tippecanoe en laisserait
-            # fuiter au-delà de leur tranche de zoom prévue z10-12 —
-            # filtre robuste, indépendant des réglages tippecanoe.
-            # covered_by_parts!=yes (issue #40) : un bâtiment
-            # entièrement recouvert par ses building:part (relation
-            # explicite ou heuristique géométrique ≥90%, cf.
-            # compute_building_coverage.py) ne doit pas être extrudé
-            # ici, sous peine de silhouette dédoublée avec
-            # building-parts-3d. Le rendu 2D (buildings-fill/
-            # buildings-outline) reste inchangé pour tous les
-            # bâtiments, quels que soient lod/covered_by_parts.
-            "filter": ["all",
-                ["==", ["get", "lod"], "detail"],
-                ["!=", ["get", "covered_by_parts"], "yes"]],
-            "paint":{"fill-extrusion-color": ["case", is_roof, roof_color, col],
-                     "fill-extrusion-base": ["case", is_untagged_roof, 2.5, base_expr],
-                     "fill-extrusion-height": ["case", is_untagged_roof, 2.8, normal_height_expr],
-                     "fill-extrusion-opacity": ["case", is_roof, 0.55, .75]}})
-    out.append({"id":"buildings-outline","type":"line",
-        "source":"buildings","source-layer":"buildings","minzoom":ap,
-        "paint":{"line-color":bc,"line-width":.5}})
-    return out
-
-
-# ── LEISURE ───────────────────────────────────────────────────────────────────
-
-def leisure(cfg):
-    st = cfg["subtypes"]
-
-    # fill-color : match expression avec couleurs par sous-type
-    fill_expr = ["match", ["get","leisure"]]
-    for k in st:
-        s = sc(cfg, k)
-        if s["color"]: fill_expr += [k, s["color"]]
-    fill_expr.append(cfg["color"] or "#def3c0")
-
-    # outline-color : match expression avec outline_color si défini
-    outline_expr = ["match", ["get","leisure"]]
-    has_custom_outline = False
-    for k in st:
-        s = sc(cfg, k)
-        if s["outline_color"]:
-            outline_expr += [k, s["outline_color"]]
-            has_custom_outline = True
-    outline_expr.append("#adadad")
-
-    return [
-        {"id":"leisure-fill","type":"fill",
-         "source":"leisure","source-layer":"leisure",
-         "filter":["==",["geometry-type"],"Polygon"],
-         "paint":{"fill-color":fill_expr,"fill-opacity":1.0}},
-        {"id":"leisure-outline","type":"line",
-         "source":"leisure","source-layer":"leisure",
-         "filter":["==",["geometry-type"],"Polygon"],
-         "paint":{"line-color": outline_expr if has_custom_outline else "#adadad",
-                  "line-width":.5}},
-    ]
-
-
-# ── ROADS ─────────────────────────────────────────────────────────────────────
-
-def roads(cfg):
-    st   = cfg["subtypes"]
-    base = cfg["appear_at"]
-    out  = []
-    # man_made tunnel/bridge polygons
-    for mm in ["tunnel","bridge"]:
-        fc = "#adadad" if mm=="tunnel" else "#ffebee"
-        op = 0.1 if mm=="tunnel" else 0.5
-        out.append({"id":f"man_made-{mm}-fill","type":"fill",
-            "source":"roads","source-layer":"roads",
-            "filter":["all",["==",["get","man_made"],mm],["==",["geometry-type"],"Polygon"]],
-            "layout":{"fill-sort-key":["coalesce",["to-number",["get","layer"]],0]},
-            "paint":{"fill-color":fc,"fill-opacity":op}})
-        dashed = {"line-dasharray":[2,2]} if mm=="tunnel" else {}
-        out.append({"id":f"man_made-{mm}-outline","type":"line",
-            "source":"roads","source-layer":"roads",
-            "filter":["==",["get","man_made"],mm],
-            "layout":{"line-join":"round","line-cap":"round",
-                      "line-sort-key":["coalesce",["to-number",["get","layer"]],0]},
-            "paint":{"line-color":"#ffc0cb" if mm=="tunnel" else "#adadad",
-                     "line-width":2, **dashed}})
-        if mm=="tunnel":
-            out.append({"id":"man_made-tunnel-line-fill","type":"line",
-                "source":"roads","source-layer":"roads",
-                "filter":["all",["==",["get","man_made"],"tunnel"],
-                                ["==",["geometry-type"],"LineString"]],
-                "layout":{"line-join":"round","line-cap":"round",
-                          "line-sort-key":["coalesce",["to-number",["get","layer"]],0]},
-                "paint":{"line-color":"#adadad","line-opacity":.3,
-                         "line-width":zoom([(14,2),(16,10),(18,20)])}})
-
-    CLASSES = {
-        "motorway":  (["motorway","motorway_link"],   "#dc2a67",[(5,1),(18,20)],  [(5,.5),(18,18)]),
-        "trunk":     (["trunk","trunk_link"],          "#c84e2f",[(5,1),(18,18)],  [(5,.5),(18,16)]),
-        "primary":   (["primary","primary_link"],      "#a06b00",[(7,1),(18,16)],  [(7,.5),(18,14)]),
-        "secondary": (["secondary","secondary_link"],  "#707d05",[(9,1),(18,14)],  [(9,.5),(18,12)]),
-        "tertiary":  (["tertiary","tertiary_link"],    "#8f8f8f",[(11,1),(18,12)], [(11,.5),(18,10)]),
-        "local":     (["residential","unclassified",
-                       "service","living_street"],     "#bbbbbb",[(13,1),(18,10)], [(13,.5),(18,8)]),
-        "track":     (["track"],                       "#886622",[(13,.5),(18,3)], [(13,.5),(18,2)]),
-        "busway":    (["busway"],                      "#bbbbbb",[(12,1.2),(18,11)],[(12,.8),(18,9)]),
-    }
-    for grp,(hw_vals,casing_c,cw,fw) in CLASSES.items():
-        s   = st.get(grp) or {}
-        ap  = s.get("appear_at", base)
-        fc  = c(s.get("color", cfg["color"] or "#ffffff"))
-        hwf = ["any"]+[["==",["get","highway"],v] for v in hw_vals]
-        layout = {"line-cap":"round","line-join":"round",
-                  "line-sort-key":["coalesce",["to-number",["get","layer"]],0]}
-        for variant,extra,op in [("surface",["!=",["get","tunnel"],"yes"],1.0),
-                                   ("tunnel", ["==",["get","tunnel"],"yes"],0.5)]:
-            f = ["all",hwf,extra]
-            out.append({"id":f"roads-casing-{grp}-{variant}","type":"line",
-                "source":"roads","source-layer":"roads","minzoom":ap,
-                "filter":f,"layout":layout,
-                "paint":{"line-color":casing_c,"line-width":zoom(cw),"line-opacity":op,
-                         **({"line-dasharray":[2,2]} if variant=="tunnel" else {})}})
-            out.append({"id":f"roads-fill-{grp}-{variant}","type":"line",
-                "source":"roads","source-layer":"roads","minzoom":ap,
-                "filter":f,"layout":layout,
-                "paint":{"line-color":fc,"line-width":zoom(fw),"line-opacity":op}})
-
-    # busway center line
-    busway_s = st.get("busway") or {}
-    busway_ap = busway_s.get("appear_at", base)
-    out.append({"id":"roads-center-busway","type":"line",
-        "source":"roads","source-layer":"roads","minzoom":busway_ap,
-        "filter":["==",["get","highway"],"busway"],
-        "layout":{"line-cap":"butt","line-join":"round",
-                  "line-sort-key":["coalesce",["to-number",["get","layer"]],0]},
-        "paint":{"line-color":"#add19e","line-width":zoom([(busway_ap,.4),(18,2)]),
-                 "line-dasharray":[2,2],
-                 "line-opacity":["case",["==",["get","tunnel"],"yes"],.5,1.0]}})
-
-    out.append({"id":"road-labels","type":"symbol",
-        "source":"roads","source-layer":"roads","minzoom":cfg["labels_at"],
-        "filter":["any"]+[["==",["get","highway"],v]
-                          for v in ["primary","secondary","tertiary","residential"]],
-        "layout":{"text-field":["get","name"],"text-font":["Noto Sans Regular"],
-                  "text-size":11,"symbol-placement":"line","text-max-angle":30},
-        "paint":{"text-color":"#333","text-halo-color":"rgba(255,255,255,0.6)",
-                 "text-halo-width":1.5}})
-
-    # ── Flèches de sens unique (issue #41) ──────────────────────────
-    # oneway=yes -> flèche dans le sens du tracé de la géométrie.
-    # oneway=-1 ignoré (déconseillé sur OSM, quasi absent des données).
-    out.append({"id":"road-oneway-arrows","type":"symbol",
-        "source":"roads","source-layer":"roads","minzoom":16,
-        "filter":["==",["get","oneway"],"yes"],
-        "layout":{
-            "symbol-placement":"line",
-            "symbol-spacing":zoom([(16,150),(18,80)]),
-            "text-field":"→",
-            "text-font":["Noto Sans Regular"],
-            "text-size":zoom([(16,10),(18,14)]),
-            "text-rotation-alignment":"map",
-            "text-pitch-alignment":"map",
-            "text-keep-upright":False,
-            "text-allow-overlap":True,
-            "text-ignore-placement":True},
-        "paint":{"text-color":"#666666","text-opacity":0.7,
-                 "text-halo-color":"rgba(255,255,255,0.6)","text-halo-width":1}})
-
-    return out
-
-
-# ── PEDESTRIAN ────────────────────────────────────────────────────────────────
-
-def pedestrian(cfg):
-    col = cfg["color"] or "#97644c"
-    st  = cfg["subtypes"]
-    DEFS = {
-        "pedestrian_street":("pedestrian",13,None,  [(13,1.2),(18,6)],  False, "#999"),
-        "pedestrian_fill":  ("pedestrian",13,None,  [(13,.8),(18,4)],   False, "#ededed"),
-        "footway":          ("footway",   14,None,  [(14,.5),(18,1.5)], True,  col),
-        "path":             ("path",      14,None,  [(14,.5),(18,1.5)], True,  col),
-        "steps":            ("steps",     14,None,  [(14,1.5),(18,4)],  True,  col),
-    }
-    out = []
-    # casing pour rue piétonne
-    ap_ped = (st.get("pedestrian_street") or {}).get("appear_at", 13)
-    out.append({"id":"pedestrian-street-casing","type":"line",
-        "source":"pedestrian","source-layer":"pedestrian","minzoom":ap_ped,
-        "filter":["==",["get","highway"],"pedestrian"],
-        "layout":{"line-cap":"round","line-join":"round"},
-        "paint":{"line-color":"#999","line-width":zoom([(ap_ped,1.2),(18,6)])}})
-    out.append({"id":"pedestrian-street-fill","type":"line",
-        "source":"pedestrian","source-layer":"pedestrian","minzoom":ap_ped,
-        "filter":["==",["get","highway"],"pedestrian"],
-        "layout":{"line-cap":"round","line-join":"round"},
-        "paint":{"line-color":"#ededed","line-width":zoom([(ap_ped,.8),(18,4)])}})
-    for key,(hw,dz,_,wp,dashed,lc_) in [
-        ("footway",("footway",14,None,[(14,.5),(18,1.5)],True,col)),
-        ("path",   ("path",   14,None,[(14,.5),(18,1.5)],True,col)),
-        ("steps",  ("steps",  14,None,[(14,1.5),(18,4)], True,col)),
-    ]:
-        ap = (st.get(key) or {}).get("appear_at", dz)
-        p  = {"line-color":lc_,"line-width":zoom(wp)}
-        if dashed: p["line-dasharray"] = [2,2] if key!="steps" else [.2,.5]
-        out.append({"id":f"pedestrian-{key}","type":"line",
-            "source":"pedestrian","source-layer":"pedestrian","minzoom":ap,
-            "filter":["==",["get","highway"],hw],"paint":p})
-    return out
-
-
-# ── CYCLEWAY ──────────────────────────────────────────────────────────────────
-
-def cycleway(cfg):
-    col = cfg["color"] or "#0000ff"
-    out = [{"id":"cycleway","type":"line",
-        "source":"cycleway","source-layer":"cycleway","minzoom":cfg["appear_at"],
-        "paint":{"line-color":col,
-                 "line-width":zoom([(cfg["appear_at"],.8),(18,2)]),
-                 "line-dasharray":[3,3]}}]
-
-    # ── Flèches de sens unique sur pistes cyclables (issue #41) ──────
-    # oneway=yes -> piste à sens unique : flèche dans le sens du tracé.
-    # Pas de flèche -> bidirectionnelle (convention standard).
-    # "oneway" est déjà conservé par apply_granulometry (couche
-    # cycleway sans sous-types -> keep_properties: "ALL").
-    #
-    # Rendu : flèche blanche + halo dans la couleur de la piste, plutôt
-    # que flèche colorée semi-transparente (invisible sur la ligne
-    # bleue en pointillés de même couleur).
-    out.append({"id":"cycleway-oneway-arrows","type":"symbol",
-        "source":"cycleway","source-layer":"cycleway","minzoom":16,
-        "filter":["==",["get","oneway"],"yes"],
-        "layout":{
-            "symbol-placement":"line",
-            "symbol-spacing":zoom([(16,100),(18,60)]),
-            "text-field":"→",
-            "text-font":["Noto Sans Regular"],
-            "text-size":zoom([(16,10),(18,13)]),
-            "text-rotation-alignment":"map",
-            "text-pitch-alignment":"map",
-            "text-keep-upright":False,
-            "text-allow-overlap":True,
-            "text-ignore-placement":True},
-        "paint":{"text-color":"#ffffff","text-opacity":0.95,
-                 "text-halo-color":col,"text-halo-width":1.5}})
-
-    return out
-
-
-# ── RAILWAY ───────────────────────────────────────────────────────────────────
-
-def railway(cfg):
-    st  = cfg["subtypes"]
-    out = []
-    DEFS = {
-        "rail":      ([(10,2),(18,7)],[(10,.8),(18,2)],10),
-        "subway":    (None,           [(12,.8),(18,2)],12),
-        "tram":      (None,           [(13,.5),(18,1.5)],13),
-        "miniature": (None,           [(14,.3),(18,1)],14),
-    }
-    # Tunnels
-    for rw in ["rail","subway","tram"]:
-        s   = st.get(rw) or {}
-        col = c(s.get("color"))
-        if not col: continue
-        ap  = s.get("appear_at", DEFS[rw][2])
-        filt_t = ["all",["==",["get","railway"],rw],
-                        ["any",["==",["get","tunnel"],"yes"],
-                               ["==",["get","tunnel"],"building_passage"]]]
-        if rw == "rail":
-            out += [
-                {"id":f"railway-tunnel-{rw}-casing","type":"line",
-                 "source":"railway","source-layer":"railway","minzoom":ap,"filter":filt_t,
-                 "layout":{"line-join":"round"},
-                 "paint":{"line-color":"#c0c0c0","line-width":zoom([(ap,3),(18,7)]),
-                          "line-dasharray":[.2,4],"line-opacity":.4}},
-                {"id":f"railway-tunnel-{rw}-core","type":"line",
-                 "source":"railway","source-layer":"railway","minzoom":ap,"filter":filt_t,
-                 "layout":{"line-join":"round"},
-                 "paint":{"line-color":"#c0c0c0","line-width":zoom([(ap,.8),(18,2)]),
-                          "line-dasharray":[5,3],"line-opacity":.5}},
-            ]
-        else:
-            out.append({"id":f"railway-tunnel-{rw}","type":"line",
-                "source":"railway","source-layer":"railway","minzoom":ap,"filter":filt_t,
-                "layout":{"line-join":"round"},
-                "paint":{"line-color":"#b0b0b0","line-width":zoom(DEFS[rw][1]),
-                         "line-dasharray":[5,3],"line-opacity":.4 if rw=="tram" else .5}})
-
-    # Surface + ponts
-    for rw,(ties_w,core_w,dz) in DEFS.items():
-        s   = st.get(rw) or {}
-        col = c(s.get("color"))
-        ap  = s.get("appear_at", dz)
-        if not col: continue
-        filt_s = ["all",["==",["get","railway"],rw],
-                        ["!=",["get","tunnel"],"yes"],
-                        ["!=",["get","tunnel"],"building_passage"],
-                        ["!=",["get","bridge"],"yes"]]
-        filt_b = ["all",["==",["get","railway"],rw],["==",["get","bridge"],"yes"]]
-
-        if ties_w:
-            for suffix, filt in [("",filt_s),("-bridge",filt_b)]:
-                if suffix == "-bridge":
-                    out.append({"id":f"railway-bridge-casing","type":"line",
-                        "source":"railway","source-layer":"railway","minzoom":ap,
-                        "filter":["all",["any"]+[["==",["get","railway"],r]
-                                                  for r in ["rail","tram","subway"]],
-                                        ["==",["get","bridge"],"yes"]],
-                        "layout":{"line-join":"round"},
-                        "paint":{"line-color":"#000000","line-width":zoom([(ap,4),(18,9)]),
-                                 "line-opacity":.15}})
-                out.append({"id":f"railway-{rw}{suffix}-ties","type":"line",
-                    "source":"railway","source-layer":"railway","minzoom":ap,"filter":filt,
-                    "layout":{"line-join":"round"},
-                    "paint":{"line-color":col,"line-width":zoom(ties_w),"line-dasharray":[.2,4]}})
-                out.append({"id":f"railway-{rw}{suffix}-core","type":"line",
-                    "source":"railway","source-layer":"railway","minzoom":ap,"filter":filt,
-                    "layout":{"line-join":"round"},
-                    "paint":{"line-color":col,"line-width":zoom(core_w)}})
-        else:
-            for suffix, filt in [("",filt_s),("-bridge",filt_b)]:
-                out.append({"id":f"railway-{rw}{suffix}","type":"line",
-                    "source":"railway","source-layer":"railway","minzoom":ap,"filter":filt,
-                    "layout":{"line-join":"round"},
-                    "paint":{"line-color":col,"line-width":zoom(core_w)}})
-    return out
-
-
-# ── PUBLIC TRANSPORT ──────────────────────────────────────────────────────────
-
-def public_transport(cfg):
-    col = cfg["color"] or "#e3004f"
-    ap  = cfg["appear_at"]
-    la  = cfg["labels_at"]
-    return [
-        {"id":"public_transport-casing","type":"line",
-         "source":"public_transport","source-layer":"public_transport","minzoom":ap,
-         "layout":{"line-join":"round","line-cap":"round"},
-         "paint":{"line-color":"#ffffff","line-width":zoom([(ap,3),(18,9)]),"line-opacity":.6}},
-        {"id":"public_transport-line","type":"line",
-         "source":"public_transport","source-layer":"public_transport","minzoom":ap,
-         "layout":{"line-join":"round","line-cap":"round"},
-         "paint":{"line-color":["coalesce",["get","colour"],col],
-                  "line-width":zoom([(ap,1.5),(18,5)]),"line-opacity":.85}},
-        {"id":"public_transport-label","type":"symbol",
-         "source":"public_transport","source-layer":"public_transport","minzoom":la,
-         "layout":{"text-field":["get","ref"],"text-font":["Noto Sans Regular"],
-                   "text-size":11,"symbol-placement":"line","text-max-angle":30},
-         "paint":{"text-color":["coalesce",["get","colour:text"],"#000000"],
-                  "text-halo-color":"rgba(255,255,255,0.85)","text-halo-width":1.5}},
-    ]
-
-
-# ── BOUNDARIES ────────────────────────────────────────────────────────────────
-
-def boundaries(cfg):
-    return [{"id":"boundaries","type":"line",
-        "source":"boundaries","source-layer":"boundaries","minzoom":cfg["appear_at"],
-        "paint":{"line-color":cfg["color"] or "#ac46ac","line-width":1,
-                 "line-dasharray":[5,5],"line-opacity":.7}}]
-
-
-# ── POI ───────────────────────────────────────────────────────────────────────
-
-def poi(cfg):
-    fc = cfg["color"] or "#734a08"
-    ap = cfg["appear_at"]
-    la = cfg["labels_at"]
-    return [
-        {"id":"poi-circle","type":"circle",
-         "source":"poi","source-layer":"poi","minzoom":ap,
-         "paint":{"circle-radius":zoom([(ap,2),(18,4)]),"circle-color":fc,
-                  "circle-stroke-color":"#fff","circle-stroke-width":.8,
-                  "circle-opacity":.85}},
-        {"id":"poi-icon","type":"symbol",
-         "source":"poi","source-layer":"poi","minzoom":ap,
-         "layout":{
-             "icon-image":["coalesce",
-                 ["case",["==",["get","cuisine"],"friture"],
-                         ["image","poi-cuisine-friture"],["image",""]],
-                 ["image",["concat","poi-",["get","shop"]]],
-                 ["image",["concat","poi-",["get","amenity"]]],
-                 ["image",["concat","poi-",["get","tourism"]]],
-                 ["case",["has","shop"],["image","poi-shop"],["image",""]]],
-             "icon-size":zoom([(ap,.7),(18,1.0)]),
-             "icon-allow-overlap":True,"icon-padding":2,"icon-anchor":"center",
-             "text-field":["step",["zoom"],"",la,["get","name"]],
-             "text-font":["Noto Sans Regular"],"text-size":10,
-             "text-offset":[0,1.2],"text-anchor":"top","text-optional":True},
-         "paint":{"icon-opacity":.9,"text-color":fc,
-                  "text-halo-color":"rgba(255,255,255,0.8)","text-halo-width":1.2}},
-        # leisure-icon (POI sur source leisure)
-        {"id":"leisure-icon","type":"symbol",
-         "source":"leisure","source-layer":"leisure","minzoom":ap,
-         "filter":["!=",["get","leisure"],"playground"],
-         "layout":{
-             "icon-padding":50,"symbol-placement":"point","icon-allow-overlap":False,
-             "icon-image":["coalesce",
-                 ["case",["==",["get","cuisine"],"friture"],
-                         ["image","poi-cuisine-friture"],["image",""]],
-                 ["image",["concat","poi-",["get","shop"]]],
-                 ["image",["concat","poi-",["get","amenity"]]],
-                 ["image",["concat","poi-",["get","tourism"]]],
-                 ["case",["has","shop"],["image","poi-shop"],["image",""]]],
-             "icon-size":zoom([(ap,.7),(18,1.0)]),
-             "icon-ignore-placement":False,"icon-anchor":"center",
-             "text-field":["step",["zoom"],"",la,["get","name"]],
-             "text-font":["Noto Sans Regular"],"text-size":10,
-             "text-offset":[0,1.2],"text-anchor":"top","text-optional":True},
-         "paint":{"icon-opacity":.9,"text-color":fc,
-                  "text-halo-color":"rgba(255,255,255,0.8)","text-halo-width":1.2}},
-    ]
-
-
-# ── Style complet ──────────────────────────────────────────────────────────────
-
-SOURCES = ["landuse","roads","buildings","water","green","trees","boundaries",
-           "poi","pedestrian","cycleway","railway","public_transport","leisure"]
-
-def build_style(config):
-    L  = config.get("layers",{})
-    M  = config.get("map",{})
-    bgc = c(M.get("background","#f2efe9"))
-    gl  = M.get("glyphs",
-        "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf")
-
-    layers = [{"id":"background","type":"background","paint":{"background-color":bgc}}]
-    layers += landuse(lc(L,"landuse"))
-    layers += green(lc(L,"green"))
-    layers += water(lc(L,"water"))
-    layers += leisure(lc(L,"leisure"))
-    layers += buildings(lc(L,"buildings"))
-    layers += trees(lc(L,"trees"))
-    layers += railway(lc(L,"railway"))
-    layers += public_transport(lc(L,"public_transport"))
-    layers += roads(lc(L,"roads"))
-    layers += pedestrian(lc(L,"pedestrian"))
-    layers += cycleway(lc(L,"cycleway"))
-    layers += boundaries(lc(L,"boundaries"))
-    layers += poi(lc(L,"poi"))
-
-    sources = {n:{"type":"vector","url":f"./{n}.pmtiles.gz",
-                  "attribution":"© OpenStreetMap contributors"} for n in SOURCES}
-    return {"version":8,"name":M.get("name","Map"),
-            "sources":sources,"glyphs":gl,"layers":layers}
-
-
-# ── Granulométrie ──────────────────────────────────────────────────────────────
-
-ROAD_CLASSES = {
-    "motorway": ["motorway","motorway_link"],
-    "trunk":    ["trunk","trunk_link"],
-    "primary":  ["primary","primary_link"],
-    "secondary":["secondary","secondary_link"],
-    "tertiary": ["tertiary","tertiary_link"],
-    "local":    ["residential","unclassified","service","living_street"],
-    "track":    ["track"],
-    "busway":   ["busway"],
-}
-POI_PROPS = ["amenity","shop","tourism","name","name:fr","name:nl",
-             "cuisine","opening_hours","addr:street","addr:housenumber","website","religion"]
-
-def build_granulometry(config):
-    L   = config.get("layers",{})
-    out = {"_meta":{"generated_by":"build_map.py"},"layers":{}}
-    for name, raw in L.items():
-        raw  = raw or {}
-        ap   = raw.get("appear_at", 10)
-        st   = raw.get("subtypes") or {}
-        rules = []
-        if name == "roads":
-            # "oneway" est dans LOW (issue #41) : toujours conservé dès
-            # l'apparition de la route, pour permettre le rendu des
-            # flèches de sens unique sur TOUTES les classes (y compris
-            # primary/secondary/tertiary, dont gap+4 >= 18 → pas de tier
-            # HIGH séparé). maxspeed/lanes/access restent réservés au
-            # tier HIGH (haut zoom uniquement).
-            LOW  = ["highway","name","ref","tunnel","bridge","layer","oneway"]
-            HIGH = LOW + ["maxspeed","lanes","access"]
-            for grp,hw_vals in ROAD_CLASSES.items():
-                gap = (st.get(grp) or {}).get("appear_at", ap)
-                if gap > 10:
-                    rules.append({"match":{"highway":hw_vals},
-                                  "zoom_min":10,"zoom_max":gap-1,"action":"drop"})
-                mid = min(gap+4, 18)
-                rules.append({"match":{"highway":hw_vals},
-                              "zoom_min":gap,"zoom_max":mid,"keep_properties":LOW})
-                if mid < 18:
-                    rules.append({"match":{"highway":hw_vals},
-                                  "zoom_min":mid+1,"zoom_max":18,"keep_properties":HIGH})
-        elif name == "poi":
-            for pt, scfg in st.items():
-                scfg = scfg or {}
-                pap  = scfg.get("appear_at", ap)
-                tag  = scfg.get("tag","amenity")
-                if pap > 10:
-                    rules.append({"match":{tag:[pt]},"zoom_min":10,"zoom_max":pap-1,"action":"drop"})
-                rules.append({"match":{tag:[pt]},"zoom_min":pap,"zoom_max":18,"keep_properties":POI_PROPS})
-            if ap > 10:
-                rules.append({"zoom_min":10,"zoom_max":ap-1,"action":"drop"})
-            rules.append({"zoom_min":ap,"zoom_max":18,"keep_properties":POI_PROPS})
-        else:
-            if ap > 10:
-                rules.append({"zoom_min":10,"zoom_max":ap-1,"action":"drop"})
-            for stk, scfg in st.items():
-                scfg = scfg or {}
-                sap  = scfg.get("appear_at", ap)
-                tag  = scfg.get("tag", name)
-                if sap > ap:
-                    rules.append({"match":{tag:[stk]},"zoom_min":ap,"zoom_max":sap-1,"action":"drop"})
-            rules.append({"zoom_min":ap,"zoom_max":18,"keep_properties":"ALL"})
-        out["layers"][name] = {"rules":rules}
-    return out
-
-
-def build_pmtiles_params(config):
-    L   = config.get("layers",{})
-    out = {}
-    for name, raw in L.items():
-        raw  = raw or {}
-        ap   = raw.get("appear_at", 10)
-        st   = raw.get("subtypes") or {}
-        first = min([ap]+[(s or {}).get("appear_at", ap) for s in st.values()])
-        out[name] = {"zoom_min":10,"zoom_max":18,"first_visible":first}
-    return out
-
-
-# ── Main ───────────────────────────────────────────────────────────────────────
-
-def main():
-    p = argparse.ArgumentParser()
-    p.add_argument("--config",      default="map.config.yaml")
-    p.add_argument("--style-out",   default="www/style.json")
-    p.add_argument("--gran-out",    default="granulometry.json")
-    p.add_argument("--pmtiles-out", default="pmtiles_params.json")
-    p.add_argument("--only", choices=["style","granulometry","pmtiles"], default=None)
-    args = p.parse_args()
-    cfg_path = Path(args.config)
-    if not cfg_path.exists():
-        print(f"✗  {cfg_path} introuvable", file=sys.stderr); sys.exit(1)
-    with open(cfg_path) as f:
-        config = yaml.safe_load(f)
-    print(f"→ {cfg_path}  ({len(config.get('layers',{}))} couches)")
-    only = args.only
-    if only in (None,"style"):
-        s = build_style(config)
-        Path(args.style_out).parent.mkdir(parents=True, exist_ok=True)
-        Path(args.style_out).write_text(json.dumps(s,indent=2,ensure_ascii=False))
-        print(f"✓  {args.style_out}  ({len(s['layers'])} layers MapLibre)")
-    if only in (None,"granulometry"):
-        g = build_granulometry(config)
-        Path(args.gran_out).write_text(json.dumps(g,indent=2,ensure_ascii=False))
-        print(f"✓  {args.gran_out}  ({sum(len(v['rules']) for v in g['layers'].values())} règles)")
-    if only in (None,"pmtiles"):
-        pm = build_pmtiles_params(config)
-        Path(args.pmtiles_out).write_text(json.dumps(pm,indent=2,ensure_ascii=False))
-        print(f"✓  {args.pmtiles_out}")
-    if only is None:
-        print("\nSuite :")
-        for s in ["bash generate_json.bash","python3 apply_granulometry.py","bash generate_pmtiles.bash"]:
-            print(f"   {s}")
-
-if __name__ == "__main__":
-    main()
+extract roads \
+  nwr/highway=motorway,motorway_link,trunk,trunk_link,primary,primary_link,secondary,secondary_link,tertiary,tertiary_link,residential,living_street,unclassified,service,track,busway nwr/man_made=bridge,tunnel
+
+# ── Buildings ──────────────────────────────────────────────
+# -a id,type (issue #40) : ajoute les propriétés @id/@type avec l'ID
+# OSM BRUT du way (pas de transformation). Nécessaire pour faire
+# correspondre les bâtiments aux membres "outline" des relations
+# type=building (cf. compute_building_coverage.py). On évite
+# volontairement --add-unique-id=type_id : pour les aires issues de
+# ways fermés, osmium DOUBLE l'id (id_unique = 2 × id_original),
+# ce qui casserait silencieusement la correspondance.
+echo "→ buildings"
+osmium tags-filter "$SRC" nwr/building=* -o "_tmp_buildings.osm.pbf" --overwrite
+osmium export "_tmp_buildings.osm.pbf" -o "buildings.json" --overwrite \
+  --attributes=id,type
+rm -f "_tmp_buildings.osm.pbf"
+echo "  $(wc -l < "buildings.json") lignes"
+echo "  → copie buildings.json → buildings_detail.json (avant merge)"
+cp buildings.json buildings_detail.json
+
+# lod=detail : marqueur explicite, symétrique de lod=merged ajouté par
+# merge_buildings.py (issue z15-18 leak). Permet au style de filtrer
+# buildings-3d sur ce critère plutôt que de dépendre des tranches de
+# zoom tippecanoe, qui peuvent laisser fuiter une feature au-delà de
+# sa plage prévue.
+python3 << 'TAG_DETAIL'
+import json
+with open('buildings_detail.json') as f:
+    data = json.load(f)
+for feat in data.get('features', []):
+    feat.setdefault('properties', {})['lod'] = 'detail'
+with open('buildings_detail.json', 'w') as f:
+    json.dump(data, f, ensure_ascii=False)
+print(f"  {len(data.get('features', []))} features taguées lod=detail")
+TAG_DETAIL
+
+# ── Building parts (issue #40 : rendu 3D détaillé) ───────────────
+# Pas de fusion via merge_buildings.py : chaque partie garde sa
+# propre hauteur/min_height (toits étagés, tours...), les fusionner
+# détruirait cette info. Chargé à la demande uniquement en mode 3D
+# (cf. www/index.html), jamais référencé dans style.json.
+echo "→ building_parts"
+osmium tags-filter "$SRC" wr/building:part=yes -o "_tmp_building_parts.osm.pbf" --overwrite
+osmium export "_tmp_building_parts.osm.pbf" -o "building_parts.json" --overwrite \
+  --attributes=id,type
+rm -f "_tmp_building_parts.osm.pbf"
+echo "  $(wc -l < "building_parts.json") lignes"
+
+# ── Relations type=building (cas complexes, issue #40) ───────────
+# Spec Simple 3D Buildings : une relation type=building avec des
+# membres role=outline (le contour) et role=part (les volumes
+# détaillés). On extrait juste la LISTE des membres (id+rôle), pas de
+# géométrie — un objet relation porte toujours sa liste de membres
+# intrinsèquement, qu'on garde ou non les ways/nodes référencés.
+echo "→ relations type=building (cas complexes)"
+osmium tags-filter "$SRC" r/type=building -o "_tmp_building_rel.osm.pbf" --overwrite
+osmium cat "_tmp_building_rel.osm.pbf" -o "_tmp_building_rel.osm" --overwrite
+REL_COUNT=$(grep -c "<relation" "_tmp_building_rel.osm" 2>/dev/null || echo 0)
+echo "  ${REL_COUNT} relations type=building trouvées"
+
+# ── Détection des bâtiments entièrement couverts par leurs parties ──
+# Relation explicite en priorité, sinon heuristique géométrique ≥90%
+# (cf. issue #40). Mute buildings_detail.json en place (ajoute
+# covered_by_parts / covered_by_parts_source).
+python3 compute_building_coverage.py \
+  --buildings buildings_detail.json \
+  --parts     building_parts.json \
+  --relations _tmp_building_rel.osm \
+  --threshold 0.90 \
+  || echo "⚠  compute_building_coverage.py en échec (non bloquant — buildings-3d affichera tout)"
+rm -f _tmp_building_rel.osm.pbf _tmp_building_rel.osm
+
+extract water \
+  nwr/natural=water nwr/waterway=river,canal,stream,ditch nwr/landuse=basin nwr/natural=wetland
+
+extract green \
+  nwr/landuse=flowerbed nwr/natural=shrubbery nwr/natural=scrub \
+  nwr/leisure=park,garden nwr/landuse=forest,meadow,grass nwr/natural=wood \
+  nwr/natural=grassland,heath
+
+extract trees \
+  nwr/natural=tree nwr/natural=tree_row nwr/barrier=hedge  
+
+extract landuse \
+  nwr/landuse=residential,industrial,commercial,retail,railway,education,construction,brownfield,greenfield,landfill,military,cemetery,allotments,farmland,farmyard,garages,religious,recreation_ground,village_green,quarry,depot
+
+# ── Vérification de couverture landuse (issue #37) ───────
+# Extraction large landuse=* (toutes valeurs) pour comparer ce qui
+# existe vraiment dans Bxl vs le wiki OSM et map.config.yaml.
+# Fichier temporaire uniquement — pas utilisé pour le rendu, afin
+# de ne pas dupliquer les features déjà couvertes par green/water.
+echo "→ landuse coverage check (vs wiki + map.config.yaml)"
+osmium tags-filter "$SRC" nwr/landuse=* -o "_tmp_landuse_all.osm.pbf" --overwrite
+osmium export "_tmp_landuse_all.osm.pbf" -o "_tmp_landuse_all.json" --overwrite
+python3 check_landuse_coverage.py \
+  --all-json _tmp_landuse_all.json \
+  --config   map.config.yaml \
+  --report   landuse_report.md \
+  || echo "⚠  landuse coverage check en échec (non bloquant)"
+rm -f _tmp_landuse_all.osm.pbf _tmp_landuse_all.json
+
+extract boundaries \
+  nwr/boundary=administrative
+
+# POI : extraction séparée avec --add-unique-id pour le dédoublonnage
+echo "→ poi"
+osmium tags-filter "$SRC" \
+  nwr/shop=* \
+  nwr/amenity=restaurant,cafe,bar,pub,fast_food,bank,pharmacy,hospital,clinic,school,university,library,theatre,cinema,post_office,police,fire_station,doctor,dentist,place_of_worship,townhall,courthouse,community_centre,kindergarten,veterinary \
+  nwr/tourism=hotel,hostel,museum,attraction,information,viewpoint \
+  nwr/leisure=playground \
+  nwr/craft=* \
+  -o "_tmp_poi.osm.pbf" --overwrite
+osmium export "_tmp_poi.osm.pbf" -o "poi.json" --overwrite --add-unique-id=type_id
+rm -f "_tmp_poi.osm.pbf"
+echo "  $(wc -l < "poi.json") lignes"
+
+# ── Normalisation POI → points + dédoublonnage ───────────
+echo "  → normalisation POI en points + dédoublonnage"
+python3 << 'POI_POINTS'
+import json
+
+
+def ring_area_and_centroid(ring):
+    """Signed area and centroid for a coordinate ring."""
+    if len(ring) < 3:
+        return 0.0, None
+    area2, cx, cy = 0.0, 0.0, 0.0
+    pts = ring if ring[0] == ring[-1] else ring + [ring[0]]
+    for (x1, y1, *_), (x2, y2, *_) in zip(pts, pts[1:]):
+        cross = x1 * y2 - x2 * y1
+        area2 += cross
+        cx += (x1 + x2) * cross
+        cy += (y1 + y2) * cross
+    if area2 == 0:
+        return 0.0, None
+    return area2 / 2.0, [cx / (3.0 * area2), cy / (3.0 * area2)]
+
+
+def avg_point(coords):
+    """Fallback: average of all coordinate pairs."""
+    pts = []
+    def collect(v):
+        if isinstance(v, list) and len(v) >= 2 and isinstance(v[0], (int, float)):
+            pts.append(v[:2]); return
+        if isinstance(v, list):
+            for i in v: collect(i)
+    collect(coords)
+    if not pts:
+        return None
+    return [sum(p[0] for p in pts) / len(pts),
+            sum(p[1] for p in pts) / len(pts)]
+
+
+def to_point(geom):
+    """Convert any geometry to a representative point (or None)."""
+    gt, coords = geom.get('type'), geom.get('coordinates')
+    if gt == 'Point':
+        return coords
+    if gt == 'Polygon' and coords:
+        _, c = ring_area_and_centroid(coords[0])
+        return c or avg_point(coords)
+    if gt == 'MultiPolygon' and coords:
+        best, best_a = None, -1.0
+        for poly in coords:
+            if not poly: continue
+            a, c = ring_area_and_centroid(poly[0])
+            if c and abs(a) > best_a:
+                best, best_a = c, abs(a)
+        return best or avg_point(coords)
+    return None  # LineString etc. → skip
+
+
+with open('poi.json') as f:
+    collection = json.load(f)
+
+features = collection.get('features', [])
+before = len(features)
+seen_ids = set()
+kept = []
+stats = {'pt': 0, 'conv': 0, 'dup': 0, 'skip': 0}
+
+for feat in features:
+    geom = feat.get('geometry') or {}
+    pt = to_point(geom)
+    if pt is None:
+        stats['skip'] += 1
+        continue
+
+    # ── Dedup par feature.id (osmium numeric ID) ──
+    fid = feat.get('id')
+    if fid is not None and fid in seen_ids:
+        stats['dup'] += 1
+        continue
+    if fid is not None:
+        seen_ids.add(fid)
+
+    was_point = geom.get('type') == 'Point'
+    feat['geometry'] = {'type': 'Point', 'coordinates': pt}
+    kept.append(feat)
+    stats['pt' if was_point else 'conv'] += 1
+
+collection['features'] = kept
+
+with open('poi.json', 'w') as out:
+    json.dump(collection, out, ensure_ascii=False)
+
+print(f"  {before} → {len(kept)} POI "
+      f"({stats['pt']} points, {stats['conv']} surfaces→centroïde, "
+      f"{stats['dup']} doublons, {stats['skip']} ignorés)")
+POI_POINTS
+
+extract leisure \
+  nwr/leisure=playground,pitch,fitness_station,dog_park,outdoor_seating
+
+# ── Orientation des terrains de sport ────────────────────
+echo "  → calcul orientation des terrains de sport"
+python3 compute_pitch_bearing.py
+
+extract pedestrian \
+  nwr/highway=pedestrian,footway,path,steps
+
+extract cycleway \
+  nwr/highway=cycleway
+
+extract railway \
+  nwr/railway=rail,tram,subway,miniature
+
+# ── Transport public STIB/MIVB ──────────────────────────
+echo "→ public_transport (relations STIB/MIVB)"
+osmium tags-filter "$SRC" r/route=bus,tram,subway,trolleybus -o "_tmp_pt.osm.pbf" --overwrite
+osmium cat "_tmp_pt.osm.pbf" -o "_tmp_pt.osm" --overwrite
+python3 extract_stib_routes.py
+rm -f _tmp_pt.osm.pbf _tmp_pt.osm
+echo "  $(wc -l < "public_transport.json") lignes"
+
+echo "✓ 13 couches extraites (+ buildings_detail.json pour zoom haut)"
