@@ -340,8 +340,12 @@ def buildings(cfg):
     is_roof = ["==", ["get", "building"], "roof"]
 
     # building=roof sans AUCUNE info exploitable (souvent juste
-    # layer=1) -> dalle plate fine flottant à une hauteur de
-    # dégagement "raisonnable" plutôt que la boîte pleine par défaut.
+    # layer=1) -> flotte au MINIMUM à la même hauteur que le fallback
+    # générique d'un bâtiment simple sans données (base 0 + 7.5m),
+    # plutôt qu'une valeur arbitrairement basse qui le plaque contre
+    # le bâtiment support en dessous (confirmé visuellement : avant
+    # ces changements, ce type d'auvent flottait correctement à
+    # mi-hauteur du bâtiment, pas au sol).
     is_untagged_roof = ["all", is_roof, ["!", has_height_info]]
 
     normal_height_expr = ["case",
@@ -352,15 +356,13 @@ def buildings(cfg):
 
     # Différenciation visuelle des auvents/verrières (building=roof) :
     # un building=roof peut être posé exactement à la même position
-    # qu'un AUTRE bâtiment OSM distinct en dessous (le vrai support,
-    # souvent sans aucune hauteur taguée -> boîte pleine du sol par
-    # défaut). Les deux features sont rendues CORRECTEMENT selon
-    # leurs propres tags, mais avec la même couleur elles fusionnent
-    # visuellement. fill-extrusion-color ACCEPTE les data expressions
-    # (contrairement à fill-extrusion-opacity, qui ne supporte QUE des
-    # expressions de zoom — la couleur seule porte donc toute la
-    # différenciation, opacité fixe pour tous.
-    roof_color = "#8a7d6c"
+    # qu'un AUTRE bâtiment OSM distinct en dessous (le vrai support).
+    # Couleur nettement plus saturée que la teinte bâtiment standard
+    # pour rester identifiable même proche en hauteur d'un volume
+    # voisin — fill-extrusion-opacity ne supporte QUE des expressions
+    # de zoom (pas de data expression), donc toute la différenciation
+    # passe par la couleur.
+    roof_color = "#6b4f3a"
 
     out = [{"id":"buildings-fill","type":"fill",
              "source":"buildings","source-layer":"buildings","minzoom":ap,
@@ -385,15 +387,14 @@ def buildings(cfg):
             "filter": ["all",
                 ["==", ["get", "lod"], "detail"],
                 ["!=", ["get", "covered_by_parts"], "yes"]],
-            "paint":{"fill-extrusion-color": ["case", is_roof, "#ff0000", col],
-                     "fill-extrusion-base": ["case", is_roof, 50, base_expr],
-                     "fill-extrusion-height": ["case", is_roof, 53, normal_height_expr],
+            "paint":{"fill-extrusion-color": ["case", is_roof, roof_color, col],
+                     "fill-extrusion-base": ["case", is_untagged_roof, 7.2, base_expr],
+                     "fill-extrusion-height": ["case", is_untagged_roof, 7.5, normal_height_expr],
                      "fill-extrusion-opacity": 0.75}})
     out.append({"id":"buildings-outline","type":"line",
         "source":"buildings","source-layer":"buildings","minzoom":ap,
         "paint":{"line-color":bc,"line-width":.5}})
     return out
-
 
 # ── LEISURE ───────────────────────────────────────────────────────────────────
 
