@@ -14,6 +14,6 @@
 | public_transport | 176 | 176 | 1.6M |
 | buildings (merged z10-12) | 1 | - | - |
 | buildings (detail z13-18) | 1 | - | - |
-| **buildings total** | **2** | **310354** | **84M** |
+| **buildings total** | **2** | **310354** | **18M** |
 | building_parts | 1748 | 1747 | 796K |
-| **Total** | **1937** | **630038** | **146M** |
+| **Total** | **1937** | **630038** | **81M** |
