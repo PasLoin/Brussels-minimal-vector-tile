@@ -1418,41 +1418,247 @@
       "layout": {
         "visibility": "none"
       },
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "lod"
+          ],
+          "detail"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "covered_by_parts"
+          ],
+          "yes"
+        ]
+      ],
       "paint": {
-        "fill-extrusion-color": "#fce1c5",
-        "fill-extrusion-height": [
+        "fill-extrusion-color": [
           "case",
           [
-            "has",
-            "height"
-          ],
-          [
-            "to-number",
+            "==",
             [
               "get",
-              "height"
+              "building"
             ],
-            6
+            "roof"
           ],
+          "#6b4f3a",
+          "#fce1c5"
+        ],
+        "fill-extrusion-base": [
+          "case",
           [
-            "has",
-            "building:levels"
+            "all",
+            [
+              "==",
+              [
+                "get",
+                "building"
+              ],
+              "roof"
+            ],
+            [
+              "!",
+              [
+                "any",
+                [
+                  "has",
+                  "height"
+                ],
+                [
+                  "has",
+                  "min_height"
+                ],
+                [
+                  "has",
+                  "building:levels"
+                ],
+                [
+                  "has",
+                  "building:min_level"
+                ]
+              ]
+            ]
           ],
+          7.2,
           [
-            "*",
+            "case",
+            [
+              "has",
+              "min_height"
+            ],
             [
               "to-number",
               [
                 "get",
-                "building:levels"
+                "min_height"
               ],
-              2
+              0
             ],
-            3
-          ],
-          7.5
+            [
+              "has",
+              "building:min_level"
+            ],
+            [
+              "*",
+              [
+                "to-number",
+                [
+                  "get",
+                  "building:min_level"
+                ],
+                0
+              ],
+              3
+            ],
+            0
+          ]
         ],
-        "fill-extrusion-base": 0,
+        "fill-extrusion-height": [
+          "case",
+          [
+            "all",
+            [
+              "==",
+              [
+                "get",
+                "building"
+              ],
+              "roof"
+            ],
+            [
+              "!",
+              [
+                "any",
+                [
+                  "has",
+                  "height"
+                ],
+                [
+                  "has",
+                  "min_height"
+                ],
+                [
+                  "has",
+                  "building:levels"
+                ],
+                [
+                  "has",
+                  "building:min_level"
+                ]
+              ]
+            ]
+          ],
+          7.5,
+          [
+            "case",
+            [
+              "has",
+              "height"
+            ],
+            [
+              "to-number",
+              [
+                "get",
+                "height"
+              ],
+              6
+            ],
+            [
+              "has",
+              "building:levels"
+            ],
+            [
+              "+",
+              [
+                "case",
+                [
+                  "has",
+                  "min_height"
+                ],
+                [
+                  "to-number",
+                  [
+                    "get",
+                    "min_height"
+                  ],
+                  0
+                ],
+                [
+                  "has",
+                  "building:min_level"
+                ],
+                [
+                  "*",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "building:min_level"
+                    ],
+                    0
+                  ],
+                  3
+                ],
+                0
+              ],
+              [
+                "*",
+                [
+                  "to-number",
+                  [
+                    "get",
+                    "building:levels"
+                  ],
+                  2
+                ],
+                3
+              ]
+            ],
+            [
+              "+",
+              [
+                "case",
+                [
+                  "has",
+                  "min_height"
+                ],
+                [
+                  "to-number",
+                  [
+                    "get",
+                    "min_height"
+                  ],
+                  0
+                ],
+                [
+                  "has",
+                  "building:min_level"
+                ],
+                [
+                  "*",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "building:min_level"
+                    ],
+                    0
+                  ],
+                  3
+                ],
+                0
+              ],
+              7.5
+            ]
+          ]
+        ],
         "fill-extrusion-opacity": 0.75
       }
     },

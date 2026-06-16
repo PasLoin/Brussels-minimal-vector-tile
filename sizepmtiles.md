@@ -1,18 +1,19 @@
 | Layer | Source Features | Output Features | File Size |
 | :--- | :---: | :---: | :--- |
-| landuse | 1 | 5438 | 6.5M |
-| roads | 1 | 57211 | 12M |
+| landuse | 1 | 5462 | 6.5M |
+| roads | 1 | 57237 | 12M |
 | water | 1 | 2623 | 2.1M |
-| green | 1 | 24067 | 12M |
-| trees | 1 | 69681 | 3.3M |
-| leisure | 1 | 4712 | 2.1M |
+| green | 1 | 24097 | 12M |
+| trees | 1 | 69757 | 3.3M |
+| leisure | 1 | 4731 | 2.1M |
 | boundaries | 1 | 348 | 572K |
-| poi | 1 | 17250 | 1.4M |
-| pedestrian | 1 | 115459 | 16M |
-| cycleway | 1 | 5884 | 2.0M |
-| railway | 1 | 14852 | 4.3M |
+| poi | 1 | 17252 | 1.4M |
+| pedestrian | 1 | 115498 | 16M |
+| cycleway | 1 | 5894 | 2.0M |
+| railway | 1 | 14862 | 4.3M |
 | public_transport | 176 | 176 | 1.6M |
 | buildings (merged z10-14) | 1 | - | - |
-| buildings (detail z15-18) | 519207 | - | - |
-| **buildings total** | **519208** | **575896** | **35M** |
-| **Total** | **519395** | **893597** | **97M** |
+| buildings (detail z15-18) | 1 | - | - |
+| **buildings total** | **2** | **310354** | **84M** |
+| building_parts | 1748 | 1747 | 796K |
+| **Total** | **1937** | **630038** | **146M** |
