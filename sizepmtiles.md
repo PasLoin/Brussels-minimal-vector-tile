@@ -12,8 +12,9 @@
 | cycleway | 1 | 5894 | 2.0M |
 | railway | 1 | 14862 | 4.3M |
 | public_transport | 176 | 176 | 1.6M |
-| buildings (merged z10-14) | 1 | - | - |
-| buildings (detail z15-18) | 1 | - | - |
-| **buildings total** | **2** | **310354** | **84M** |
+| buildings (merged z10-12) | 1 | - | - |
+| buildings (detail z13-15, simpl.4) | 1 | - | - |
+| buildings (detail z16-18, simpl.2) | 1 | - | - |
+| **buildings total** | **2** | **564021** | **94M** |
 | building_parts | 1748 | 1747 | 796K |
-| **Total** | **1937** | **630038** | **146M** |
+| **Total** | **1937** | **883705** | **157M** |
