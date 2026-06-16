@@ -28,12 +28,13 @@ beforeEach(() => {
 });
 
 describe('SPORT_MARKINGS', () => {
-  it('contient les 4 sports attendus', () => {
+  it('contient les 5 marquages attendus', () => {
     expect(globalThis.SPORT_MARKINGS).toBeDefined();
-    expect(globalThis.SPORT_MARKINGS).toHaveLength(4);
+    expect(globalThis.SPORT_MARKINGS).toHaveLength(5);
     expect(globalThis.SPORT_MARKINGS).toContain('sport-markings-tennis');
     expect(globalThis.SPORT_MARKINGS).toContain('sport-markings-soccer');
     expect(globalThis.SPORT_MARKINGS).toContain('sport-markings-basketball');
+    expect(globalThis.SPORT_MARKINGS).toContain('sport-markings-basketball-1hoop');
     expect(globalThis.SPORT_MARKINGS).toContain('sport-markings-boules');
   });
 
