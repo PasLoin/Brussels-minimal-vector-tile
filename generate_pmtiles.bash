@@ -100,17 +100,18 @@ for layer in landuse roads water green trees leisure boundaries poi pedestrian c
 done
 
 # ── Buildings : double couche dans un seul PMTiles ───────
-# --extend-zooms-if-still-dropping RÉINTÉGRÉ : l'hypothèse initiale
-# (ce flag causait le leak building=yes en 3D) s'est révélée fausse —
-# un tile-dump fait APRÈS son retrait montrait encore le leak à z13/z14.
-# Le vrai bug venait du calcul de hauteur dans build_map.py (déjà
-# corrigé séparément). La protection robuste contre tout résidu du
-# palier fusionné est désormais le marquage lod="merged"/"detail" +
-# le filtre style ["==",["get","lod"],"detail"] sur buildings-3d —
-# indépendant de ce flag. On le réintègre donc pour retrouver la
-# taille de fichier d'origine (~35M) sans perte de complétude aux
-# zooms élevés (son rôle réel : éviter --drop-densest-as-needed de
-# supprimer des bâtiments légitimes par excès de densité).
+# IMPORTANT : appel tippecanoe identique à la toute première version
+# de ce fichier (celle qui donnait 35M), à l'exception de
+# --geometry-types=polygon appliqué en amont dans generate_json.bash
+# (dédoublonnage Polygon/LineString). Les flags --minimum-zoom=10
+# --maximum-zoom=18 globaux qui avaient été ajoutés temporairement
+# pour corriger le plafond z14 ont été RETIRÉS : diagnostic confirmé
+# que c'est leur ajout (et non --extend-zooms-if-still-dropping) qui
+# faisait doubler la taille du fichier (35M -> ~85M). Les blocs -L
+# JSON ci-dessous spécifient déjà la plage de zoom nécessaire
+# (union 10-18) ; --extend-zooms-if-still-dropping seul suffit à
+# empêcher la réduction automatique du maxzoom effectif observée
+# quand ce flag était absent.
 echo "→ buildings (merged z10-12 + detail z13-18)"
 
 SRC_MERGED=0
@@ -125,8 +126,6 @@ SRC_COUNT=$((SRC_MERGED + SRC_DETAIL))
 
 TIPPE_LOG=$(tippecanoe -o buildings.pmtiles \
   --attribution="© OpenStreetMap contributors" \
-  --minimum-zoom=10 \
-  --maximum-zoom=18 \
   --simplify-only-low-zooms \
   --drop-densest-as-needed \
   --extend-zooms-if-still-dropping \
