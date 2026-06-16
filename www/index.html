@@ -230,7 +230,9 @@ function initMap(style) {
   /* ── Building parts (issue #40) : ajoutés à la carte SEULEMENT à la
      première activation du mode 3D — aucune requête réseau pour les
      visiteurs qui restent en 2D, car ni le source ni le layer ne sont
-     déclarés dans style.json. ── */
+     déclarés dans style.json. Pas de rendu de la FORME du toit
+     (gabled/hipped/pyramidal…) : fill-extrusion ne sait dessiner qu'un
+     prisme à toit plat — limite MapLibre, pas traitée ici. ── */
   function ensureBuildingPartsLayer() {
     if (map.getSource('building_parts')) return;
     map.addSource('building_parts', {
