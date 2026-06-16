@@ -150,6 +150,51 @@ TOTAL_SOURCE=$((TOTAL_SOURCE + SRC_COUNT))
 TOTAL_OUTPUT=$((TOTAL_OUTPUT + OUT_COUNT))
 TOTAL_SIZE=$((TOTAL_SIZE + FILE_SIZE_BYTES))
 
+# ── Building parts : fichier séparé, mode 3D uniquement ──
+# issue #40 — z13-18 seulement (pas de couche basse résolution z10-12,
+# ces détails ne servent qu'au mode 3D, jamais chargés en 2D). Pas dans
+# la boucle standard ci-dessus car celle-ci force minimum-zoom=10 pour
+# toutes les couches, ce qui serait inutile ici.
+echo "→ building_parts (z13-18)"
+
+SRC_COUNT=0
+if [ -f "building_parts.json" ]; then
+  SRC_COUNT=$(grep -c "^{" "building_parts.json" || wc -l < "building_parts.json")
+fi
+
+TIPPE_LOG=$(tippecanoe -o building_parts.pmtiles \
+  --name="building_parts" \
+  --minimum-zoom=13 \
+  --maximum-zoom=18 \
+  --simplification=2 \
+  "${COMMON_OPTS[@]}" \
+  -L "building_parts:building_parts.json" 2>&1 || true)
+
+echo "$TIPPE_LOG"
+
+OUT_COUNT=$(echo "$TIPPE_LOG" | grep -oE '[0-9]+ features' | tail -n 1 | awk '{print $1}' || echo "0")
+[ -z "$OUT_COUNT" ] && OUT_COUNT=0
+
+if [ -f "building_parts.pmtiles" ]; then
+  mv "building_parts.pmtiles" "building_parts.pmtiles.gz"
+fi
+
+if [ -f "building_parts.pmtiles.gz" ]; then
+  FILE_SIZE_BYTES=$(stat -c%s "building_parts.pmtiles.gz" 2>/dev/null || stat -f%z "building_parts.pmtiles.gz")
+  FILE_SIZE_HUMAN=$(ls -lh "building_parts.pmtiles.gz" | awk '{print $5}')
+else
+  FILE_SIZE_BYTES=0
+  FILE_SIZE_HUMAN="0B"
+fi
+
+echo "  ${FILE_SIZE_HUMAN}"
+
+echo "| building_parts | ${SRC_COUNT} | ${OUT_COUNT} | ${FILE_SIZE_HUMAN} |" >> "$REPORT_FILE"
+
+TOTAL_SOURCE=$((TOTAL_SOURCE + SRC_COUNT))
+TOTAL_OUTPUT=$((TOTAL_OUTPUT + OUT_COUNT))
+TOTAL_SIZE=$((TOTAL_SIZE + FILE_SIZE_BYTES))
+
 # ── Total ────────────────────────────────────────────────
 TOTAL_SIZE_HUMAN=$(numfmt --to=iec "$TOTAL_SIZE" 2>/dev/null || echo "$((TOTAL_SIZE / 1024 / 1024))M")
 
