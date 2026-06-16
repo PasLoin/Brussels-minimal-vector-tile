@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────
 # PMTiles — un fichier par couche
-# Buildings : double couche (merged z10-14, detail z15-18)
+# Buildings : triple couche (merged z10-12, detail z13-15 grossier, detail z16-18 fin)
 # Pré-requis : tippecanoe (github.com/felt/tippecanoe)
 # ─────────────────────────────────────────────────────────
 set -euo pipefail
@@ -99,8 +99,15 @@ for layer in landuse roads water green trees leisure boundaries poi pedestrian c
   TOTAL_SIZE=$((TOTAL_SIZE + FILE_SIZE_BYTES))
 done
 
-# ── Buildings : double couche dans un seul PMTiles ───────
-echo "→ buildings (merged z10-14 + detail z15-18)"
+# ── Buildings : triple couche dans un seul PMTiles ───────
+# Pourquoi 3 paliers et pas 2 : à simplification=2 uniforme sur tout
+# z13-18, l'archive complète pèse ~80 Mo — trop proche de la limite
+# dure GitHub de 100 Mo sans marge pour la croissance future des
+# données OSM. z13-15 (vue d'ensemble, zoom modéré) n'a pas besoin de
+# la même finesse géométrique que z16-18 (zoom rapproché, où chaque
+# détail de contour compte visuellement) -> simplification=4 sur le
+# premier sous-palier, simplification=2 conservé sur le second.
+echo "→ buildings (merged z10-12 + detail z13-15 + detail z16-18)"
 
 SRC_MERGED=0
 SRC_DETAIL=0
@@ -112,15 +119,11 @@ if [ -f "buildings_detail.json" ]; then
 fi
 SRC_COUNT=$((SRC_MERGED + SRC_DETAIL))
 
-# IMPORTANT :
-# --minimum-zoom=10 --maximum-zoom=18 forcés explicitement en options
-# GLOBALES ici. Sans --extend-zooms-if-still-dropping (qui causait des
-# doublons "building=yes" fuyant au-delà de leur tranche de zoom
-# d'origine z10-12 vers z13+), tippecanoe peut, de son propre chef,
-# réduire le maxzoom EFFECTIF de toute l'archive via son heuristique de
-# densité automatique (observé : max_zoom réduit à 14 au lieu de 18,
-# rendant z15-18 entièrement vides). On force donc la plage explicitement
-# pour ne plus dépendre de cette heuristique dans un sens ou dans l'autre.
+# IMPORTANT : --minimum-zoom=10 --maximum-zoom=18 forcés explicitement
+# en options globales (cf. issue précédente : sans ça, l'heuristique
+# de densité de tippecanoe peut réduire silencieusement le maxzoom
+# effectif de toute l'archive en dessous de 18, vidant les hauts
+# niveaux de zoom).
 TIPPE_LOG=$(tippecanoe -o buildings.pmtiles \
   --attribution="© OpenStreetMap contributors" \
   --minimum-zoom=10 \
@@ -130,7 +133,8 @@ TIPPE_LOG=$(tippecanoe -o buildings.pmtiles \
   --generate-ids \
   --force \
   -L'{"file":"buildings_merged.json","layer":"buildings","minimum-zoom":10,"maximum-zoom":12,"simplification":2}' \
-  -L'{"file":"buildings_detail.json","layer":"buildings","minimum-zoom":13,"maximum-zoom":18,"simplification":2}' \
+  -L'{"file":"buildings_detail.json","layer":"buildings","minimum-zoom":13,"maximum-zoom":15,"simplification":4}' \
+  -L'{"file":"buildings_detail.json","layer":"buildings","minimum-zoom":16,"maximum-zoom":18,"simplification":2}' \
   2>&1 || true)
 
 echo "$TIPPE_LOG"
@@ -152,8 +156,9 @@ fi
 
 echo "  ${FILE_SIZE_HUMAN}"
 
-echo "| buildings (merged z10-14) | ${SRC_MERGED} | - | - |" >> "$REPORT_FILE"
-echo "| buildings (detail z15-18) | ${SRC_DETAIL} | - | - |" >> "$REPORT_FILE"
+echo "| buildings (merged z10-12) | ${SRC_MERGED} | - | - |" >> "$REPORT_FILE"
+echo "| buildings (detail z13-15, simpl.4) | ${SRC_DETAIL} | - | - |" >> "$REPORT_FILE"
+echo "| buildings (detail z16-18, simpl.2) | ${SRC_DETAIL} | - | - |" >> "$REPORT_FILE"
 echo "| **buildings total** | **${SRC_COUNT}** | **${OUT_COUNT}** | **${FILE_SIZE_HUMAN}** |" >> "$REPORT_FILE"
 
 TOTAL_SOURCE=$((TOTAL_SOURCE + SRC_COUNT))
