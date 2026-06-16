@@ -44,6 +44,14 @@ extract buildings nwr/building=*
 echo "  → copie buildings.json → buildings_detail.json (avant merge)"
 cp buildings.json buildings_detail.json
 
+# ── Building parts (issue #40 : rendu 3D détaillé) ───────────────
+# Pas de fusion via merge_buildings.py : chaque partie garde sa
+# propre hauteur/min_height (toits étagés, tours...), les fusionner
+# détruirait cette info. Chargé à la demande uniquement en mode 3D
+# (cf. www/index.html), jamais référencé dans style.json.
+extract building_parts \
+  wr/building:part=yes
+
 extract water \
   nwr/natural=water nwr/waterway=river,canal,stream,ditch nwr/landuse=basin nwr/natural=wetland
 
@@ -208,4 +216,4 @@ python3 extract_stib_routes.py
 rm -f _tmp_pt.osm.pbf _tmp_pt.osm
 echo "  $(wc -l < "public_transport.json") lignes"
 
-echo "✓ 12 couches extraites (+ buildings_detail.json pour zoom haut)"
+echo "✓ 13 couches extraites (+ buildings_detail.json pour zoom haut)"
