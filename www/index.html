@@ -134,7 +134,8 @@ function initMap(style) {
   const map = new maplibregl.Map({
     container: 'map', style,
     center: [4.3517, 50.8503], zoom: 13,
-    hash: true, maxZoom: 18, minZoom: 10,
+    hash: true, maxZoom: 19, minZoom: 10,
+    maxPitch: 85,
   });
   window.map = map;
   setupSportMarkings(map);
