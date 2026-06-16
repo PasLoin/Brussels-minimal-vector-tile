@@ -5849,11 +5849,34 @@
       ],
       "layout": {
         "icon-image": [
-          "concat",
-          "sport-markings-",
+          "case",
           [
-            "get",
-            "sport_render"
+            "all",
+            [
+              "==",
+              [
+                "get",
+                "sport_render"
+              ],
+              "basketball"
+            ],
+            [
+              "==",
+              [
+                "get",
+                "hoops"
+              ],
+              "1"
+            ]
+          ],
+          "sport-markings-basketball-1hoop",
+          [
+            "concat",
+            "sport-markings-",
+            [
+              "get",
+              "sport_render"
+            ]
           ]
         ],
         "icon-rotation-alignment": "map",
