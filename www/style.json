@@ -5484,6 +5484,65 @@
       }
     },
     {
+      "id": "road-oneway-arrows",
+      "type": "symbol",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 16,
+      "filter": [
+        "==",
+        [
+          "get",
+          "oneway"
+        ],
+        "yes"
+      ],
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          16,
+          150,
+          18,
+          80
+        ],
+        "text-field": "→",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          16,
+          10,
+          18,
+          14
+        ],
+        "text-rotation-alignment": "map",
+        "text-pitch-alignment": "map",
+        "text-keep-upright": false,
+        "text-allow-overlap": true,
+        "text-ignore-placement": true
+      },
+      "paint": {
+        "text-color": "#666666",
+        "text-opacity": 0.7,
+        "text-halo-color": "rgba(255,255,255,0.6)",
+        "text-halo-width": 1
+      }
+    },
+    {
       "id": "pedestrian-street-casing",
       "type": "line",
       "source": "pedestrian",
@@ -5683,6 +5742,65 @@
           3,
           3
         ]
+      }
+    },
+    {
+      "id": "cycleway-oneway-arrows",
+      "type": "symbol",
+      "source": "cycleway",
+      "source-layer": "cycleway",
+      "minzoom": 16,
+      "filter": [
+        "==",
+        [
+          "get",
+          "oneway"
+        ],
+        "yes"
+      ],
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          16,
+          100,
+          18,
+          60
+        ],
+        "text-field": "→",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          16,
+          10,
+          18,
+          13
+        ],
+        "text-rotation-alignment": "map",
+        "text-pitch-alignment": "map",
+        "text-keep-upright": false,
+        "text-allow-overlap": true,
+        "text-ignore-placement": true
+      },
+      "paint": {
+        "text-color": "#ffffff",
+        "text-opacity": 0.95,
+        "text-halo-color": "#0000ff",
+        "text-halo-width": 1.5
       }
     },
     {
