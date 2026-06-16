@@ -95,9 +95,13 @@ for root, indices in groups.items():
     if merged.is_empty:
         continue
 
+    # lod=merged : marqueur explicite (issue z15-18 leak) — permet au
+    # style (build_map.py, layer buildings-3d) de filtrer ces features
+    # sans dépendre des tranches de zoom tippecanoe, qui peuvent
+    # laisser fuiter une feature de ce palier au-delà de z12.
     merged_features.append({
         "type": "Feature",
-        "properties": {"building": "yes"},
+        "properties": {"building": "yes", "lod": "merged"},
         "geometry": mapping(merged)
     })
 
