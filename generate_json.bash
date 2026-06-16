@@ -47,10 +47,14 @@ extract roads \
 # volontairement --add-unique-id=type_id : pour les aires issues de
 # ways fermés, osmium DOUBLE l'id (id_unique = 2 × id_original),
 # ce qui casserait silencieusement la correspondance.
+# --geometry-types=polygon : sans ça, osmium export émet AUSSI une
+# version LineString de chaque way fermée (comportement documenté
+# par défaut), créant un doublon Polygon+LineString pour le même
+# bâtiment dans les tuiles. On ne veut que les polygones ici.
 echo "→ buildings"
 osmium tags-filter "$SRC" nwr/building=* -o "_tmp_buildings.osm.pbf" --overwrite
 osmium export "_tmp_buildings.osm.pbf" -o "buildings.json" --overwrite \
-  --attributes=id,type
+  --attributes=id,type --geometry-types=polygon
 rm -f "_tmp_buildings.osm.pbf"
 echo "  $(wc -l < "buildings.json") lignes"
 echo "  → copie buildings.json → buildings_detail.json (avant merge)"
@@ -77,10 +81,11 @@ TAG_DETAIL
 # propre hauteur/min_height (toits étagés, tours...), les fusionner
 # détruirait cette info. Chargé à la demande uniquement en mode 3D
 # (cf. www/index.html), jamais référencé dans style.json.
+# --geometry-types=polygon : même raison que pour buildings ci-dessus.
 echo "→ building_parts"
 osmium tags-filter "$SRC" wr/building:part=yes -o "_tmp_building_parts.osm.pbf" --overwrite
 osmium export "_tmp_building_parts.osm.pbf" -o "building_parts.json" --overwrite \
-  --attributes=id,type
+  --attributes=id,type --geometry-types=polygon
 rm -f "_tmp_building_parts.osm.pbf"
 echo "  $(wc -l < "building_parts.json") lignes"
 
