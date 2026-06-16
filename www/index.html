@@ -134,7 +134,8 @@ function initMap(style) {
   const map = new maplibregl.Map({
     container: 'map', style,
     center: [4.3517, 50.8503], zoom: 13,
-    hash: true, maxZoom: 18, minZoom: 10,
+    hash: true, maxZoom: 19, minZoom: 10,
+    maxPitch: 85,
   });
   window.map = map;
   setupSportMarkings(map);
@@ -227,6 +228,45 @@ function initMap(style) {
   map.on('moveend', () => updateOsmLink(map));
   map.on('zoomend', () => updateOsmLink(map));
 
+  /* ── Building parts (issue #40) : ajoutés à la carte SEULEMENT à la
+     première activation du mode 3D — aucune requête réseau pour les
+     visiteurs qui restent en 2D, car ni le source ni le layer ne sont
+     déclarés dans style.json. Pas de rendu de la FORME du toit
+     (gabled/hipped/pyramidal…) : fill-extrusion ne sait dessiner qu'un
+     prisme à toit plat — limite MapLibre, pas traitée ici. ── */
+  function ensureBuildingPartsLayer() {
+    if (map.getSource('building_parts')) return;
+    map.addSource('building_parts', {
+      type: 'vector',
+      url: 'pmtiles://' + new URL('./building_parts.pmtiles.gz', location.href).href,
+      attribution: '© OpenStreetMap contributors',
+    });
+    map.addLayer({
+      id: 'building-parts-3d',
+      type: 'fill-extrusion',
+      source: 'building_parts',
+      'source-layer': 'building_parts',
+      minzoom: 13,
+      paint: {
+        'fill-extrusion-color': ['coalesce', ['get', 'building:colour'], '#fce1c5'],
+        'fill-extrusion-base': ['case',
+          ['has', 'min_height'], ['to-number', ['get', 'min_height'], 0],
+          ['has', 'building:min_level'], ['*', ['to-number', ['get', 'building:min_level'], 0], 3],
+          0],
+        'fill-extrusion-height': ['case',
+          ['has', 'height'], ['to-number', ['get', 'height'], 9],
+          ['has', 'building:levels'], ['+',
+            ['case',
+              ['has', 'min_height'], ['to-number', ['get', 'min_height'], 0],
+              ['has', 'building:min_level'], ['*', ['to-number', ['get', 'building:min_level'], 0], 3],
+              0],
+            ['*', ['to-number', ['get', 'building:levels'], 3], 3]],
+          9],
+        'fill-extrusion-opacity': 0.85,
+      },
+    });
+  }
+
   /* ── Toggle 2D/3D ── */
   const toggleBtn = document.getElementById('toggle-3d');
   let is3d = false;
@@ -237,11 +277,14 @@ function initMap(style) {
       if (map.getLayer('buildings-fill')) map.setLayoutProperty('buildings-fill', 'visibility', 'none');
       if (map.getLayer('buildings-outline')) map.setLayoutProperty('buildings-outline', 'visibility', 'none');
       if (map.getLayer('buildings-3d')) map.setLayoutProperty('buildings-3d', 'visibility', 'visible');
+      ensureBuildingPartsLayer();
+      map.setLayoutProperty('building-parts-3d', 'visibility', 'visible');
       map.easeTo({ pitch: 45, duration: 800 });
     } else {
       if (map.getLayer('buildings-fill')) map.setLayoutProperty('buildings-fill', 'visibility', 'visible');
       if (map.getLayer('buildings-outline')) map.setLayoutProperty('buildings-outline', 'visibility', 'visible');
       if (map.getLayer('buildings-3d')) map.setLayoutProperty('buildings-3d', 'visibility', 'none');
+      if (map.getLayer('building-parts-3d')) map.setLayoutProperty('building-parts-3d', 'visibility', 'none');
       map.easeTo({ pitch: 0, duration: 800 });
     }
   };

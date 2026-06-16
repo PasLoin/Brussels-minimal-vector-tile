@@ -39,10 +39,79 @@ extract() {
 extract roads \
   nwr/highway=motorway,motorway_link,trunk,trunk_link,primary,primary_link,secondary,secondary_link,tertiary,tertiary_link,residential,living_street,unclassified,service,track,busway nwr/man_made=bridge,tunnel
 
-# Buildings : export unique, puis copie pour garder le détail avant merge
-extract buildings nwr/building=*
+# ── Buildings ──────────────────────────────────────────────
+# -a id,type (issue #40) : ajoute les propriétés @id/@type avec l'ID
+# OSM BRUT du way (pas de transformation). Nécessaire pour faire
+# correspondre les bâtiments aux membres "outline" des relations
+# type=building (cf. compute_building_coverage.py). On évite
+# volontairement --add-unique-id=type_id : pour les aires issues de
+# ways fermés, osmium DOUBLE l'id (id_unique = 2 × id_original),
+# ce qui casserait silencieusement la correspondance.
+# --geometry-types=polygon : sans ça, osmium export émet AUSSI une
+# version LineString de chaque way fermée (comportement documenté
+# par défaut), créant un doublon Polygon+LineString pour le même
+# bâtiment dans les tuiles. On ne veut que les polygones ici.
+echo "→ buildings"
+osmium tags-filter "$SRC" nwr/building=* -o "_tmp_buildings.osm.pbf" --overwrite
+osmium export "_tmp_buildings.osm.pbf" -o "buildings.json" --overwrite \
+  --attributes=id,type --geometry-types=polygon
+rm -f "_tmp_buildings.osm.pbf"
+echo "  $(wc -l < "buildings.json") lignes"
 echo "  → copie buildings.json → buildings_detail.json (avant merge)"
 cp buildings.json buildings_detail.json
+
+# lod=detail : marqueur explicite, symétrique de lod=merged ajouté par
+# merge_buildings.py (issue z15-18 leak). Permet au style de filtrer
+# buildings-3d sur ce critère plutôt que de dépendre des tranches de
+# zoom tippecanoe, qui peuvent laisser fuiter une feature au-delà de
+# sa plage prévue.
+python3 << 'TAG_DETAIL'
+import json
+with open('buildings_detail.json') as f:
+    data = json.load(f)
+for feat in data.get('features', []):
+    feat.setdefault('properties', {})['lod'] = 'detail'
+with open('buildings_detail.json', 'w') as f:
+    json.dump(data, f, ensure_ascii=False)
+print(f"  {len(data.get('features', []))} features taguées lod=detail")
+TAG_DETAIL
+
+# ── Building parts (issue #40 : rendu 3D détaillé) ───────────────
+# Pas de fusion via merge_buildings.py : chaque partie garde sa
+# propre hauteur/min_height (toits étagés, tours...), les fusionner
+# détruirait cette info. Chargé à la demande uniquement en mode 3D
+# (cf. www/index.html), jamais référencé dans style.json.
+# --geometry-types=polygon : même raison que pour buildings ci-dessus.
+echo "→ building_parts"
+osmium tags-filter "$SRC" wr/building:part=yes -o "_tmp_building_parts.osm.pbf" --overwrite
+osmium export "_tmp_building_parts.osm.pbf" -o "building_parts.json" --overwrite \
+  --attributes=id,type --geometry-types=polygon
+rm -f "_tmp_building_parts.osm.pbf"
+echo "  $(wc -l < "building_parts.json") lignes"
+
+# ── Relations type=building (cas complexes, issue #40) ───────────
+# Spec Simple 3D Buildings : une relation type=building avec des
+# membres role=outline (le contour) et role=part (les volumes
+# détaillés). On extrait juste la LISTE des membres (id+rôle), pas de
+# géométrie — un objet relation porte toujours sa liste de membres
+# intrinsèquement, qu'on garde ou non les ways/nodes référencés.
+echo "→ relations type=building (cas complexes)"
+osmium tags-filter "$SRC" r/type=building -o "_tmp_building_rel.osm.pbf" --overwrite
+osmium cat "_tmp_building_rel.osm.pbf" -o "_tmp_building_rel.osm" --overwrite
+REL_COUNT=$(grep -c "<relation" "_tmp_building_rel.osm" 2>/dev/null || echo 0)
+echo "  ${REL_COUNT} relations type=building trouvées"
+
+# ── Détection des bâtiments entièrement couverts par leurs parties ──
+# Relation explicite en priorité, sinon heuristique géométrique ≥90%
+# (cf. issue #40). Mute buildings_detail.json en place (ajoute
+# covered_by_parts / covered_by_parts_source).
+python3 compute_building_coverage.py \
+  --buildings buildings_detail.json \
+  --parts     building_parts.json \
+  --relations _tmp_building_rel.osm \
+  --threshold 0.90 \
+  || echo "⚠  compute_building_coverage.py en échec (non bloquant — buildings-3d affichera tout)"
+rm -f _tmp_building_rel.osm.pbf _tmp_building_rel.osm
 
 extract water \
   nwr/natural=water nwr/waterway=river,canal,stream,ditch nwr/landuse=basin nwr/natural=wetland
@@ -208,4 +277,4 @@ python3 extract_stib_routes.py
 rm -f _tmp_pt.osm.pbf _tmp_pt.osm
 echo "  $(wc -l < "public_transport.json") lignes"
 
-echo "✓ 12 couches extraites (+ buildings_detail.json pour zoom haut)"
+echo "✓ 13 couches extraites (+ buildings_detail.json pour zoom haut)"

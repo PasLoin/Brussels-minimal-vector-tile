@@ -323,6 +323,47 @@ def buildings(cfg):
     col = cfg["color"] or "#fce1c5"
     bc  = cfg["border_color"] or "#d4a574"
     ap  = cfg["appear_at"]
+
+    # Base de l'extrusion : 0 normalement, sauf bâtiment surélevé
+    # (passage carrossable / allée vers l'intérieur d'îlot) taggé
+    # directement min_height/building:min_level, sans building:part.
+    base_expr = ["case",
+        ["has", "min_height"], ["to-number", ["get", "min_height"], 0],
+        ["has", "building:min_level"], ["*", ["to-number", ["get", "building:min_level"], 0], 3],
+        0]
+
+    # Le bâtiment porte-t-il une info de hauteur exploitable quelconque ?
+    has_height_info = ["any",
+        ["has", "height"], ["has", "min_height"],
+        ["has", "building:levels"], ["has", "building:min_level"]]
+
+    is_roof = ["==", ["get", "building"], "roof"]
+
+    # building=roof sans AUCUNE info exploitable (souvent juste
+    # layer=1) -> flotte au MINIMUM à la même hauteur que le fallback
+    # générique d'un bâtiment simple sans données (base 0 + 7.5m),
+    # plutôt qu'une valeur arbitrairement basse qui le plaque contre
+    # le bâtiment support en dessous (confirmé visuellement : avant
+    # ces changements, ce type d'auvent flottait correctement à
+    # mi-hauteur du bâtiment, pas au sol).
+    is_untagged_roof = ["all", is_roof, ["!", has_height_info]]
+
+    normal_height_expr = ["case",
+        ["has", "height"], ["to-number", ["get", "height"], 6],
+        ["has", "building:levels"], ["+", base_expr,
+            ["*", ["to-number", ["get", "building:levels"], 2], 3]],
+        ["+", base_expr, 7.5]]
+
+    # Différenciation visuelle des auvents/verrières (building=roof) :
+    # un building=roof peut être posé exactement à la même position
+    # qu'un AUTRE bâtiment OSM distinct en dessous (le vrai support).
+    # Couleur nettement plus saturée que la teinte bâtiment standard
+    # pour rester identifiable même proche en hauteur d'un volume
+    # voisin — fill-extrusion-opacity ne supporte QUE des expressions
+    # de zoom (pas de data expression), donc toute la différenciation
+    # passe par la couleur.
+    roof_color = "#6b4f3a"
+
     out = [{"id":"buildings-fill","type":"fill",
              "source":"buildings","source-layer":"buildings","minzoom":ap,
              "paint":{"fill-color":col}}]
@@ -330,17 +371,30 @@ def buildings(cfg):
         out.append({"id":"buildings-3d","type":"fill-extrusion",
             "source":"buildings","source-layer":"buildings","minzoom":ap,
             "layout":{"visibility":"none"},
-            "paint":{"fill-extrusion-color":col,
-                     "fill-extrusion-height":["case",
-                         ["has","height"],["to-number",["get","height"],6],
-                         ["has","building:levels"],["*",["to-number",["get","building:levels"],2],3],
-                         7.5],
-                     "fill-extrusion-base":0,"fill-extrusion-opacity":.75}})
+            # lod="detail" (issue z15-18 leak) : exclut explicitement
+            # les features du palier fusionné (lod=merged, ajouté par
+            # merge_buildings.py), au cas où tippecanoe en laisserait
+            # fuiter au-delà de leur tranche de zoom prévue z10-12 —
+            # filtre robuste, indépendant des réglages tippecanoe.
+            # covered_by_parts!=yes (issue #40) : un bâtiment
+            # entièrement recouvert par ses building:part (relation
+            # explicite ou heuristique géométrique ≥90%, cf.
+            # compute_building_coverage.py) ne doit pas être extrudé
+            # ici, sous peine de silhouette dédoublée avec
+            # building-parts-3d. Le rendu 2D (buildings-fill/
+            # buildings-outline) reste inchangé pour tous les
+            # bâtiments, quels que soient lod/covered_by_parts.
+            "filter": ["all",
+                ["==", ["get", "lod"], "detail"],
+                ["!=", ["get", "covered_by_parts"], "yes"]],
+            "paint":{"fill-extrusion-color": ["case", is_roof, roof_color, col],
+                     "fill-extrusion-base": ["case", is_untagged_roof, 7.2, base_expr],
+                     "fill-extrusion-height": ["case", is_untagged_roof, 7.5, normal_height_expr],
+                     "fill-extrusion-opacity": 0.75}})
     out.append({"id":"buildings-outline","type":"line",
         "source":"buildings","source-layer":"buildings","minzoom":ap,
         "paint":{"line-color":bc,"line-width":.5}})
     return out
-
 
 # ── LEISURE ───────────────────────────────────────────────────────────────────
 
