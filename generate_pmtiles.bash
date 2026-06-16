@@ -112,11 +112,21 @@ if [ -f "buildings_detail.json" ]; then
 fi
 SRC_COUNT=$((SRC_MERGED + SRC_DETAIL))
 
+# NOTE : PAS de --extend-zooms-if-still-dropping ici (contrairement aux
+# autres couches via COMMON_OPTS). Ce flag autorise tippecanoe à
+# repousser une feature au-delà de son maximum-zoom déclaré si elle
+# serait sinon perdue par densité — ce qui peut faire "fuiter" des
+# features du palier fusionné (z10-12, building=yes forcé, AUCUNE
+# hauteur) dans les tuiles z13+ du palier détail. Résultat observé :
+# un bâtiment correctement tagué (ex: building=roof + height/min_height)
+# se retrouve avec un doublon fantôme superposé qui retombe sur le
+# fallback générique (base 0 → 7.5m), donnant l'impression que
+# l'extrusion "remplit depuis le sol" alors que le style calcule la
+# bonne dalle fine pour la vraie feature détaillée.
 TIPPE_LOG=$(tippecanoe -o buildings.pmtiles \
   --attribution="© OpenStreetMap contributors" \
   --simplify-only-low-zooms \
   --drop-densest-as-needed \
-  --extend-zooms-if-still-dropping \
   --generate-ids \
   --force \
   -L'{"file":"buildings_merged.json","layer":"buildings","minimum-zoom":10,"maximum-zoom":12,"simplification":2}' \
