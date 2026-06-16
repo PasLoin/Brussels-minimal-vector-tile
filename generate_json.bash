@@ -104,7 +104,8 @@ echo "  ${REL_COUNT} relations type=building trouvées"
 # ── Détection des bâtiments entièrement couverts par leurs parties ──
 # Relation explicite en priorité, sinon heuristique géométrique ≥90%
 # (cf. issue #40). Mute buildings_detail.json en place (ajoute
-# covered_by_parts / covered_by_parts_source).
+# covered_by_parts / covered_by_parts_source). @id/@type sont
+# nécessaires À CETTE ÉTAPE pour la correspondance avec les relations.
 python3 compute_building_coverage.py \
   --buildings buildings_detail.json \
   --parts     building_parts.json \
@@ -112,6 +113,29 @@ python3 compute_building_coverage.py \
   --threshold 0.90 \
   || echo "⚠  compute_building_coverage.py en échec (non bloquant — buildings-3d affichera tout)"
 rm -f _tmp_building_rel.osm.pbf _tmp_building_rel.osm
+
+# ── Nettoyage des propriétés de build uniquement ─────────────────
+# @id/@type n'ont servi que pour la correspondance avec les relations
+# type=building ci-dessus, et covered_by_parts_source n'est qu'une
+# info de debug jamais lue par style.json (seuls "lod" et
+# "covered_by_parts" sont effectivement utilisés par build_map.py).
+# On les retire avant tippecanoe : aucune perte fonctionnelle, fichier
+# final plus léger.
+python3 << 'STRIP_BUILD_PROPS'
+import json
+with open('buildings_detail.json') as f:
+    data = json.load(f)
+removed = 0
+for feat in data.get('features', []):
+    props = feat.get('properties', {})
+    for k in ('@id', '@type', 'covered_by_parts_source'):
+        if k in props:
+            del props[k]
+            removed += 1
+with open('buildings_detail.json', 'w') as f:
+    json.dump(data, f, ensure_ascii=False)
+print(f"  {removed} propriétés de build retirées (@id/@type/covered_by_parts_source)")
+STRIP_BUILD_PROPS
 
 extract water \
   nwr/natural=water nwr/waterway=river,canal,stream,ditch nwr/landuse=basin nwr/natural=wetland
