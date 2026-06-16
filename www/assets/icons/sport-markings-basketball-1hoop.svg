@@ -1,32 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="107" height="101"
-     viewBox="0 0 107 101">
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="188.8"
+     viewBox="0 0 200 188.8">
 
-  <g fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="square">
+  <g fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="square">
 
-
-    <rect x="1" y="1" width="105" height="99"/>
-
-
-    <path d="M 40.6 100 A 12.9 12.9 0 0 1 66.4 100"/>
+    <rect x="1.9" y="1.9" width="196.3" height="185.1"/>
 
 
-    <rect x="36" y="1" width="35" height="41.4"/>
+    <path d="M 75.9 186.9 A 24.1 24.1 0 0 1 124.1 186.9"/>
 
-    <path d="M 40.6 42.4 A 12.9 12.9 0 0 0 66.4 42.4"/>
+    <rect x="67.3" y="1.9" width="65.4" height="77.4"/>
 
-    <path d="M 40.6 42.4 A 12.9 12.9 0 0 1 66.4 42.4"
-          stroke-dasharray="3,2.5"/>
+    <path d="M 75.9 79.3 A 24.1 24.1 0 0 0 124.1 79.3"/>
 
-
-    <path d="M 7.4 1 L 7.4 26.4 A 48.2 48.2 0 0 0 99.6 26.4 L 99.6 1"/>
-
-
-    <path d="M 44.6 12.25 A 8.9 8.9 0 0 0 62.4 12.25"/>
+    <path d="M 75.9 79.3 A 24.1 24.1 0 0 1 124.1 79.3"
+          stroke-dasharray="5.6,4.7"/>
 
 
-    <circle cx="53.5" cy="12.25" r="1.8" stroke-width="1"/>
+    <path d="M 13.8 1.9 L 13.8 49.4 A 90.1 90.1 0 0 0 186.2 49.4 L 186.2 1.9"/>
 
-    <line x1="49" y1="10.5" x2="58" y2="10.5" stroke-width="1.5"/>
+
+    <path d="M 83.4 22.9 A 16.6 16.6 0 0 0 116.6 22.9"/>
+
+    <circle cx="100" cy="22.9" r="3.4" stroke-width="1.9"/>
+
+    <line x1="91.6" y1="19.6" x2="108.4" y2="19.6" stroke-width="2.8"/>
 
   </g>
 </svg>
