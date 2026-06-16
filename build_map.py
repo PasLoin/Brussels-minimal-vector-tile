@@ -385,9 +385,9 @@ def buildings(cfg):
             "filter": ["all",
                 ["==", ["get", "lod"], "detail"],
                 ["!=", ["get", "covered_by_parts"], "yes"]],
-            "paint":{"fill-extrusion-color": ["case", is_roof, roof_color, col],
-                     "fill-extrusion-base": ["case", is_untagged_roof, 2.5, base_expr],
-                     "fill-extrusion-height": ["case", is_untagged_roof, 2.8, normal_height_expr],
+            "paint":{"fill-extrusion-color": ["case", is_roof, "#ff0000", col],
+                     "fill-extrusion-base": ["case", is_roof, 50, base_expr],
+                     "fill-extrusion-height": ["case", is_roof, 53, normal_height_expr],
                      "fill-extrusion-opacity": 0.75}})
     out.append({"id":"buildings-outline","type":"line",
         "source":"buildings","source-layer":"buildings","minzoom":ap,
