@@ -191,6 +191,12 @@ def main():
         if props.get("name"):
             point_props["name"] = props["name"]
 
+        # Copier hoops s'il existe (issue #39 : terrain de basketball
+        # avec un seul panier -> demi-terrain -> rendu SVG différent,
+        # cf. icon-image dans patch_style_pitches.py)
+        if props.get("hoops"):
+            point_props["hoops"] = props["hoops"]
+
         new_points.append({
             "type": "Feature",
             "geometry": {"type": "Point", "coordinates": centroid},

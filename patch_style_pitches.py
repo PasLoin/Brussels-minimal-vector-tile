@@ -88,6 +88,11 @@ PITCH_SPORT_OUTLINE = {
 #      z17 → 0.01326 × 0.92 = 0.01220
 #      z18 → 0.02654 × 0.92 = 0.02442
 #
+#    icon-image (issue #39) : un terrain de basketball avec hoops=1
+#    (un seul panier, ex. streetball / demi-terrain) utilise un SVG
+#    dédié "sport-markings-basketball-1hoop" plutôt que le marquage
+#    "terrain complet" à 2 paniers. Le fichier SVG correspondant doit
+#    exister dans www/assets/icons/.
 PITCH_MARKINGS = {
     "id": "pitch-markings",
     "type": "symbol",
@@ -102,7 +107,12 @@ PITCH_MARKINGS = {
     ],
     "layout": {
         "icon-image": [
-            "concat", "sport-markings-", ["get", "sport_render"]
+            "case",
+            ["all",
+                ["==", ["get", "sport_render"], "basketball"],
+                ["==", ["get", "hoops"], "1"]],
+            "sport-markings-basketball-1hoop",
+            ["concat", "sport-markings-", ["get", "sport_render"]]
         ],
         "icon-rotation-alignment": "map",
         "icon-pitch-alignment": "map",

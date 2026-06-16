@@ -16,6 +16,7 @@ var SPORT_MARKINGS = [
   'sport-markings-tennis',
   'sport-markings-soccer',
   'sport-markings-basketball',
+  'sport-markings-basketball-1hoop',
   'sport-markings-boules'
 ];
 
