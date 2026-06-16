@@ -351,17 +351,16 @@ def buildings(cfg):
         ["+", base_expr, 7.5]]
 
     # Différenciation visuelle des auvents/verrières (building=roof) :
-    # il arrive qu'un building=roof soit posé exactement à la même
-    # position qu'un AUTRE bâtiment OSM distinct en dessous (le vrai
-    # support, souvent sans aucune hauteur taguée -> boîte pleine du
-    # sol par défaut). Les deux features sont rendues CORRECTEMENT
-    # selon leurs propres tags respectifs, mais avec la même couleur
-    # pleine elles fusionnent visuellement en un seul bloc, rendant
-    # invisible la fine dalle de l'auvent qui devrait se distinguer.
-    # On donne donc à TOUT building=roof une teinte et une opacité
-    # distinctes (gris-taupe semi-transparent, façon verrière), pour
-    # qu'il reste identifiable même superposé à un autre volume.
-    roof_color = "#b3a89c"
+    # un building=roof peut être posé exactement à la même position
+    # qu'un AUTRE bâtiment OSM distinct en dessous (le vrai support,
+    # souvent sans aucune hauteur taguée -> boîte pleine du sol par
+    # défaut). Les deux features sont rendues CORRECTEMENT selon
+    # leurs propres tags, mais avec la même couleur elles fusionnent
+    # visuellement. fill-extrusion-color ACCEPTE les data expressions
+    # (contrairement à fill-extrusion-opacity, qui ne supporte QUE des
+    # expressions de zoom — la couleur seule porte donc toute la
+    # différenciation, opacité fixe pour tous.
+    roof_color = "#8a7d6c"
 
     out = [{"id":"buildings-fill","type":"fill",
              "source":"buildings","source-layer":"buildings","minzoom":ap,
@@ -389,7 +388,7 @@ def buildings(cfg):
             "paint":{"fill-extrusion-color": ["case", is_roof, roof_color, col],
                      "fill-extrusion-base": ["case", is_untagged_roof, 2.5, base_expr],
                      "fill-extrusion-height": ["case", is_untagged_roof, 2.8, normal_height_expr],
-                     "fill-extrusion-opacity": ["case", is_roof, 0.55, .75]}})
+                     "fill-extrusion-opacity": 0.75}})
     out.append({"id":"buildings-outline","type":"line",
         "source":"buildings","source-layer":"buildings","minzoom":ap,
         "paint":{"line-color":bc,"line-width":.5}})
