@@ -461,6 +461,27 @@ def roads(cfg):
                   "text-size":11,"symbol-placement":"line","text-max-angle":30},
         "paint":{"text-color":"#333","text-halo-color":"rgba(255,255,255,0.6)",
                  "text-halo-width":1.5}})
+
+    # ── Flèches de sens unique (issue #41) ──────────────────────────
+    # oneway=yes -> flèche dans le sens du tracé de la géométrie.
+    # oneway=-1 ignoré (déconseillé sur OSM, quasi absent des données).
+    out.append({"id":"road-oneway-arrows","type":"symbol",
+        "source":"roads","source-layer":"roads","minzoom":16,
+        "filter":["==",["get","oneway"],"yes"],
+        "layout":{
+            "symbol-placement":"line",
+            "symbol-spacing":zoom([(16,150),(18,80)]),
+            "text-field":"→",
+            "text-font":["Noto Sans Regular"],
+            "text-size":zoom([(16,10),(18,14)]),
+            "text-rotation-alignment":"map",
+            "text-pitch-alignment":"map",
+            "text-keep-upright":False,
+            "text-allow-overlap":True,
+            "text-ignore-placement":True},
+        "paint":{"text-color":"#666666","text-opacity":0.7,
+                 "text-halo-color":"rgba(255,255,255,0.6)","text-halo-width":1}})
+
     return out
 
 
@@ -506,11 +527,40 @@ def pedestrian(cfg):
 # ── CYCLEWAY ──────────────────────────────────────────────────────────────────
 
 def cycleway(cfg):
-    return [{"id":"cycleway","type":"line",
+    col = cfg["color"] or "#0000ff"
+    out = [{"id":"cycleway","type":"line",
         "source":"cycleway","source-layer":"cycleway","minzoom":cfg["appear_at"],
-        "paint":{"line-color":cfg["color"] or "#0000ff",
+        "paint":{"line-color":col,
                  "line-width":zoom([(cfg["appear_at"],.8),(18,2)]),
                  "line-dasharray":[3,3]}}]
+
+    # ── Flèches de sens unique sur pistes cyclables (issue #41) ──────
+    # oneway=yes -> piste à sens unique : flèche dans le sens du tracé.
+    # Pas de flèche -> bidirectionnelle (convention standard).
+    # "oneway" est déjà conservé par apply_granulometry (couche
+    # cycleway sans sous-types -> keep_properties: "ALL").
+    #
+    # Rendu : flèche blanche + halo dans la couleur de la piste, plutôt
+    # que flèche colorée semi-transparente (invisible sur la ligne
+    # bleue en pointillés de même couleur).
+    out.append({"id":"cycleway-oneway-arrows","type":"symbol",
+        "source":"cycleway","source-layer":"cycleway","minzoom":16,
+        "filter":["==",["get","oneway"],"yes"],
+        "layout":{
+            "symbol-placement":"line",
+            "symbol-spacing":zoom([(16,100),(18,60)]),
+            "text-field":"→",
+            "text-font":["Noto Sans Regular"],
+            "text-size":zoom([(16,10),(18,13)]),
+            "text-rotation-alignment":"map",
+            "text-pitch-alignment":"map",
+            "text-keep-upright":False,
+            "text-allow-overlap":True,
+            "text-ignore-placement":True},
+        "paint":{"text-color":"#ffffff","text-opacity":0.95,
+                 "text-halo-color":col,"text-halo-width":1.5}})
+
+    return out
 
 
 # ── RAILWAY ───────────────────────────────────────────────────────────────────
@@ -736,8 +786,14 @@ def build_granulometry(config):
         st   = raw.get("subtypes") or {}
         rules = []
         if name == "roads":
-            LOW  = ["highway","name","ref","tunnel","bridge","layer"]
-            HIGH = LOW + ["oneway","maxspeed","lanes","access"]
+            # "oneway" est dans LOW (issue #41) : toujours conservé dès
+            # l'apparition de la route, pour permettre le rendu des
+            # flèches de sens unique sur TOUTES les classes (y compris
+            # primary/secondary/tertiary, dont gap+4 >= 18 → pas de tier
+            # HIGH séparé). maxspeed/lanes/access restent réservés au
+            # tier HIGH (haut zoom uniquement).
+            LOW  = ["highway","name","ref","tunnel","bridge","layer","oneway"]
+            HIGH = LOW + ["maxspeed","lanes","access"]
             for grp,hw_vals in ROAD_CLASSES.items():
                 gap = (st.get(grp) or {}).get("appear_at", ap)
                 if gap > 10:
