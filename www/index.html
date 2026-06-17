@@ -120,6 +120,7 @@ fetch('./style.json')
 function initMap(style) {
   const poiIconLayer = style.layers.find(l => l.id === 'poi-icon');
   const leisureIconLayer = style.layers.find(l => l.id === 'leisure-icon');
+  const streetFurnitureIconLayer = style.layers.find(l => l.id === 'street-furniture-icon');
   if (leisureIconLayer) {
     leisureIconLayer.layout = leisureIconLayer.layout || {};
     leisureIconLayer.layout.visibility = 'none';
@@ -129,6 +130,11 @@ function initMap(style) {
     poiIconLayer.layout = poiIconLayer.layout || {};
     poiIconLayer.layout.visibility = 'none';
     delete poiIconLayer.layout['icon-image'];
+  }
+  if (streetFurnitureIconLayer) {
+    streetFurnitureIconLayer.layout = streetFurnitureIconLayer.layout || {};
+    streetFurnitureIconLayer.layout.visibility = 'none';
+    delete streetFurnitureIconLayer.layout['icon-image'];
   }
 
   const map = new maplibregl.Map({
@@ -147,6 +153,7 @@ function initMap(style) {
     await loadAllPoiIcons(map);
     map.setLayoutProperty('poi-icon', 'visibility', 'visible');
     if (map.getLayer('leisure-icon')) map.setLayoutProperty('leisure-icon', 'visibility', 'visible');
+    if (map.getLayer('street-furniture-icon')) map.setLayoutProperty('street-furniture-icon', 'visibility', 'visible');
   });
 
   /* ── Légende dynamique ── */
@@ -182,6 +189,7 @@ function initMap(style) {
       { label: 'Cyclable', pattern: 'cycleway', type: 'line' },
       { label: 'POI', pattern: 'poi-', type: 'dot' },
       { label: 'Limites', pattern: 'boundaries', type: 'line' },
+      { label: 'Mobilier urbain', pattern: 'street-furniture-', type: 'dot' },
     ];
 
     categories.forEach(cat => {
