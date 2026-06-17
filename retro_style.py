@@ -37,6 +37,7 @@ GROUPS = {
     "public_transport": ["public_transport-"],
     "boundaries":       ["boundaries"],
     "poi":              ["poi-", "leisure-icon"],
+    "street_furniture": ["street-furniture-"],
 }
 
 LABELS = {
@@ -53,6 +54,7 @@ LABELS = {
     "public_transport": "Transport STIB",
     "boundaries":       "Limites administratives",
     "poi":              "POI",
+    "street_furniture": "Mobilier urbain",
 }
 
 # Tag OSM principal par couche (pour identifier les sous-types)
@@ -70,6 +72,7 @@ GROUP_TAGS = {
     "boundaries":       ["boundary"],
     "cycleway":         ["highway"],
     "public_transport": ["route"],
+    "street_furniture": ["amenity", "barrier", "highway"],
 }
 
 # ── Helpers d'extraction d'expressions MapLibre ───────────────────────────────
