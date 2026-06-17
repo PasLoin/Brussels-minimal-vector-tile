@@ -4,18 +4,24 @@
       "advertising",
       "aeroway",
       "amenity",
+      "barrier",
       "club",
       "craft",
       "emergency",
       "healthcare",
+      "highway",
       "historic",
       "industrial",
       "leisure",
       "man_made",
+      "military",
       "natural",
       "office",
       "shop",
       "tourism"
+    ],
+    "presence_keys": [
+      "entrance"
     ],
     "special_cases": [
       {
@@ -27,6 +33,31 @@
         "key": "religion",
         "value": "muslim",
         "icon_key": "religion-muslim"
+      },
+      {
+        "key": "vending",
+        "value": "condoms",
+        "icon_key": "vending-condoms"
+      },
+      {
+        "key": "vending",
+        "value": "excrement_bags",
+        "icon_key": "vending-excrement_bags"
+      },
+      {
+        "key": "vending",
+        "value": "newspapers",
+        "icon_key": "vending-newspapers"
+      },
+      {
+        "key": "vending",
+        "value": "parking_tickets",
+        "icon_key": "vending-parking_tickets"
+      },
+      {
+        "key": "vending",
+        "value": "public_transport_tickets",
+        "icon_key": "vending-public_transport_tickets"
       }
     ]
   },
@@ -118,7 +149,7 @@
     null,
     null,
     "attraction",
-    null
+    "attraction"
   ],
   "auction_house": [
     null,
@@ -148,18 +179,24 @@
     "bakery",
     null,
     "bakery",
-    null
+    "bakery"
   ],
   "bank": [
     null,
     null,
     "bank",
-    null
+    "bank"
   ],
   "bar": [
     null,
     null,
     "bar",
+    "bar"
+  ],
+  "barracks": [
+    null,
+    null,
+    null,
     null
   ],
   "bathroom_furnishing": [
@@ -208,13 +245,19 @@
     null,
     null,
     "bicycle",
+    "bicycle"
+  ],
+  "bicycle_parking": [
+    null,
+    null,
+    null,
     null
   ],
   "bicycle_rental": [
     null,
     "bicycle_rental",
     null,
-    null
+    "bicycle_rental"
   ],
   "bicycle_repair": [
     null,
@@ -246,6 +289,12 @@
     null,
     null
   ],
+  "bollard": [
+    null,
+    "bollard",
+    null,
+    null
+  ],
   "bonsai": [
     null,
     null,
@@ -262,7 +311,7 @@
     null,
     null,
     null,
-    null
+    "library"
   ],
   "boutique": [
     null,
@@ -286,7 +335,7 @@
     null,
     null,
     "building",
-    null
+    "building"
   ],
   "building_materials": [
     null,
@@ -294,11 +343,17 @@
     null,
     null
   ],
+  "bus_trap": [
+    null,
+    null,
+    "barrier",
+    null
+  ],
   "butcher": [
     "butcher",
     null,
     null,
-    null
+    "butcher"
   ],
   "cabinet_maker": [
     null,
@@ -310,7 +365,7 @@
     null,
     null,
     "cafe",
-    null
+    "cafe"
   ],
   "camera": [
     null,
@@ -328,7 +383,7 @@
     null,
     null,
     "car",
-    null
+    "car"
   ],
   "car_parts": [
     null,
@@ -364,7 +419,7 @@
     null,
     null,
     "castle",
-    null
+    "castle"
   ],
   "caterer": [
     null,
@@ -373,6 +428,12 @@
     null
   ],
   "centre": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "chain": [
     null,
     null,
     null,
@@ -412,6 +473,12 @@
     null,
     null,
     "cinema",
+    "cinema"
+  ],
+  "city_wall": [
+    null,
+    null,
+    null,
     null
   ],
   "cleaning": [
@@ -424,7 +491,7 @@
     null,
     null,
     "doctor",
-    null
+    "hospital"
   ],
   "clock": [
     null,
@@ -529,6 +596,12 @@
     null
   ],
   "craft": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "crossing": [
     null,
     null,
     null,
@@ -2886,6 +2959,12 @@
     null,
     null
   ],
+  "cycle_barrier": [
+    null,
+    "cycle_barrier",
+    null,
+    null
+  ],
   "dance": [
     null,
     null,
@@ -2908,9 +2987,15 @@
     null,
     null,
     null,
-    null
+    "dentist"
   ],
   "department_store": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "diplomatic": [
     null,
     null,
     null,
@@ -2934,7 +3019,169 @@
     "doctor",
     null
   ],
+  "dog_park": [
+    null,
+    null,
+    null,
+    "dog_park"
+  ],
+  "dog_toilet": [
+    null,
+    null,
+    null,
+    null
+  ],
   "doityourself": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-1": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-2": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-3": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-A": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-B": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-B.2.252": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-C": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-D": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-X": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-Y": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-Z": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-automatic": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-bibliothèque des sciences et techniques": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-double": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-garage": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-hig": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-hinged": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-motorised": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-no": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-noname": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-overhead": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-revolving": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-sliding": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-yes": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "door-yes/manual": [
     null,
     null,
     null,
@@ -2958,11 +3205,17 @@
     null,
     null
   ],
-  "dry_cleaning": [
+  "driver_training": [
     null,
     null,
     null,
     null
+  ],
+  "dry_cleaning": [
+    null,
+    null,
+    null,
+    "laundry"
   ],
   "duty_free": [
     null,
@@ -3012,11 +3265,29 @@
     null,
     null
   ],
+  "elevator": [
+    null,
+    "elevator",
+    "elevator",
+    null
+  ],
+  "embankment": [
+    null,
+    null,
+    null,
+    null
+  ],
   "emergency_ward_entrance": [
     null,
     null,
     null,
     null
+  ],
+  "entrance": [
+    null,
+    null,
+    "entrance",
+    "entrance"
   ],
   "erotic": [
     null,
@@ -3031,6 +3302,12 @@
     null
   ],
   "events_centre": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "exit": [
     null,
     null,
     null,
@@ -3060,6 +3337,12 @@
     "fast-food",
     null
   ],
+  "fence": [
+    null,
+    null,
+    "fence",
+    null
+  ],
   "fire_station": [
     null,
     null,
@@ -3073,6 +3356,12 @@
     null
   ],
   "fishing": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "fitness_station": [
     null,
     null,
     null,
@@ -3094,7 +3383,7 @@
     null,
     "florist",
     "florist",
-    null
+    "florist"
   ],
   "folly": [
     null,
@@ -3142,6 +3431,12 @@
     null,
     null,
     "fuel",
+    "fuel"
+  ],
+  "full-height_turnstile": [
+    null,
+    null,
+    null,
     null
   ],
   "funeral_directors": [
@@ -3154,7 +3449,7 @@
     null,
     "furniture",
     "furniture",
-    null
+    "furniture"
   ],
   "gallery": [
     null,
@@ -3172,7 +3467,7 @@
     null,
     null,
     "garden",
-    null
+    "garden"
   ],
   "garden_centre": [
     null,
@@ -3192,6 +3487,12 @@
     null,
     null
   ],
+  "gate": [
+    null,
+    "gate",
+    "gate",
+    null
+  ],
   "general": [
     null,
     null,
@@ -3202,6 +3503,12 @@
     null,
     null,
     "gift",
+    "gift"
+  ],
+  "give_way": [
+    null,
+    null,
+    null,
     null
   ],
   "glassblower": [
@@ -3228,6 +3535,12 @@
     null,
     null
   ],
+  "grassland": [
+    null,
+    null,
+    null,
+    null
+  ],
   "greengrocer": [
     null,
     null,
@@ -3238,13 +3551,13 @@
     null,
     null,
     "grocery",
-    null
+    "grocery"
   ],
   "hairdresser": [
     null,
     null,
     "hairdresser",
-    null
+    "hairdresser"
   ],
   "hairdresser_supply": [
     null,
@@ -3273,6 +3586,24 @@
   "hearing_aids": [
     null,
     null,
+    null,
+    null
+  ],
+  "heath": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "hedge": [
+    null,
+    "hedge",
+    null,
+    null
+  ],
+  "height_restrictor": [
+    null,
+    "height_restrictor",
     null,
     null
   ],
@@ -3316,7 +3647,7 @@
     null,
     null,
     "hospital",
-    null
+    "hospital"
   ],
   "hostel": [
     null,
@@ -3352,13 +3683,13 @@
     null,
     null,
     null,
-    null
+    "ice_cream"
   ],
   "information": [
     null,
     null,
     "information",
-    null
+    "information"
   ],
   "insect_hotel": [
     null,
@@ -3397,6 +3728,12 @@
     null
   ],
   "joiner": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "kerb": [
     null,
     null,
     null,
@@ -3442,7 +3779,7 @@
     null,
     "laundry",
     "laundry",
-    null
+    "laundry"
   ],
   "leather": [
     null,
@@ -3454,6 +3791,18 @@
     null,
     "library",
     "library",
+    "library"
+  ],
+  "life_ring": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "lift_gate": [
+    null,
+    "lift_gate",
+    "lift-gate",
     null
   ],
   "lighting": [
@@ -3483,6 +3832,12 @@
   "logistics": [
     null,
     null,
+    null,
+    null
+  ],
+  "lounger": [
+    null,
+    "lounger",
     null,
     null
   ],
@@ -3592,7 +3947,7 @@
     null,
     null,
     "monument",
-    null
+    "monument"
   ],
   "motorcycle": [
     null,
@@ -3610,13 +3965,13 @@
     null,
     "museum",
     "museum",
-    null
+    "museum"
   ],
   "music": [
     null,
     null,
     "music",
-    null
+    "music"
   ],
   "musical_instrument": [
     null,
@@ -3666,6 +4021,12 @@
     null,
     null
   ],
+  "outdoor_seating": [
+    null,
+    null,
+    null,
+    null
+  ],
   "outpost": [
     null,
     null,
@@ -3694,13 +4055,13 @@
     null,
     null,
     "park",
-    null
+    "park"
   ],
   "parking": [
     null,
     null,
     "parking",
-    null
+    "parking"
   ],
   "parking_entrance": [
     null,
@@ -3760,7 +4121,7 @@
     null,
     "pharmacy",
     "pharmacy",
-    null
+    "pharmacy"
   ],
   "photo": [
     null,
@@ -3786,6 +4147,12 @@
     null,
     null
   ],
+  "pitch": [
+    null,
+    null,
+    "pitch",
+    "pitch"
+  ],
   "place_of_worship": [
     null,
     null,
@@ -3798,11 +4165,17 @@
     null,
     null
   ],
+  "planter": [
+    null,
+    null,
+    "barrier",
+    null
+  ],
   "playground": [
     null,
     null,
     "playground",
-    null
+    "playground"
   ],
   "plumber": [
     null,
@@ -3814,7 +4187,7 @@
     null,
     null,
     "police",
-    null
+    "police"
   ],
   "popup": [
     null,
@@ -3832,7 +4205,7 @@
     null,
     "post_box",
     "post",
-    null
+    "post"
   ],
   "poster_box": [
     null,
@@ -3982,9 +4355,15 @@
     null,
     null,
     "restaurant",
-    null
+    "restaurant"
   ],
   "restoration": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "retaining_wall": [
     null,
     null,
     null,
@@ -4018,6 +4397,12 @@
     null,
     "school",
     "school",
+    "school"
+  ],
+  "schoolyard": [
+    null,
+    null,
+    null,
     null
   ],
   "scout": [
@@ -4027,6 +4412,12 @@
     null
   ],
   "screen": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "scrub": [
     null,
     null,
     null,
@@ -4090,11 +4481,17 @@
     null,
     null,
     "shop",
-    null
+    "shop"
   ],
   "shrub": [
     null,
     "shrub",
+    null,
+    null
+  ],
+  "shrubbery": [
+    null,
+    null,
     null,
     null
   ],
@@ -4105,6 +4502,12 @@
     null
   ],
   "signmaker": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "sliding_gate": [
     null,
     null,
     null,
@@ -4158,6 +4561,12 @@
     null,
     null
   ],
+  "stadium": [
+    null,
+    null,
+    "stadium",
+    "stadium"
+  ],
   "stationery": [
     null,
     null,
@@ -4176,9 +4585,21 @@
     null,
     null
   ],
+  "stop": [
+    null,
+    "stop",
+    null,
+    null
+  ],
   "storage_rental": [
     null,
     "storage_rental",
+    null,
+    null
+  ],
+  "street_lamp": [
+    null,
+    "street_lamp_arm",
     null,
     null
   ],
@@ -4213,6 +4634,12 @@
     null
   ],
   "swimming_pool": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "swing_gate": [
     null,
     null,
     null,
@@ -4258,11 +4685,17 @@
     null,
     null,
     "theatre",
-    null
+    "theatre"
   ],
   "ticket": [
     null,
     "ticket",
+    null,
+    null
+  ],
+  "ticket_validator": [
+    null,
+    null,
     null,
     null
   ],
@@ -4276,7 +4709,7 @@
     null,
     null,
     null,
-    null
+    "toilets"
   ],
   "tool_hire": [
     null,
@@ -4308,6 +4741,12 @@
     null,
     null
   ],
+  "traffic_signals": [
+    null,
+    "traffic_signals",
+    null,
+    null
+  ],
   "trampoline_park": [
     null,
     null,
@@ -4315,6 +4754,12 @@
     null
   ],
   "travel_agency": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "tree": [
     null,
     null,
     null,
@@ -4362,6 +4807,156 @@
     null,
     null
   ],
+  "vending-admission_tickets": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-candles": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-chemist": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-chemist;condoms": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-coffee": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-condoms": [
+    null,
+    "vending_love",
+    null,
+    null
+  ],
+  "vending-condoms;menstrual_products": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-drinks": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-drinks;food": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-elongated_coin": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-excrement_bags": [
+    null,
+    "vending_pet_waste",
+    null,
+    null
+  ],
+  "vending-food": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-lottery": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-meat": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-milk": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-newspapers": [
+    null,
+    "vending_newspaper",
+    null,
+    null
+  ],
+  "vending-parking_tickets": [
+    null,
+    "vending_tickets",
+    null,
+    null
+  ],
+  "vending-potatoes;eggs": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-public_transport_tickets": [
+    null,
+    "vending_tickets",
+    null,
+    null
+  ],
+  "vending-snacks": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-souvenirs": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-sun_cream": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-sweets": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-sweets;drinks;condoms": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "vending-umbrella": [
+    null,
+    null,
+    null,
+    null
+  ],
   "vending_machine": [
     null,
     "vending_machine",
@@ -4384,7 +4979,7 @@
     null,
     null,
     "veterinary",
-    null
+    "veterinary"
   ],
   "video": [
     null,
@@ -4404,6 +4999,18 @@
     "viewpoint",
     null
   ],
+  "wall": [
+    null,
+    "wall",
+    null,
+    null
+  ],
+  "waste_basket": [
+    null,
+    null,
+    "waste-basket",
+    "waste_basket"
+  ],
   "watches": [
     null,
     null,
@@ -4420,7 +5027,7 @@
     null,
     "water",
     "water",
-    null
+    "water"
   ],
   "wayside_shrine": [
     null,
@@ -4441,6 +5048,12 @@
     null
   ],
   "wholesale": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "wicket_gate": [
     null,
     null,
     null,
@@ -4499,5 +5112,11 @@
     null,
     null,
     null
+  ],
+  "zoo": [
+    null,
+    "zoo",
+    "zoo",
+    "zoo"
   ]
 }
