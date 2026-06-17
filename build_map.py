@@ -783,10 +783,67 @@ def poi(cfg):
     ]
 
 
+# ── STREET FURNITURE (mobilier urbain, issue #51) ─────────────────────────────
+#
+# bench, lounger, waste_basket, vending_machine (amenity) ; bollard,
+# gate, bus_trap, cycle_barrier, lift_gate, planter, fence (barrier) ;
+# street_lamp (highway) ; entrance=* (toute valeur). Géométrie mixte :
+# Point pour tout sauf barrier=fence qui reste une LineString (même
+# principe que trees.json : tree=Point, tree_row/hedge=LineString).
+#
+# L'expression icon-image ci-dessous est un FALLBACK statique : comme
+# pour poi-icon/leisure-icon, www/poi_icons.js la regénère au chargement
+# depuis www/poi-icons.json (_meta.type_keys/special_cases), construits
+# par generate_poi_icons.py à partir de poi.json ET street_furniture.json
+# fusionnés — aucune modification de poi_icons.js n'est nécessaire pour
+# ajouter un nouveau type, seulement de generate_poi_icons.py / map.config.yaml.
+def street_furniture(cfg):
+    st    = cfg["subtypes"]
+    ap    = cfg["appear_at"]
+    fence_color = (st.get("fence") or {}).get("color") or "#9c9c9c"
+
+    icon_expr = ["coalesce",
+        # raffinements d'icône (comme cuisine=*/religion=* pour les POI) :
+        # vending=* affine amenity=vending_machine, door=* affine entrance=*
+        ["case",["has","vending"],
+                ["image",["concat","poi-vending-",["get","vending"]]],["image",""]],
+        ["case",["has","door"],
+                ["image",["concat","poi-door-",["get","door"]]],["image",""]],
+        # types de base
+        ["image",["concat","poi-",["get","amenity"]]],
+        ["image",["concat","poi-",["get","barrier"]]],
+        ["case",["==",["get","highway"],"street_lamp"],
+                ["image","poi-street_lamp"],["image",""]],
+        # entrance=* : rendu uniforme, quelle que soit la valeur
+        # (yes/home/garage/main/service/exit/emergency… bien trop
+        # hétérogènes pour un jeu d'icônes dédié)
+        ["case",["has","entrance"],["image","poi-entrance"],["image",""]]]
+
+    return [
+        {"id":"street-furniture-fence","type":"line",
+         "source":"street_furniture","source-layer":"street_furniture",
+         "minzoom":ap,
+         "filter":["all",["==",["get","barrier"],"fence"],
+                         ["==",["geometry-type"],"LineString"]],
+         "paint":{"line-color":fence_color,
+                  "line-width":zoom([(ap,.5),(18,1.5)]),"line-opacity":.8}},
+        {"id":"street-furniture-icon","type":"symbol",
+         "source":"street_furniture","source-layer":"street_furniture",
+         "minzoom":ap,
+         "filter":["==",["geometry-type"],"Point"],
+         "layout":{"icon-image":icon_expr,
+                   "icon-size":zoom([(ap,.7),(18,1.0)]),
+                   "icon-allow-overlap":False,"icon-padding":2,
+                   "icon-anchor":"center"},
+         "paint":{"icon-opacity":.9}},
+    ]
+
+
 # ── Style complet ──────────────────────────────────────────────────────────────
 
 SOURCES = ["landuse","roads","buildings","water","green","trees","boundaries",
-           "poi","pedestrian","cycleway","railway","public_transport","leisure"]
+           "poi","pedestrian","cycleway","railway","public_transport","leisure",
+           "street_furniture"]
 
 def build_style(config):
     L  = config.get("layers",{})
@@ -809,6 +866,7 @@ def build_style(config):
     layers += cycleway(lc(L,"cycleway"))
     layers += boundaries(lc(L,"boundaries"))
     layers += poi(lc(L,"poi"))
+    layers += street_furniture(lc(L,"street_furniture"))
 
     sources = {n:{"type":"vector","url":f"./{n}.pmtiles.gz",
                   "attribution":"© OpenStreetMap contributors"} for n in SOURCES}

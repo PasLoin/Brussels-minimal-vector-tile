@@ -9,6 +9,7 @@ on:
       - 'brussels_capital_region-latest.osm.pbf'
       - 'granulometry_report.md'
       - 'landuse_report.md'
+      - 'street_furniture_report.md'
   workflow_dispatch:
   schedule:
     - cron: '0 3 1 * *'
@@ -98,13 +99,13 @@ jobs:
             && osmium fileinfo /tmp/repo.pbf \
             || echo "Pas encore dans le repo"
 
-      # ── Étape 3 : Extraction GeoJSON ───────────────────────────────────────────────────
+      # ── Étape 3 : Extraction GeoJSON (inclut street_furniture.json, issue #51) ─────────
       - name: Extract GeoJSON layers
         run: bash generate_json.bash
 
-      # ── Étape 4 : POI icons ────────────────────────────────────────────────────────────
+      # ── Étape 4 : POI icons (poi.json + street_furniture.json, issue #51) ──────────────
       - name: Generate POI icon mapping
-        run: python3 generate_poi_icons.py
+        run: python3 generate_poi_icons.py --poi-json poi.json street_furniture.json
 
       # ── Étape 5 : Fusionner les bâtiments ─────────────────────────────────────────────
       - name: Merge touching buildings
@@ -122,7 +123,7 @@ jobs:
             echo "ℹ️  granulometry.json absent — étape LOD ignorée"
           fi
 
-      # ── Étape 7 : Générer les PMTiles ─────────────────────────────────────────────────
+      # ── Étape 7 : Générer les PMTiles (inclut street_furniture.pmtiles.gz, issue #51) ──
       - name: Generate PMTiles
         run: |
           # Si pmtiles_params.json existe, injecter les zoom min/max dans le bash
@@ -158,6 +159,7 @@ jobs:
           # Optionnel : commiter aussi les rapports
           [ -f granulometry_report.md ] && git add granulometry_report.md || true
           [ -f landuse_report.md ] && git add landuse_report.md || true
+          [ -f street_furniture_report.md ] && git add street_furniture_report.md || true
           if git diff --cached --quiet; then
             echo "Pas de changements à commiter"
           else
@@ -174,6 +176,7 @@ jobs:
           cp -f sizepmtiles.md _site/ 2>/dev/null || true
           [ -f granulometry_report.md ] && cp granulometry_report.md _site/ || true
           [ -f landuse_report.md ] && cp landuse_report.md _site/ || true
+          [ -f street_furniture_report.md ] && cp street_furniture_report.md _site/ || true
           echo "Site prêt :"
           ls -lh _site/
 

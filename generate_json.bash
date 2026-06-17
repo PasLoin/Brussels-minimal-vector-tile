@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────
-# Extraction minimaliste — 11 couches essentielles
+# Extraction minimaliste — 14 couches essentielles
 # Pré-requis : osmium-tool, jq
 # ─────────────────────────────────────────────────────────
 set -euo pipefail
@@ -169,6 +169,40 @@ rm -f _tmp_landuse_all.osm.pbf _tmp_landuse_all.json
 extract boundaries \
   nwr/boundary=administrative
 
+# ── Mobilier urbain / micro-mapping (issue #51) ──────────
+# Géométrie native conservée — contrairement à poi.json, AUCUNE
+# conversion en points n'est appliquée ici : barrier=fence reste une
+# LineString (rendue en ligne dans build_map.py), tout le reste
+# (bench, bollard, gate, street_lamp, entrance...) reste un Point.
+# n/entrance=* : restreint aux nodes (usage quasi exclusif de ce tag).
+extract street_furniture \
+  nwr/amenity=bench,lounger,waste_basket,vending_machine \
+  nwr/barrier=bollard,gate,bus_trap,cycle_barrier,lift_gate,planter,fence \
+  nwr/highway=street_lamp \
+  n/entrance=*
+
+# ── Vérification de couverture street_furniture (issue #51) ──────
+# Même principe que la vérification landuse (issue #37) : extraction
+# élargie (valeurs déjà rendues + candidats du wiki OSM pas encore
+# configurés) pour que le rapport distingue "présent mais non rendu"
+# de "absent du pbf Bxl". Fichier temporaire uniquement — pas utilisé
+# pour le rendu (street_furniture.json ci-dessus reste limité aux tags
+# explicitement configurés dans map.config.yaml).
+echo "→ street_furniture coverage check (vs wiki + map.config.yaml)"
+osmium tags-filter "$SRC" \
+  nwr/amenity=bench,lounger,waste_basket,vending_machine,drinking_water,clock,bicycle_parking,shelter,give_box \
+  nwr/barrier=bollard,gate,bus_trap,cycle_barrier,lift_gate,planter,fence,kissing_gate,block,full-height_turnstile,swing_gate,stile \
+  nwr/highway=street_lamp \
+  n/entrance=* \
+  -o "_tmp_street_furniture_all.osm.pbf" --overwrite
+osmium export "_tmp_street_furniture_all.osm.pbf" -o "_tmp_street_furniture_all.json" --overwrite
+python3 check_street_furniture_coverage.py \
+  --all-json _tmp_street_furniture_all.json \
+  --config   map.config.yaml \
+  --report   street_furniture_report.md \
+  || echo "⚠  street_furniture coverage check en échec (non bloquant)"
+rm -f _tmp_street_furniture_all.osm.pbf _tmp_street_furniture_all.json
+
 # POI : extraction séparée avec --add-unique-id pour le dédoublonnage
 echo "→ poi"
 osmium tags-filter "$SRC" \
@@ -301,4 +335,4 @@ python3 extract_stib_routes.py
 rm -f _tmp_pt.osm.pbf _tmp_pt.osm
 echo "  $(wc -l < "public_transport.json") lignes"
 
-echo "✓ 13 couches extraites (+ buildings_detail.json pour zoom haut)"
+echo "✓ 14 couches extraites (+ buildings_detail.json pour zoom haut)"

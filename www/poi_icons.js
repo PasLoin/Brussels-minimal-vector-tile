@@ -12,7 +12,7 @@ export const ICON_SIZE = 20;
 // CDN bases
 export const LOCAL   = './assets/icons/';
 export const TEMAKI  = 'https://cdn.jsdelivr.net/npm/@ideditor/temaki@5/icons/';
-export const LIBERTY = 'https://raw.githubusercontent.com/maputnik/osm-liberty/gh-pages/icons/';
+export const LIBERTY = 'https://raw.githubusercontent.com/maputnik/osm-liberty/gh-pages/svgs/svgs_iconset/';
 export const MAKI    = 'https://cdn.jsdelivr.net/npm/@mapbox/maki/icons/';
 
 /**
@@ -113,22 +113,25 @@ export async function loadPoiIcon(map, poiType, localName, temakiName, makiName,
  *
  * Résultat :
  *   ["coalesce",
- *     // special cases
+ *     // special cases (valeur exacte, ex: cuisine=friture)
  *     ["case", ["==", ["get","cuisine"], "friture"], ["image","poi-cuisine-friture"], ["image",""]],
- *     // pour chaque type_key
+ *     // pour chaque type_key : la VALEUR du tag nomme l'icône
  *     ["image", ["concat", "poi-", ["get", "shop"]]],
  *     ["image", ["concat", "poi-", ["get", "amenity"]]],
+ *     // pour chaque presence_key : la CLÉ elle-même nomme l'icône,
+ *     // quelle que soit sa valeur (ex: entrance=yes/home/garage/... -> "entrance")
+ *     ["case", ["has", "entrance"], ["image", "poi-entrance"], ["image", ""]],
  *     // fallback
  *     ["case", ["has","shop"], ["image","poi-shop"], ["image",""]]
  *   ]
  *
- * @param {object} meta - Objet { type_keys: string[], special_cases: Array }
+ * @param {object} meta - Objet { type_keys: string[], presence_keys: string[], special_cases: Array }
  * @returns {Array} Expression MapLibre GL
  */
 export function buildIconImageExpression(meta) {
   const expr = ['coalesce'];
 
-  // 1. Special cases (cuisine=friture, etc.)
+  // 1. Special cases (cuisine=friture, vending=parking_tickets, door=hinged, etc.)
   for (const sc of (meta.special_cases || [])) {
     expr.push([
       'case',
@@ -138,12 +141,24 @@ export function buildIconImageExpression(meta) {
     ]);
   }
 
-  // 2. Chaque type_key détecté dans les données
+  // 2. Chaque type_key détecté dans les données (icône nommée par la VALEUR)
   for (const key of (meta.type_keys || [])) {
     expr.push(['image', ['concat', 'poi-', ['get', key]]]);
   }
 
-  // 3. Fallback : icône générique "shop"
+  // 3. Chaque presence_key détectée (icône nommée par la CLÉ elle-même,
+  //    issue #51 — entrance=* a des valeurs trop hétérogènes pour mériter
+  //    une icône par valeur).
+  for (const key of (meta.presence_keys || [])) {
+    expr.push([
+      'case',
+      ['has', key],
+      ['image', 'poi-' + key],
+      ['image', '']
+    ]);
+  }
+
+  // 4. Fallback : icône générique "shop"
   expr.push([
     'case',
     ['has', 'shop'],
@@ -227,10 +242,14 @@ export async function loadAllPoiIcons(map) {
   const meta = data._meta || { type_keys: [], special_cases: [] };
   delete data._meta;
 
-  // Patcher l'expression icon-image du layer poi-icon
+  // Patcher l'expression icon-image des layers symbol concernés.
+  // street-furniture-icon (issue #51) suit exactement le même mécanisme
+  // générique que poi-icon/leisure-icon : aucune icône n'est codée en dur
+  // ici, tout vient de _meta (type_keys/presence_keys/special_cases).
   const iconImageExpr = buildIconImageExpression(meta);
-  map.setLayoutProperty('poi-icon', 'icon-image', iconImageExpr);
-  if (map.getLayer('leisure-icon')) map.setLayoutProperty('leisure-icon', 'icon-image', iconImageExpr);
+  for (const layerId of ['poi-icon', 'leisure-icon', 'street-furniture-icon']) {
+    if (map.getLayer(layerId)) map.setLayoutProperty(layerId, 'icon-image', iconImageExpr);
+  }
   console.log('POI icon-image expression built from _meta.type_keys:', meta.type_keys);
 
   // Charger les icônes SVG

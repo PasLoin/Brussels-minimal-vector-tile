@@ -29,6 +29,7 @@ declare -A MAX_ZOOM=(
   [cycleway]=18
   [railway]=18
   [public_transport]=16
+  [street_furniture]=18
 )
 
 # simplification par couche
@@ -45,6 +46,7 @@ declare -A SIMPLIFICATION=(
   [cycleway]=10
   [railway]=10
   [public_transport]=10
+  [street_furniture]=10
 )
 
 REPORT_FILE="sizepmtiles.md"
@@ -56,7 +58,7 @@ TOTAL_OUTPUT=0
 TOTAL_SIZE=0
 
 # ── Couches standard (tout sauf buildings) ───────────────
-for layer in landuse roads water green trees leisure boundaries poi pedestrian cycleway railway public_transport; do
+for layer in landuse roads water green trees leisure boundaries poi pedestrian cycleway railway public_transport street_furniture; do
   echo "→ ${layer} (z10-${MAX_ZOOM[$layer]})"
   
   if [ -f "${layer}.json" ]; then
