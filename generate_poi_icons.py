@@ -15,7 +15,7 @@ un nouveau type dans generate_json.bash.
 
 Usage :
   python3 generate_poi_icons.py                     # depuis la racine du projet
-  python3 generate_poi_icons.py --poi-json poi.json # chemin explicite
+  python3 generate_poi_icons.py --poi-json poi.json street_furniture.json
 """
 
 import argparse
@@ -33,7 +33,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 LOCAL_DIR   = os.path.join('www', 'assets', 'icons')
 TEMAKI_URL  = 'https://cdn.jsdelivr.net/npm/@ideditor/temaki@5/icons/{}.svg'
 MAKI_URL    = 'https://cdn.jsdelivr.net/npm/@mapbox/maki/icons/{}.svg'
-LIBERTY_URL = 'https://raw.githubusercontent.com/maputnik/osm-liberty/gh-pages/icons/{}.svg'
+LIBERTY_URL = 'https://raw.githubusercontent.com/maputnik/osm-liberty/gh-pages/svgs/svgs_iconset/{}.svg'
 
 # ═══════════════════════════════════════════════════════════
 # Tag-keys OSM qui représentent un « type » de POI.
@@ -46,6 +46,11 @@ OSM_TYPE_KEYS = {
     'healthcare', 'historic', 'emergency', 'club', 'man_made',
     'natural', 'aeroway', 'military', 'telecom', 'advertising',
     'industrial', 'gambling',
+    # issue #51 — mobilier urbain : barrier=bollard/gate/fence/...,
+    # highway=street_lamp. street_furniture.json est le seul fichier
+    # qui contient ces clés, donc aucun risque de collision avec
+    # highway=residential/primary/... de roads.json (jamais scanné ici).
+    'barrier', 'highway',
 }
 
 # ═══════════════════════════════════════════════════════════
@@ -56,8 +61,11 @@ OSM_TYPE_KEYS = {
 # religion-muslim).  Il suffit de déposer l'icône SVG dans
 # www/assets/icons/ avec le nom {key}_{value}.svg
 # (ex: cuisine_friture.svg, religion_muslim.svg).
+#
+# vending  : raffine amenity=vending_machine (ex: vending-parking_tickets)
+# door     : raffine entrance=* (ex: door-hinged) — issue #51
 # ═══════════════════════════════════════════════════════════
-SUB_TYPE_KEYS = {'cuisine', 'religion'}
+SUB_TYPE_KEYS = {'cuisine', 'religion', 'vending', 'door'}
 
 # ═══════════════════════════════════════════════════════════
 # Mapping OSM tag value → CDN icon name quand ils diffèrent
@@ -96,6 +104,26 @@ CDN_NAME_OVERRIDES = {
     'books':             {'temaki': 'books', 'maki': None, 'liberty': 'library'},
     # special
     'cuisine-friture':   {'local': 'cuisine_friture', 'temaki': None, 'maki': None, 'liberty': None},
+
+    # ── issue #51 : mobilier urbain ───────────────────────────────
+    # barrier — bollard/gate/cycle_barrier/lift_gate ont déjà un nom
+    # Temaki identique au tag OSM (pas d'override nécessaire) ; ceux
+    # sans icône dédiée retombent sur le pictogramme générique Maki
+    # "barrier".
+    'bus_trap':          {'maki': 'barrier'},
+    'planter':           {'maki': 'barrier'},
+    'lift_gate':         {'maki': 'lift-gate'},
+    # amenity
+    'waste_basket':      {'maki': 'waste-basket'},
+    # highway=street_lamp : pas d'icône "street_lamp" nue dans Temaki,
+    # seulement la variante murale "street_lamp_arm".
+    'street_lamp':       {'temaki': 'street_lamp_arm'},
+    # vending=* (raffinement de amenity=vending_machine)
+    'vending-parking_tickets':            {'temaki': 'vending_tickets'},
+    'vending-public_transport_tickets':   {'temaki': 'vending_tickets'},
+    'vending-newspapers':                 {'temaki': 'vending_newspaper'},
+    'vending-condoms':                    {'temaki': 'vending_love'},
+    'vending-excrement_bags':             {'temaki': 'vending_pet_waste'},
 }
 
 
@@ -157,48 +185,78 @@ def resolve_icon(poi_type):
     return poi_type, [local, temaki, maki, liberty]
 
 
-def extract_poi_types(poi_json_path):
+# ═══════════════════════════════════════════════════════════
+# Clés "présence" (issue #51) : contrairement à OSM_TYPE_KEYS (où
+# c'est la VALEUR du tag qui nomme l'icône, ex: amenity=bench -> icône
+# "bench"), ces clés ont des valeurs bien trop hétérogènes/incohérentes
+# pour mériter une icône par valeur (entrance=yes/home/garage/main/
+# service/exit/emergency/secondary/staircase/office/door/parking/
+# restaurant... cf. issue #51). Le TYPE est ici la clé elle-même : dès
+# que la clé est présente, l'icône est unique ("poi-entrance"), quelle
+# que soit la valeur. door=* (dans SUB_TYPE_KEYS) reste le seul axe de
+# raffinement (porte battante/coulissante/...).
+# ═══════════════════════════════════════════════════════════
+PRESENCE_TYPE_KEYS = {'entrance'}
+
+
+def extract_poi_types(poi_json_paths):
     """
-    Lit poi.json et retourne :
-      - types : Counter { type_name: count }
-      - detected_keys : set des tag-keys OSM effectivement trouvés
+    Lit un ou plusieurs fichiers GeoJSON (poi.json, street_furniture.json...)
+    et retourne :
+      - types : Counter { type_name: count }       (fusion de tous les fichiers)
+      - detected_keys : set des tag-keys OSM_TYPE_KEYS effectivement trouvés
+      - presence_keys : set des PRESENCE_TYPE_KEYS effectivement trouvées
       - sub_types : dict { icon_key: {key, value} } pour les sous-types détectés
-    Auto-détecte les keys depuis OSM_TYPE_KEYS et SUB_TYPE_KEYS.
+    Auto-détecte les keys depuis OSM_TYPE_KEYS, SUB_TYPE_KEYS et
+    PRESENCE_TYPE_KEYS.
     """
+    if isinstance(poi_json_paths, (str, os.PathLike)):
+        poi_json_paths = [poi_json_paths]
+
     types = Counter()
     detected_keys = set()
+    presence_keys = set()
     sub_types = {}  # 'cuisine-friture' → {'key': 'cuisine', 'value': 'friture'}
 
-    with open(poi_json_path) as f:
-        data = json.load(f)
+    for poi_json_path in poi_json_paths:
+        with open(poi_json_path) as f:
+            data = json.load(f)
 
-    features = data.get('features', [])
-    for feat in features:
-        props = feat.get('properties', {})
+        features = data.get('features', [])
+        for feat in features:
+            props = feat.get('properties', {})
 
-        # Sous-types auto-détectés (cuisine, religion, denomination…)
-        for key in SUB_TYPE_KEYS:
-            val = props.get(key)
-            if val and isinstance(val, str) and val.strip():
-                val = val.strip()
-                icon_key = f'{key}-{val}'
-                types[icon_key] += 1
-                sub_types[icon_key] = {'key': key, 'value': val}
+            # Sous-types auto-détectés (cuisine, religion, vending, door…)
+            for key in SUB_TYPE_KEYS:
+                val = props.get(key)
+                if val and isinstance(val, str) and val.strip():
+                    val = val.strip()
+                    icon_key = f'{key}-{val}'
+                    types[icon_key] += 1
+                    sub_types[icon_key] = {'key': key, 'value': val}
 
-        # Type keys principaux
-        for key in OSM_TYPE_KEYS:
-            val = props.get(key)
-            if val and isinstance(val, str) and val.strip():
-                types[val.strip()] += 1
-                detected_keys.add(key)
+            # Clés "présence" (entrance=*) : type synthétique = la clé
+            # elle-même, peu importe la valeur.
+            for key in PRESENCE_TYPE_KEYS:
+                if props.get(key):
+                    types[key] += 1
+                    presence_keys.add(key)
 
-    return types, detected_keys, sub_types
+            # Type keys principaux (la VALEUR nomme l'icône)
+            for key in OSM_TYPE_KEYS:
+                val = props.get(key)
+                if val and isinstance(val, str) and val.strip():
+                    types[val.strip()] += 1
+                    detected_keys.add(key)
+
+    return types, detected_keys, presence_keys, sub_types
 
 
 def main():
     parser = argparse.ArgumentParser(description='Génère poi-icons.json et missing-icons.txt')
-    parser.add_argument('--poi-json', default='poi.json',
-                        help='Chemin vers poi.json (défaut: poi.json)')
+    parser.add_argument('--poi-json', nargs='+', default=['poi.json'],
+                        help='Chemin(s) vers les GeoJSON à scanner, ex: '
+                             'poi.json street_furniture.json (défaut: poi.json)')
     parser.add_argument('--output', default=os.path.join('www', 'poi-icons.json'),
                         help='Chemin de sortie JSON (défaut: www/poi-icons.json)')
     parser.add_argument('--missing', default='missing-icons.txt',
@@ -207,15 +265,19 @@ def main():
                         help='Nombre de threads pour les vérifications CDN (défaut: 10)')
     args = parser.parse_args()
 
-    if not os.path.isfile(args.poi_json):
-        print(f'✗ {args.poi_json} introuvable. Lancez d\'abord generate_json.bash', file=sys.stderr)
+    missing_inputs = [p for p in args.poi_json if not os.path.isfile(p)]
+    if missing_inputs:
+        print(f'✗ introuvable : {", ".join(missing_inputs)}. '
+              f'Lancez d\'abord generate_json.bash', file=sys.stderr)
         sys.exit(1)
 
     # ── 1. Extraire les types POI ──────────────────────────
-    print(f'→ Lecture de {args.poi_json}...')
-    poi_types, detected_keys, sub_types = extract_poi_types(args.poi_json)
+    print(f'→ Lecture de {", ".join(args.poi_json)}...')
+    poi_types, detected_keys, presence_keys, sub_types = extract_poi_types(args.poi_json)
     print(f'  {len(poi_types)} types POI trouvés ({sum(poi_types.values())} features)')
     print(f'  Tag-keys détectés : {", ".join(sorted(detected_keys))}')
+    if presence_keys:
+        print(f'  Clés "présence" détectées : {", ".join(sorted(presence_keys))}')
     if sub_types:
         print(f'  Sous-types détectés : {len(sub_types)} ({", ".join(sorted(SUB_TYPE_KEYS & {st["key"] for st in sub_types.values()}))})')
 
@@ -250,6 +312,7 @@ def main():
     output = {
         '_meta': {
             'type_keys': sorted(detected_keys),
+            'presence_keys': sorted(presence_keys),
             'special_cases': special_cases,
         },
     }
