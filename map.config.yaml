@@ -193,3 +193,32 @@ layers:
     color: "#734a08"
     appear_at: 14
     labels_at: 15
+
+  # Mobilier urbain / micro-mapping (issue #51) : bench, bollard,
+  # street lamp, entrance, doors, barriers, waste baskets, vending
+  # machines... Tags très denses (qq dizaines de milliers de nœuds
+  # sur Bxl) -> réservé au zoom maximum (z18), pmtiles séparé.
+  street_furniture:
+    label: Mobilier urbain
+    color: "#555555"
+    appear_at: 17
+    subtypes:
+      # amenity
+      bench: { tag: amenity }
+      lounger: { tag: amenity }
+      waste_basket: { tag: amenity }
+      vending_machine: { tag: amenity }
+      # barrier
+      bollard: { tag: barrier }
+      gate: { tag: barrier }
+      bus_trap: { tag: barrier }
+      cycle_barrier: { tag: barrier }
+      lift_gate: { tag: barrier }
+      planter: { tag: barrier }
+      fence: { tag: barrier, color: "#9c9c9c" }
+      # highway
+      street_lamp: { tag: highway }
+      # entrance=* : rendu uniforme par clé (toute valeur), cf.
+      # build_map.py — door=* affine seulement l'icône (comme
+      # cuisine=*/religion=* pour les POI), pas une couche à part.
+      entrance: { tag: entrance }
