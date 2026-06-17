@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <!-- foliage: three overlapping circles forming a small bush -->
+  <circle cx="9"  cy="6.5" r="3"   fill="currentColor"/>
+  <circle cx="15" cy="6.5" r="3"   fill="currentColor"/>
+  <circle cx="12" cy="4.3" r="3.4" fill="currentColor"/>
+  <!-- stem -->
+  <rect x="11" y="8.5" width="2" height="3.5" fill="currentColor"/>
+  <!-- pot rim -->
+  <rect x="6" y="11" width="12" height="2" rx="0.6" fill="currentColor"/>
+  <!-- pot body (trapezoid, narrower at the base) -->
+  <path d="M7.2 13 L16.8 13 L15 21 L9 21 Z" fill="currentColor"/>
+</svg>
