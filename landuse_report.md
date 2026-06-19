@@ -26,7 +26,7 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.landus
 
 | landuse | features |
 | :--- | ---: |
-| `residential` | 2375 |
+| `residential` | 2387 |
 | `commercial` | 447 |
 | `construction` | 337 |
 | `industrial` | 315 |

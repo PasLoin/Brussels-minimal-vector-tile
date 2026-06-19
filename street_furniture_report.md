@@ -28,12 +28,12 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.street
 
 | tag | valeur | features |
 | :--- | :--- | ---: |
-| `highway` | `street_lamp` | 10193 |
+| `highway` | `street_lamp` | 10194 |
 | `amenity` | `bench` | 7530 |
-| `barrier` | `bollard` | 7327 |
+| `barrier` | `bollard` | 7333 |
 | `amenity` | `waste_basket` | 6820 |
-| `barrier` | `fence` | 4525 |
-| `barrier` | `gate` | 3367 |
+| `barrier` | `fence` | 4536 |
+| `barrier` | `gate` | 3375 |
 | `amenity` | `vending_machine` | 1801 |
 | `barrier` | `lift_gate` | 840 |
 | `barrier` | `cycle_barrier` | 131 |
