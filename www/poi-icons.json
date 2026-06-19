@@ -30,6 +30,26 @@
         "icon_key": "cuisine-friture"
       },
       {
+        "key": "door",
+        "value": "overhead",
+        "icon_key": "door-overhead"
+      },
+      {
+        "key": "door",
+        "value": "revolving",
+        "icon_key": "door-revolving"
+      },
+      {
+        "key": "door",
+        "value": "sliding",
+        "icon_key": "door-sliding"
+      },
+      {
+        "key": "religion",
+        "value": "buddhist",
+        "icon_key": "religion-buddhist"
+      },
+      {
         "key": "religion",
         "value": "muslim",
         "icon_key": "religion-muslim"
@@ -344,7 +364,7 @@
     null
   ],
   "bus_trap": [
-    null,
+    "bus_trap",
     null,
     "barrier",
     null
@@ -3158,19 +3178,19 @@
     null
   ],
   "door-overhead": [
-    null,
+    "door_overhead",
     null,
     null,
     null
   ],
   "door-revolving": [
-    null,
+    "door_revolving",
     null,
     null,
     null
   ],
   "door-sliding": [
-    null,
+    "door_sliding",
     null,
     null,
     null
@@ -3284,7 +3304,7 @@
     null
   ],
   "entrance": [
-    null,
+    "entrance",
     null,
     "entrance",
     "entrance"
@@ -4166,7 +4186,7 @@
     null
   ],
   "planter": [
-    null,
+    "planter",
     null,
     "barrier",
     null
@@ -4292,7 +4312,7 @@
     null
   ],
   "religion-buddhist": [
-    null,
+    "religion-buddhist",
     null,
     null,
     null
@@ -4838,7 +4858,7 @@
     null
   ],
   "vending-condoms": [
-    null,
+    "vending_condoms",
     "vending_love",
     null,
     null

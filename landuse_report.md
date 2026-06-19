@@ -13,7 +13,7 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.landus
 
 | landuse | features |
 | :--- | ---: |
-| `plant_nursery` | 28 |
+| `plant_nursery` | 32 |
 | `orchard` | 24 |
 | `traffic_island` | 10 |
 | `animal_keeping` | 6 |
@@ -26,7 +26,7 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.landus
 
 | landuse | features |
 | :--- | ---: |
-| `residential` | 2314 |
+| `residential` | 2375 |
 | `commercial` | 447 |
 | `construction` | 337 |
 | `industrial` | 315 |
@@ -51,10 +51,10 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.landus
 
 | landuse | features | couche |
 | :--- | ---: | :--- |
-| `grass` | 8928 | green (green.json) |
+| `grass` | 8982 | green (green.json) |
 | `forest` | 881 | green (green.json, via natural=wood + landuse=forest) |
 | `flowerbed` | 541 | green (green.json) |
-| `meadow` | 497 | green (green.json) |
+| `meadow` | 495 | green (green.json) |
 | `basin` | 2 | water (water.json) |
 
 ## · Sans donnée dans le pbf Bxl

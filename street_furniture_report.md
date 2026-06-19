@@ -13,9 +13,9 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.street
 
 | tag | valeur | features |
 | :--- | :--- | ---: |
-| `amenity` | `bicycle_parking` | 7614 |
-| `amenity` | `shelter` | 3664 |
-| `barrier` | `block` | 266 |
+| `amenity` | `bicycle_parking` | 7615 |
+| `amenity` | `shelter` | 3666 |
+| `barrier` | `block` | 295 |
 | `amenity` | `drinking_water` | 155 |
 | `barrier` | `swing_gate` | 65 |
 | `amenity` | `clock` | 43 |
@@ -28,12 +28,12 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.street
 
 | tag | valeur | features |
 | :--- | :--- | ---: |
-| `highway` | `street_lamp` | 10128 |
-| `amenity` | `bench` | 7525 |
-| `barrier` | `bollard` | 7276 |
+| `highway` | `street_lamp` | 10193 |
+| `amenity` | `bench` | 7530 |
+| `barrier` | `bollard` | 7327 |
 | `amenity` | `waste_basket` | 6820 |
-| `barrier` | `fence` | 4521 |
-| `barrier` | `gate` | 3356 |
+| `barrier` | `fence` | 4525 |
+| `barrier` | `gate` | 3367 |
 | `amenity` | `vending_machine` | 1801 |
 | `barrier` | `lift_gate` | 840 |
 | `barrier` | `cycle_barrier` | 131 |
