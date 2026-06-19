@@ -64,6 +64,12 @@ OSM_TYPE_KEYS = {
 #
 # vending  : raffine amenity=vending_machine (ex: vending-parking_tickets)
 # door     : raffine entrance=* (ex: door-hinged) — issue #51
+#
+# Note issue #56 : ces clés peuvent porter des valeurs multiples
+# séparées par des points-virgules dans OSM (ex: cuisine=french;italian).
+# La normalisation principale se fait dans generate_json.bash (POI_POINTS),
+# mais extract_poi_types applique aussi un split défensif pour rester
+# robuste face à des GeoJSON non normalisés.
 # ═══════════════════════════════════════════════════════════
 SUB_TYPE_KEYS = {'cuisine', 'religion', 'vending', 'door'}
 
@@ -230,7 +236,14 @@ def extract_poi_types(poi_json_paths):
             for key in SUB_TYPE_KEYS:
                 val = props.get(key)
                 if val and isinstance(val, str) and val.strip():
-                    val = val.strip()
+                    # issue #56 : garde seulement la première valeur en cas
+                    # de liste OSM séparée par des points-virgules
+                    # (ex: "french;italian" → "french"). La normalisation
+                    # principale est dans generate_json.bash (POI_POINTS) ;
+                    # ce split est une sécurité pour les GeoJSON non normalisés.
+                    val = val.split(';')[0].strip()
+                    if not val:
+                        continue
                     icon_key = f'{key}-{val}'
                     types[icon_key] += 1
                     sub_types[icon_key] = {'key': key, 'value': val}
