@@ -26,9 +26,9 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.landus
 
 | landuse | features |
 | :--- | ---: |
-| `residential` | 2387 |
+| `residential` | 2260 |
 | `commercial` | 447 |
-| `construction` | 337 |
+| `construction` | 345 |
 | `industrial` | 315 |
 | `allotments` | 290 |
 | `farmland` | 240 |
@@ -39,7 +39,7 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.landus
 | `retail` | 100 |
 | `recreation_ground` | 66 |
 | `cemetery` | 64 |
-| `education` | 48 |
+| `education` | 54 |
 | `farmyard` | 46 |
 | `greenfield` | 44 |
 | `military` | 8 |
@@ -51,7 +51,7 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.landus
 
 | landuse | features | couche |
 | :--- | ---: | :--- |
-| `grass` | 8982 | green (green.json) |
+| `grass` | 9068 | green (green.json) |
 | `forest` | 881 | green (green.json, via natural=wood + landuse=forest) |
 | `flowerbed` | 541 | green (green.json) |
 | `meadow` | 495 | green (green.json) |
