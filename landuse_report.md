@@ -3,7 +3,7 @@
 Comparaison entre les `landuse=*` présents dans l'extrait Bruxelles et ceux rendus par `map.config.yaml` (cf. issue #37).
 
 - ✓ rendus : 20
-- ⚠ manquants (présents mais sans style) : 8
+- ⚠ manquants (présents mais sans style) : 9
 - ↪ gérés par une autre couche : 5
 - · sans donnée dans le pbf Bxl : 7
 
@@ -21,18 +21,19 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.landus
 | `vineyard` | 6 |
 | `greenhouse_horticulture` | 4 |
 | `institutional` | 4 |
+| `shrubs` | 4 |
 
 ## ✓ Rendus
 
 | landuse | features |
 | :--- | ---: |
-| `residential` | 2260 |
-| `commercial` | 447 |
-| `construction` | 345 |
+| `residential` | 2264 |
+| `commercial` | 450 |
+| `construction` | 339 |
 | `industrial` | 315 |
-| `allotments` | 290 |
-| `farmland` | 240 |
-| `railway` | 164 |
+| `allotments` | 288 |
+| `farmland` | 242 |
+| `railway` | 165 |
 | `village_green` | 158 |
 | `garages` | 126 |
 | `brownfield` | 113 |
@@ -51,9 +52,9 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.landus
 
 | landuse | features | couche |
 | :--- | ---: | :--- |
-| `grass` | 9068 | green (green.json) |
-| `forest` | 881 | green (green.json, via natural=wood + landuse=forest) |
-| `flowerbed` | 541 | green (green.json) |
+| `grass` | 9382 | green (green.json) |
+| `forest` | 879 | green (green.json, via natural=wood + landuse=forest) |
+| `flowerbed` | 553 | green (green.json) |
 | `meadow` | 495 | green (green.json) |
 | `basin` | 2 | water (water.json) |
 

@@ -345,12 +345,6 @@
     null,
     null
   ],
-  "builder": [
-    null,
-    null,
-    null,
-    null
-  ],
   "building": [
     null,
     null,
@@ -742,12 +736,6 @@
     null
   ],
   "cuisine-british": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "cuisine-brownie": [
     null,
     null,
     null,
@@ -2211,6 +2199,12 @@
     null,
     null
   ],
+  "hvac": [
+    null,
+    null,
+    null,
+    null
+  ],
   "ice_cream": [
     null,
     null,
@@ -2362,6 +2356,12 @@
     null
   ],
   "logistics": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "lottery": [
     null,
     null,
     null,
@@ -3536,6 +3536,12 @@
     "water",
     "water",
     "water"
+  ],
+  "water_filter": [
+    null,
+    null,
+    null,
+    null
   ],
   "wayside_shrine": [
     null,
