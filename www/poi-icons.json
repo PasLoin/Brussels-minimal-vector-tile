@@ -615,12 +615,6 @@
     null,
     null
   ],
-  "crossing": [
-    null,
-    null,
-    null,
-    null
-  ],
   "cuisine-afghan": [
     null,
     null,
@@ -682,6 +676,12 @@
     null
   ],
   "cuisine-baklawa": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-balkan": [
     null,
     null,
     null,
@@ -1785,6 +1785,12 @@
     null,
     null
   ],
+  "electronics_repair;data_recovery": [
+    null,
+    null,
+    null,
+    null
+  ],
   "elevator": [
     null,
     "elevator",
@@ -2236,6 +2242,12 @@
     null
   ],
   "ironingshop": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "it": [
     null,
     null,
     null,

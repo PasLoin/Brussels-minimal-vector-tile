@@ -3,7 +3,7 @@
 Comparaison entre les `landuse=*` présents dans l'extrait Bruxelles et ceux rendus par `map.config.yaml` (cf. issue #37).
 
 - ✓ rendus : 20
-- ⚠ manquants (présents mais sans style) : 9
+- ⚠ manquants (présents mais sans style) : 10
 - ↪ gérés par une autre couche : 5
 - · sans donnée dans le pbf Bxl : 7
 
@@ -14,35 +14,36 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.landus
 | landuse | features |
 | :--- | ---: |
 | `plant_nursery` | 32 |
-| `orchard` | 24 |
+| `orchard` | 26 |
 | `traffic_island` | 10 |
 | `animal_keeping` | 6 |
 | `greenery` | 6 |
+| `institutional` | 6 |
 | `vineyard` | 6 |
 | `greenhouse_horticulture` | 4 |
-| `institutional` | 4 |
 | `shrubs` | 4 |
+| `parking` | 2 |
 
 ## ✓ Rendus
 
 | landuse | features |
 | :--- | ---: |
-| `residential` | 2264 |
-| `commercial` | 450 |
-| `construction` | 339 |
+| `residential` | 2299 |
+| `commercial` | 452 |
+| `construction` | 337 |
 | `industrial` | 315 |
 | `allotments` | 288 |
 | `farmland` | 242 |
-| `railway` | 165 |
+| `railway` | 189 |
 | `village_green` | 158 |
 | `garages` | 126 |
-| `brownfield` | 113 |
+| `brownfield` | 117 |
 | `retail` | 100 |
 | `recreation_ground` | 66 |
 | `cemetery` | 64 |
 | `education` | 54 |
 | `farmyard` | 46 |
-| `greenfield` | 44 |
+| `greenfield` | 46 |
 | `military` | 8 |
 | `landfill` | 4 |
 | `quarry` | 4 |
@@ -52,10 +53,10 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.landus
 
 | landuse | features | couche |
 | :--- | ---: | :--- |
-| `grass` | 9382 | green (green.json) |
-| `forest` | 879 | green (green.json, via natural=wood + landuse=forest) |
-| `flowerbed` | 553 | green (green.json) |
-| `meadow` | 495 | green (green.json) |
+| `grass` | 9505 | green (green.json) |
+| `forest` | 884 | green (green.json, via natural=wood + landuse=forest) |
+| `flowerbed` | 555 | green (green.json) |
+| `meadow` | 501 | green (green.json) |
 | `basin` | 2 | water (water.json) |
 
 ## · Sans donnée dans le pbf Bxl

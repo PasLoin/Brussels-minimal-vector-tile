@@ -5,7 +5,7 @@ Comparaison entre les tags `amenity=*` / `barrier=*` / `highway=street_lamp` pr�
 - ✓ rendus : 12
 - ⚠ manquants (présents mais sans style) : 10
 - · sans donnée dans le pbf Bxl : 0
-- `entrance=*` (toutes valeurs confondues) : 12253 features — rendu (rendu uniforme par clé, pas par valeur)
+- `entrance=*` (toutes valeurs confondues) : 12311 features — rendu (rendu uniforme par clé, pas par valeur)
 
 ## ⚠ Présents dans Bxl mais non rendus
 
@@ -13,10 +13,10 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.street
 
 | tag | valeur | features |
 | :--- | :--- | ---: |
-| `amenity` | `bicycle_parking` | 7634 |
-| `amenity` | `shelter` | 3668 |
-| `barrier` | `block` | 299 |
-| `amenity` | `drinking_water` | 177 |
+| `amenity` | `bicycle_parking` | 7638 |
+| `amenity` | `shelter` | 3664 |
+| `barrier` | `block` | 296 |
+| `amenity` | `drinking_water` | 176 |
 | `barrier` | `swing_gate` | 65 |
 | `amenity` | `clock` | 44 |
 | `barrier` | `full-height_turnstile` | 27 |
@@ -28,16 +28,16 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.street
 
 | tag | valeur | features |
 | :--- | :--- | ---: |
-| `highway` | `street_lamp` | 10226 |
-| `amenity` | `bench` | 7640 |
-| `barrier` | `bollard` | 7344 |
-| `amenity` | `waste_basket` | 6844 |
-| `barrier` | `fence` | 4569 |
-| `barrier` | `gate` | 3419 |
-| `amenity` | `vending_machine` | 1802 |
-| `barrier` | `lift_gate` | 842 |
+| `highway` | `street_lamp` | 10228 |
+| `amenity` | `bench` | 7758 |
+| `barrier` | `bollard` | 7348 |
+| `amenity` | `waste_basket` | 6875 |
+| `barrier` | `fence` | 4603 |
+| `barrier` | `gate` | 3466 |
+| `amenity` | `vending_machine` | 1805 |
+| `barrier` | `lift_gate` | 845 |
 | `barrier` | `cycle_barrier` | 132 |
-| `barrier` | `planter` | 72 |
+| `barrier` | `planter` | 73 |
 | `amenity` | `lounger` | 42 |
 | `barrier` | `bus_trap` | 15 |
 
@@ -47,9 +47,9 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.street
 
 | vending | features |
 | :--- | ---: |
-| `parking_tickets` | 1442 |
-| `public_transport_tickets` | 229 |
-| `excrement_bags` | 62 |
+| `parking_tickets` | 1443 |
+| `public_transport_tickets` | 230 |
+| `excrement_bags` | 63 |
 | `newspapers` | 18 |
 | `coffee` | 15 |
 | `condoms` | 6 |
