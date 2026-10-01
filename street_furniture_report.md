@@ -5,7 +5,7 @@ Comparaison entre les tags `amenity=*` / `barrier=*` / `highway=street_lamp` pr�
 - ✓ rendus : 12
 - ⚠ manquants (présents mais sans style) : 10
 - · sans donnée dans le pbf Bxl : 0
-- `entrance=*` (toutes valeurs confondues) : 12311 features — rendu (rendu uniforme par clé, pas par valeur)
+- `entrance=*` (toutes valeurs confondues) : 12393 features — rendu (rendu uniforme par clé, pas par valeur)
 
 ## ⚠ Présents dans Bxl mais non rendus
 
@@ -13,12 +13,12 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.street
 
 | tag | valeur | features |
 | :--- | :--- | ---: |
-| `amenity` | `bicycle_parking` | 7638 |
-| `amenity` | `shelter` | 3664 |
+| `amenity` | `bicycle_parking` | 7646 |
+| `amenity` | `shelter` | 3683 |
 | `barrier` | `block` | 296 |
-| `amenity` | `drinking_water` | 176 |
+| `amenity` | `drinking_water` | 180 |
 | `barrier` | `swing_gate` | 65 |
-| `amenity` | `clock` | 44 |
+| `amenity` | `clock` | 51 |
 | `barrier` | `full-height_turnstile` | 27 |
 | `barrier` | `stile` | 20 |
 | `barrier` | `kissing_gate` | 5 |
@@ -28,17 +28,17 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.street
 
 | tag | valeur | features |
 | :--- | :--- | ---: |
-| `highway` | `street_lamp` | 10228 |
-| `amenity` | `bench` | 7758 |
-| `barrier` | `bollard` | 7348 |
-| `amenity` | `waste_basket` | 6875 |
-| `barrier` | `fence` | 4603 |
-| `barrier` | `gate` | 3466 |
-| `amenity` | `vending_machine` | 1805 |
-| `barrier` | `lift_gate` | 845 |
+| `highway` | `street_lamp` | 10240 |
+| `amenity` | `bench` | 7780 |
+| `barrier` | `bollard` | 7462 |
+| `amenity` | `waste_basket` | 6880 |
+| `barrier` | `fence` | 4612 |
+| `barrier` | `gate` | 3481 |
+| `amenity` | `vending_machine` | 1807 |
+| `barrier` | `lift_gate` | 846 |
 | `barrier` | `cycle_barrier` | 132 |
 | `barrier` | `planter` | 73 |
-| `amenity` | `lounger` | 42 |
+| `amenity` | `lounger` | 48 |
 | `barrier` | `bus_trap` | 15 |
 
 ## Sous-types `vending=*` (raffinement d'icône)
@@ -47,15 +47,14 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.street
 
 | vending | features |
 | :--- | ---: |
-| `parking_tickets` | 1443 |
-| `public_transport_tickets` | 230 |
+| `parking_tickets` | 1445 |
+| `public_transport_tickets` | 231 |
 | `excrement_bags` | 63 |
 | `newspapers` | 18 |
 | `coffee` | 15 |
 | `condoms` | 6 |
 | `admission_tickets` | 3 |
 | `drinks` | 2 |
-| `sun_cream` | 2 |
 | `sweets` | 1 |
 | `candles` | 1 |
 | `snacks` | 1 |
@@ -65,6 +64,7 @@ Ces valeurs existent dans le pbf mais n'ont pas de sous-type dans `layers.street
 | `milk` | 1 |
 | `chemist` | 1 |
 | `souvenirs` | 1 |
+| `sun_cream` | 1 |
 | `food` | 1 |
 | `drinks;food` | 1 |
 | `meat` | 1 |

@@ -565,7 +565,7 @@
     null,
     null,
     "confectionery",
-    null
+    "confectionery"
   ],
   "conference_centre": [
     null,
@@ -577,7 +577,7 @@
     null,
     null,
     "grocery",
-    null
+    "convenience"
   ],
   "copyshop": [
     "copyshop",
@@ -664,6 +664,12 @@
     null
   ],
   "cuisine-asian": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "cuisine-azerbaijani": [
     null,
     null,
     null,
@@ -1317,6 +1323,12 @@
     null,
     null
   ],
+  "cuisine-snack": [
+    null,
+    null,
+    null,
+    null
+  ],
   "cuisine-soup": [
     null,
     null,
@@ -1495,7 +1507,7 @@
     null,
     null,
     "defibrillator",
-    null
+    "defibrillator"
   ],
   "deli": [
     null,
@@ -1555,7 +1567,7 @@
     null,
     null,
     null,
-    null
+    "hardware"
   ],
   "door-1": [
     null,
@@ -1689,6 +1701,12 @@
     null,
     null
   ],
+  "door-sealed": [
+    null,
+    null,
+    null,
+    null
+  ],
   "door-sliding": [
     "door_sliding",
     null,
@@ -1795,7 +1813,7 @@
     null,
     "elevator",
     "elevator",
-    null
+    "elevator"
   ],
   "embankment": [
     null,
@@ -1849,7 +1867,7 @@
     null,
     null,
     "farm",
-    null
+    "farm"
   ],
   "fashion_accessories": [
     null,
@@ -1867,7 +1885,7 @@
     null,
     null,
     "fence",
-    null
+    "fence"
   ],
   "fire_station": [
     null,
@@ -1999,7 +2017,7 @@
     null,
     null,
     null,
-    null
+    "garden_centre"
   ],
   "garden_furniture": [
     null,
@@ -2017,7 +2035,7 @@
     null,
     "gate",
     "gate",
-    null
+    "gate"
   ],
   "general": [
     null,
@@ -2101,7 +2119,7 @@
     null,
     null,
     "hardware",
-    null
+    "hardware"
   ],
   "health_food": [
     null,
@@ -2341,7 +2359,7 @@
     null,
     "lift_gate",
     "lift-gate",
-    null
+    "lift_gate"
   ],
   "lighting": [
     null,
@@ -2551,7 +2569,7 @@
     null,
     null,
     "optician",
-    null
+    "optician"
   ],
   "orthopedics": [
     null,
@@ -2587,7 +2605,7 @@
     null,
     null,
     "paint",
-    null
+    "paint"
   ],
   "painter": [
     null,
@@ -2821,7 +2839,7 @@
     null,
     null,
     "recycling",
-    null
+    "recycling"
   ],
   "rehabilitation": [
     null,
@@ -3517,7 +3535,7 @@
     null,
     "binoculars",
     "viewpoint",
-    null
+    "viewpoint"
   ],
   "wall": [
     null,
