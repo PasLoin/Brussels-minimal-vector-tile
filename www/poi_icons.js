@@ -169,6 +169,25 @@ export function buildIconImageExpression(meta) {
   return expr;
 }
 
+export function buildNoIconFilter(meta, loadedTypes) {
+  const loaded = new Set(loadedTypes || []);
+  const hasIcon = ['any'];
+  for (const sc of (meta.special_cases || [])) {
+    if (loaded.has(sc.icon_key)) hasIcon.push(['==', ['get', sc.key], sc.value]);
+  }
+  const values = [...loaded].sort();
+  if (values.length) {
+    for (const key of (meta.type_keys || [])) {
+      hasIcon.push(['in', ['get', key], ['literal', values]]);
+    }
+  }
+  for (const key of (meta.presence_keys || [])) {
+    if (loaded.has(key)) hasIcon.push(['has', key]);
+  }
+  if (loaded.has('shop')) hasIcon.push(['has', 'shop']);
+  return ['!', hasIcon];
+}
+
 /**
  * Charge poi-icons.json, construit l'expression icon-image,
  * puis charge toutes les icônes SVG.
@@ -259,7 +278,12 @@ export async function loadAllPoiIcons(map) {
       loadPoiIcon(map, type, ...sources)
     )
   );
-  const loaded = results.filter(r => r.status === 'fulfilled' && r.value).length;
-  console.log(`POI icons: ${loaded}/${entries.length} loaded`);
+  const loadedTypes = entries
+    .filter((_, i) => results[i].status === 'fulfilled' && results[i].value)
+    .map(([type]) => type);
+  if (map.getLayer('poi-circle')) {
+    map.setFilter('poi-circle', buildNoIconFilter(meta, loadedTypes));
+  }
+  console.log(`POI icons: ${loadedTypes.length}/${entries.length} loaded`);
   map.triggerRepaint();
 }
