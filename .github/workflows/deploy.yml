@@ -153,6 +153,7 @@ jobs:
             www/*.pmtiles.gz \
             www/style.json \
             www/poi-icons.json \
+            www/data-info.json \
             missing-icons.txt \
             sizepmtiles.md \
             brussels_capital_region-latest.osm.pbf
