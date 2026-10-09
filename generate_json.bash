@@ -58,9 +58,35 @@ extract() {
   local name="$1"; shift
   echo "→ $name"
   osmium tags-filter "$SRC" "$@" -o "_tmp_${name}.osm.pbf" --overwrite
-  osmium export "_tmp_${name}.osm.pbf" -o "${name}.json" --overwrite
+  osmium export "_tmp_${name}.osm.pbf" -o "${name}.json" --overwrite --attributes=id,type
   rm -f "_tmp_${name}.osm.pbf"
-  echo "  $(wc -l < "${name}.json") lignes"
+  python3 filter_geojson.py "${name}.json" --layer "$name" --filters "$@"
+}
+
+config_filters() {
+  python3 - "$1" "$2" << 'CONFIG_FILTERS'
+import sys
+import yaml
+layer, fallback = sys.argv[1], sys.argv[2].split()
+with open("map.config.yaml") as f:
+    cfg = yaml.safe_load(f) or {}
+st = ((cfg.get("layers") or {}).get(layer) or {}).get("subtypes") or {}
+if not st:
+    print(" ".join(fallback))
+    sys.exit(0)
+by_tag = {}
+for value, scfg in st.items():
+    tag = (scfg or {}).get("tag") or "amenity"
+    by_tag.setdefault(tag, []).append(value)
+out = []
+for tag in sorted(by_tag):
+    values = sorted(by_tag[tag])
+    if values == [tag]:
+        out.append(f"n/{tag}=*")
+    else:
+        out.append(f"nwr/{tag}=" + ",".join(values))
+print(" ".join(out))
+CONFIG_FILTERS
 }
 
 extract roads \
@@ -202,11 +228,11 @@ extract boundaries \
 # LineString (rendue en ligne dans build_map.py), tout le reste
 # (bench, bollard, gate, street_lamp, entrance...) reste un Point.
 # n/entrance=* : restreint aux nodes (usage quasi exclusif de ce tag).
-extract street_furniture \
-  nwr/amenity=bench,lounger,waste_basket,vending_machine \
-  nwr/barrier=bollard,gate,bus_trap,cycle_barrier,lift_gate,planter,fence \
-  nwr/highway=street_lamp \
-  n/entrance=*
+SF_FILTERS=$(config_filters street_furniture \
+  "nwr/amenity=bench,lounger,waste_basket,vending_machine nwr/barrier=bollard,gate,bus_trap,cycle_barrier,lift_gate,planter,fence nwr/highway=street_lamp n/entrance=*")
+echo "  filtres street_furniture (map.config.yaml) : ${SF_FILTERS}"
+read -r -a SF_FILTER_ARGS <<< "$SF_FILTERS"
+extract street_furniture "${SF_FILTER_ARGS[@]}"
 
 # ── Vérification de couverture street_furniture (issue #51) ──────
 # Même principe que la vérification landuse (issue #37) : extraction
@@ -232,16 +258,17 @@ rm -f _tmp_street_furniture_all.osm.pbf _tmp_street_furniture_all.json
 
 # POI : extraction séparée avec --add-unique-id pour le dédoublonnage
 echo "→ poi"
-osmium tags-filter "$SRC" \
-  nwr/shop=* \
-  nwr/amenity=restaurant,cafe,bar,pub,fast_food,bank,pharmacy,hospital,clinic,school,university,library,theatre,cinema,post_office,police,fire_station,doctor,dentist,place_of_worship,townhall,courthouse,community_centre,kindergarten,veterinary \
-  nwr/tourism=hotel,hostel,museum,attraction,information,viewpoint \
-  nwr/leisure=playground \
-  nwr/craft=* \
-  -o "_tmp_poi.osm.pbf" --overwrite
-osmium export "_tmp_poi.osm.pbf" -o "poi.json" --overwrite --add-unique-id=type_id
+POI_FILTERS=(
+  nwr/shop=*
+  nwr/amenity=restaurant,cafe,bar,pub,fast_food,bank,pharmacy,hospital,clinic,school,university,library,theatre,cinema,post_office,police,fire_station,doctor,dentist,place_of_worship,townhall,courthouse,community_centre,kindergarten,veterinary
+  nwr/tourism=hotel,hostel,museum,attraction,information,viewpoint
+  nwr/leisure=playground
+  nwr/craft=*
+)
+osmium tags-filter "$SRC" "${POI_FILTERS[@]}" -o "_tmp_poi.osm.pbf" --overwrite
+osmium export "_tmp_poi.osm.pbf" -o "poi.json" --overwrite --add-unique-id=type_id --attributes=id,type
 rm -f "_tmp_poi.osm.pbf"
-echo "  $(wc -l < "poi.json") lignes"
+python3 filter_geojson.py poi.json --layer poi --filters "${POI_FILTERS[@]}"
 
 # ── Normalisation POI → points + dédoublonnage ───────────
 echo "  → normalisation POI en points + dédoublonnage"
