@@ -67,6 +67,30 @@ jobs:
             --style "${{ github.event.inputs.style_path }}" \
             --out   "${{ github.event.inputs.config_out }}"
 
+      - name: Validate generated config
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          python3 build_map.py \
+            --config      "${{ github.event.inputs.config_out }}" \
+            --style-out   /tmp/retro-check/style.json \
+            --gran-out    /tmp/retro-check/granulometry.json \
+            --pmtiles-out /tmp/retro-check/pmtiles_params.json
+          python3 retro_style.py --style /tmp/retro-check/style.json --out /tmp/retro-check/config.yaml
+          python3 build_map.py \
+            --config      /tmp/retro-check/config.yaml \
+            --style-out   /tmp/retro-check/style2.json \
+            --gran-out    /tmp/retro-check/granulometry2.json \
+            --pmtiles-out /tmp/retro-check/pmtiles_params2.json
+          python3 - << 'CHECK'
+          import json
+          a = json.load(open("/tmp/retro-check/style.json"))["layers"]
+          b = json.load(open("/tmp/retro-check/style2.json"))["layers"]
+          if a != b:
+              ids = [x["id"] for x, y in zip(a, b) if x != y] or ["(nombre de layers différent)"]
+              raise SystemExit(f"::error::retro_style.py ne converge pas : {ids[:10]}")
+          print("✓ config générée valide et stable")
+          CHECK
+
       - name: Show generated config
         if: steps.check.outputs.exists == 'false'
         run: |

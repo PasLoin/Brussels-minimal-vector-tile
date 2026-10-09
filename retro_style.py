@@ -72,7 +72,7 @@ GROUP_TAGS = {
     "boundaries":       ["boundary"],
     "cycleway":         ["highway"],
     "public_transport": ["route"],
-    "street_furniture": ["amenity", "barrier", "highway"],
+    "street_furniture": ["amenity", "barrier", "highway", "entrance"],
 }
 
 # ── Helpers d'extraction d'expressions MapLibre ───────────────────────────────
@@ -162,16 +162,9 @@ def parse_opacity(paint):
 
 
 def min_zoom_of(layer):
-    z = layer.get("minzoom", 10)
-    for block in (layer.get("paint", {}), layer.get("layout", {})):
-        for val in block.values():
-            if (isinstance(val, list) and len(val) > 3
-                    and val[0] in ("interpolate", "step")):
-                try:
-                    z = min(z, int(val[3]))
-                except (TypeError, ValueError):
-                    pass
-    return max(int(z), 10)
+    if "minzoom" in layer:
+        return max(int(layer["minzoom"]), 10)
+    return 10
 
 
 def max_zoom_of(layer):
@@ -195,12 +188,48 @@ def filter_values(filt, tag):
             if isinstance(vals, list) and vals and vals[0] == "literal":
                 return [str(v) for v in vals[1]]
             return [str(v) for v in filt[2:] if isinstance(v, str)]
+    if op == "has" and len(filt) == 2 and filt[1] == tag:
+        return [str(tag)]
     if op in ("any", "all"):
         out = []
         for sub in filt[1:]:
             out += filter_values(sub, tag)
         return out
     return []
+
+
+def refers_to_property(expr):
+    if isinstance(expr, list):
+        if expr and expr[0] == "get":
+            return True
+        return any(refers_to_property(e) for e in expr)
+    return False
+
+
+def is_label_layer(layer):
+    if layer.get("type") != "symbol":
+        return False
+    return refers_to_property(layer.get("layout", {}).get("text-field"))
+
+
+def is_variant_layer(layer):
+    lid = layer["id"]
+    return "tunnel" in lid or "bridge" in lid
+
+
+def is_casing_layer(layer):
+    return "-casing" in layer["id"]
+
+
+def is_outline_layer(layer):
+    return layer["id"].endswith("-outline")
+
+
+def step_threshold(expr):
+    if (isinstance(expr, list) and len(expr) >= 5 and expr[0] == "step"
+            and expr[1] == ["zoom"] and isinstance(expr[3], (int, float))):
+        return int(expr[3])
+    return None
 
 
 def has_private_condition(filt):
@@ -216,12 +245,15 @@ def has_private_condition(filt):
 # ── Extraction des symboles (labels_at) ───────────────────────────────────────
 
 def extract_labels_at(layers, prefixes):
-    """Trouve le minzoom du premier layer symbol du groupe."""
     for l in layers:
         if not any(l["id"].startswith(p) for p in prefixes):
             continue
-        if l.get("type") == "symbol" and "text-field" in l.get("layout", {}):
-            return max(int(l.get("minzoom", 10)), 10)
+        if is_label_layer(l):
+            z = int(l.get("minzoom", 10))
+            st = step_threshold(l["layout"]["text-field"])
+            if st is not None:
+                z = max(z, st)
+            return max(z, 10)
     return None
 
 
@@ -271,7 +303,9 @@ def analyse_group(name, style_layers):
     # ── Couleur principale du groupe ──
     # Priorité : premier fill, puis premier line
     main_color = None
-    for l in matched:
+    primary = [l for l in matched
+               if not (is_casing_layer(l) or is_variant_layer(l) or is_label_layer(l))]
+    for l in primary + matched:
         paint = l.get("paint", {})
         for key in ("fill-color", "line-color", "circle-color"):
             col, _ = parse_color_expr(paint.get(key))
@@ -306,9 +340,14 @@ def analyse_group(name, style_layers):
         ltype  = l.get("type")
         lz     = min_zoom_of(l)
 
-        # Pattern
+        if is_label_layer(l):
+            continue
+
         pattern = paint.get("fill-pattern")
         is_private_layer = has_private_condition(filt) if filt else False
+        variant = is_variant_layer(l)
+        casing = is_casing_layer(l)
+        outline = is_outline_layer(l)
 
         for tag in tags_to_check:
             if not filt:
@@ -323,7 +362,16 @@ def analyse_group(name, style_layers):
                 if v not in subtypes:
                     subtypes[v] = {"tag": tag}
 
-                if col and col != main_color:
+                subtypes[v]["appear_at"] = min(subtypes[v].get("appear_at", lz), lz)
+
+                if variant:
+                    continue
+                if casing or outline:
+                    if col:
+                        subtypes[v]["outline_color"] = col
+                    continue
+
+                if col:
                     subtypes[v]["color"] = col
                 if col_priv:
                     subtypes[v]["color_private"] = col_priv
@@ -333,9 +381,7 @@ def analyse_group(name, style_layers):
                     subtypes[v]["pattern"] = str(pattern)
                 if op is not None and abs(op - 1.0) > 0.01:
                     subtypes[v]["opacity"] = op
-                if lz > appear:
-                    subtypes[v]["appear_at"] = lz
-                if v in outline_map and outline_map[v] != main_color:
+                if v in outline_map and "outline_color" not in subtypes[v]:
                     subtypes[v]["outline_color"] = outline_map[v]
 
         # Match expressions sur fill-color pour les layers sans filtre explicite
@@ -350,10 +396,13 @@ def analyse_group(name, style_layers):
                     for val, col in subtypes_from_match.items():
                         if val not in subtypes:
                             subtypes[val] = {"tag": tag}
-                        if col and col != main_color:
+                        subtypes[val]["appear_at"] = min(subtypes[val].get("appear_at", lz), lz)
+                        if not col:
+                            continue
+                        if outline:
+                            subtypes[val]["outline_color"] = col
+                        else:
                             subtypes[val]["color"] = col
-                        if lz > appear:
-                            subtypes[val].setdefault("appear_at", lz)
 
     # Nettoyage : supprimer les champs redondants
     cleaned = {}
@@ -448,12 +497,20 @@ def main():
 
     # Métadonnées globales
     bg = next(
-        (l["paint"].get("background-color", "#f2efe9")
+        (l.get("paint", {}).get("background-color", "#f2efe9")
          for l in style_layers if l.get("type") == "background"),
         "#f2efe9"
     )
+    if not isinstance(bg, str):
+        bg = first_hex(bg) or "#f2efe9"
     glyphs = style.get("glyphs",
         "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf")
+    map_meta = (style.get("metadata") or {}).get("brussels:map") or {}
+    map_name = style.get("name") or map_meta.get("name") or "Map"
+    map_version = map_meta.get("version")
+    map_center = style.get("center") or map_meta.get("center") or [4.3517, 50.8503]
+    map_zoom = style.get("zoom", map_meta.get("zoom", 13))
+    map_font = map_meta.get("font", "#734a08")
 
     groups = {}
     for name in GROUPS:
@@ -501,11 +558,15 @@ def main():
         "# ─────────────────────────────────────────────────────────────────────",
         "",
         "map:",
-        "  name: Map",
-        "  center: [4.3517, 50.8503]",
-        "  zoom: 13",
+        f"  name: {json.dumps(map_name, ensure_ascii=False)}",
+    ]
+    if map_version is not None:
+        out_lines.append(f"  version: {json.dumps(str(map_version))}")
+    out_lines += [
+        f"  center: [{map_center[0]}, {map_center[1]}]",
+        f"  zoom: {map_zoom}",
         f'  background: "{bg}"',
-        '  font: "#734a08"',
+        f'  font: "{map_font}"',
         f'  glyphs: "{glyphs}"',
         "", "",
         "layers:", "",

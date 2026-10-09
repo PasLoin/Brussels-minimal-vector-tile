@@ -27,6 +27,33 @@ fi
 
 echo "✓ Source valide : $SRC ($(numfmt --to=iec "$FILESIZE"))"
 
+echo "→ data-info"
+osmium fileinfo -e -j "$SRC" > _tmp_fileinfo.json
+python3 - "$SRC" _tmp_fileinfo.json www/data-info.json << 'DATA_INFO'
+import hashlib, json, sys
+from datetime import datetime, timezone
+from pathlib import Path
+src, info_path, out_path = sys.argv[1], sys.argv[2], sys.argv[3]
+info = json.loads(Path(info_path).read_text())
+header = (info.get("header") or {}).get("option") or {}
+h = hashlib.sha256()
+with open(src, "rb") as f:
+    for chunk in iter(lambda: f.read(1 << 20), b""):
+        h.update(chunk)
+data = {
+    "source": Path(src).name,
+    "timestamp": ((info.get("data") or {}).get("timestamp") or {}).get("last") or None,
+    "replication_timestamp": header.get("osmosis_replication_timestamp"),
+    "replication_sequence": header.get("osmosis_replication_sequence_number"),
+    "sha256": h.hexdigest()[:12],
+    "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+}
+Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+Path(out_path).write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+print(f"  {out_path} : {data['timestamp']} ({data['sha256']})")
+DATA_INFO
+rm -f _tmp_fileinfo.json
+
 extract() {
   local name="$1"; shift
   echo "→ $name"

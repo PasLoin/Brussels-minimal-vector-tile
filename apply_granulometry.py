@@ -15,7 +15,7 @@ Usage :
 import argparse, json, sys
 from pathlib import Path
 
-ZOOM_BLOCKS = [(10,12),(13,14),(15,16),(17,18)]
+ZOOM_BLOCKS = [(z, z) for z in range(10, 19)]
 
 
 def match_rule(rule, props):

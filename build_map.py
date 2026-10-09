@@ -2,7 +2,7 @@
 """
 build_map.py  —  map.config.yaml → style.json + granulometry.json + pmtiles_params.json
 """
-import argparse, json, sys
+import argparse, hashlib, json, sys
 from pathlib import Path
 
 try:
@@ -403,7 +403,7 @@ def leisure(cfg):
 
     # fill-color : match expression avec couleurs par sous-type
     fill_expr = ["match", ["get","leisure"]]
-    for k in st:
+    for k in sorted(st):
         s = sc(cfg, k)
         if s["color"]: fill_expr += [k, s["color"]]
     fill_expr.append(cfg["color"] or "#def3c0")
@@ -411,7 +411,7 @@ def leisure(cfg):
     # outline-color : match expression avec outline_color si défini
     outline_expr = ["match", ["get","leisure"]]
     has_custom_outline = False
-    for k in st:
+    for k in sorted(st):
         s = sc(cfg, k)
         if s["outline_color"]:
             outline_expr += [k, s["outline_color"]]
@@ -431,110 +431,220 @@ def leisure(cfg):
     ]
 
 
-# ── ROADS ─────────────────────────────────────────────────────────────────────
+ROAD_ORDER = [
+    "track", "service", "busway", "living_street", "unclassified", "residential",
+    "tertiary_link", "secondary_link", "primary_link", "trunk_link", "motorway_link",
+    "tertiary", "secondary", "primary", "trunk", "motorway",
+]
+
+ROAD_LEGACY_GROUP = {
+    "motorway": "motorway", "motorway_link": "motorway",
+    "trunk": "trunk",       "trunk_link": "trunk",
+    "primary": "primary",   "primary_link": "primary",
+    "secondary": "secondary", "secondary_link": "secondary",
+    "tertiary": "tertiary", "tertiary_link": "tertiary",
+    "residential": "local", "unclassified": "local",
+    "service": "local",     "living_street": "local",
+    "track": "track",       "busway": "busway",
+}
+
+_W_MAJOR  = [(10, 1.5), (13, 3.0), (15, 8.0), (18, 22.0)]
+_W_PRIM   = [(10, 1.2), (13, 2.5), (15, 7.0), (18, 20.0)]
+_W_SEC    = [(10, 1.0), (13, 2.5), (15, 7.0), (18, 18.0)]
+_W_TERT   = [(11, 0.8), (13, 2.0), (15, 6.0), (18, 16.0)]
+_W_LOCAL  = [(12, 0.6), (13, 1.2), (15, 4.5), (18, 14.0)]
+_W_LIVING = [(13, 1.0), (15, 4.0), (18, 12.0)]
+_W_LINK   = [(12, 0.8), (15, 4.0), (18, 12.0)]
+_W_SERV   = [(14, 0.8), (16, 3.0), (18, 7.0)]
+_W_BUS    = [(12, 0.8), (15, 3.0), (18, 9.0)]
+_W_TRACK  = [(13, 0.6), (16, 1.5), (18, 2.5)]
+
+ROAD_DEFAULTS = {
+    "motorway":       ("#e892a2", "#dc2a67", 10, _W_MAJOR),
+    "motorway_link":  ("#e892a2", "#dc2a67", 12, _W_LINK),
+    "trunk":          ("#f9b29c", "#c84e2f", 10, _W_MAJOR),
+    "trunk_link":     ("#f9b29c", "#c84e2f", 12, _W_LINK),
+    "primary":        ("#fcd6a4", "#a06b00", 10, _W_PRIM),
+    "primary_link":   ("#fcd6a4", "#a06b00", 12, _W_LINK),
+    "secondary":      ("#f7fabf", "#707d05", 10, _W_SEC),
+    "secondary_link": ("#f7fabf", "#707d05", 13, _W_LINK),
+    "tertiary":       ("#ffffff", "#8f8f8f", 11, _W_TERT),
+    "tertiary_link":  ("#ffffff", "#8f8f8f", 13, _W_LINK),
+    "residential":    ("#ffffff", "#bbbbbb", 12, _W_LOCAL),
+    "unclassified":   ("#ffffff", "#bbbbbb", 12, _W_LOCAL),
+    "living_street":  ("#ededed", "#c6c6c6", 13, _W_LIVING),
+    "service":        ("#ffffff", "#bbbbbb", 14, _W_SERV),
+    "busway":         ("#ffffff", "#bbbbbb", 13, _W_BUS),
+    "track":          ("#996600", None,      13, _W_TRACK),
+}
+
+ROAD_TUNNEL_VALUES = ["yes", "building_passage"]
+ROAD_BUSWAY_CENTER = "#6699ff"
+ROAD_BRIDGE_CASING = "#000000"
+ROAD_LABEL_VALUES  = ["motorway", "trunk", "primary", "secondary", "tertiary",
+                      "residential", "unclassified", "living_street"]
+
+
+def road_subtype(cfg_or_layer, value):
+    raw_st = cfg_or_layer.get("subtypes") or {}
+    layer_ap = cfg_or_layer.get("appear_at", 10) or 10
+    fill, casing, ap, widths = ROAD_DEFAULTS[value]
+    legacy = raw_st.get(ROAD_LEGACY_GROUP.get(value)) or {}
+    own    = raw_st.get(value) or {}
+    merged = {**legacy, **own}
+    return {
+        "color":   c(merged.get("color", fill)),
+        "casing":  c(merged.get("outline_color", casing)) if casing or "outline_color" in merged else None,
+        "appear_at": int(merged.get("appear_at", max(ap, layer_ap))),
+        "opacity": merged.get("opacity"),
+        "widths":  widths,
+    }
+
+
+def _interp(stops, z):
+    if z <= stops[0][0]:  return stops[0][1]
+    if z >= stops[-1][0]: return stops[-1][1]
+    for (z0, v0), (z1, v1) in zip(stops, stops[1:]):
+        if z0 <= z <= z1:
+            return round(v0 + (v1 - v0) * (z - z0) / (z1 - z0), 2)
+
+
+def _curve_from(stops, ap):
+    return [(ap, _interp(stops, ap))] + [(z, w) for z, w in stops if z > ap]
+
+
+def _road_border(z):
+    return 0.5 if z <= 13 else (1.0 if z <= 16 else 1.5)
+
+
+def _casing_curve(fill_curve, factor=1.0):
+    return [(z, round(w + 2 * _road_border(z) * factor, 2)) for z, w in fill_curve]
+
+
+def _lighten(hex_col, amount=0.5):
+    h = hex_col.lstrip("#")
+    if len(h) == 3: h = "".join(ch * 2 for ch in h)
+    if len(h) != 6: return hex_col
+    r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
+    mix = lambda v: round(v + (255 - v) * amount)
+    return "#{:02x}{:02x}{:02x}".format(mix(r), mix(g), mix(b))
+
 
 def roads(cfg):
-    st   = cfg["subtypes"]
-    base = cfg["appear_at"]
-    out  = []
-    # man_made tunnel/bridge polygons
-    for mm in ["tunnel","bridge"]:
-        fc = "#adadad" if mm=="tunnel" else "#ffebee"
-        op = 0.1 if mm=="tunnel" else 0.5
-        out.append({"id":f"man_made-{mm}-fill","type":"fill",
-            "source":"roads","source-layer":"roads",
-            "filter":["all",["==",["get","man_made"],mm],["==",["geometry-type"],"Polygon"]],
-            "layout":{"fill-sort-key":["coalesce",["to-number",["get","layer"]],0]},
-            "paint":{"fill-color":fc,"fill-opacity":op}})
-        dashed = {"line-dasharray":[2,2]} if mm=="tunnel" else {}
-        out.append({"id":f"man_made-{mm}-outline","type":"line",
-            "source":"roads","source-layer":"roads",
-            "filter":["==",["get","man_made"],mm],
-            "layout":{"line-join":"round","line-cap":"round",
-                      "line-sort-key":["coalesce",["to-number",["get","layer"]],0]},
-            "paint":{"line-color":"#ffc0cb" if mm=="tunnel" else "#adadad",
-                     "line-width":2, **dashed}})
-        if mm=="tunnel":
-            out.append({"id":"man_made-tunnel-line-fill","type":"line",
-                "source":"roads","source-layer":"roads",
-                "filter":["all",["==",["get","man_made"],"tunnel"],
-                                ["==",["geometry-type"],"LineString"]],
-                "layout":{"line-join":"round","line-cap":"round",
-                          "line-sort-key":["coalesce",["to-number",["get","layer"]],0]},
-                "paint":{"line-color":"#adadad","line-opacity":.3,
-                         "line-width":zoom([(14,2),(16,10),(18,20)])}})
+    out = []
+    sort_key = ["coalesce", ["to-number", ["get", "layer"]], 0]
 
-    CLASSES = {
-        "motorway":  (["motorway","motorway_link"],   "#dc2a67",[(5,1),(18,20)],  [(5,.5),(18,18)]),
-        "trunk":     (["trunk","trunk_link"],          "#c84e2f",[(5,1),(18,18)],  [(5,.5),(18,16)]),
-        "primary":   (["primary","primary_link"],      "#a06b00",[(7,1),(18,16)],  [(7,.5),(18,14)]),
-        "secondary": (["secondary","secondary_link"],  "#707d05",[(9,1),(18,14)],  [(9,.5),(18,12)]),
-        "tertiary":  (["tertiary","tertiary_link"],    "#8f8f8f",[(11,1),(18,12)], [(11,.5),(18,10)]),
-        "local":     (["residential","unclassified",
-                       "service","living_street"],     "#bbbbbb",[(13,1),(18,10)], [(13,.5),(18,8)]),
-        "track":     (["track"],                       "#886622",[(13,.5),(18,3)], [(13,.5),(18,2)]),
-        "busway":    (["busway"],                      "#bbbbbb",[(12,1.2),(18,11)],[(12,.8),(18,9)]),
+    for mm in ["tunnel", "bridge"]:
+        fc = "#adadad" if mm == "tunnel" else "#ffebee"
+        op = 0.1 if mm == "tunnel" else 0.5
+        out.append({"id": f"man_made-{mm}-fill", "type": "fill",
+            "source": "roads", "source-layer": "roads",
+            "filter": ["all", ["==", ["get", "man_made"], mm], ["==", ["geometry-type"], "Polygon"]],
+            "layout": {"fill-sort-key": sort_key},
+            "paint": {"fill-color": fc, "fill-opacity": op}})
+        dashed = {"line-dasharray": [2, 2]} if mm == "tunnel" else {}
+        out.append({"id": f"man_made-{mm}-outline", "type": "line",
+            "source": "roads", "source-layer": "roads",
+            "filter": ["==", ["get", "man_made"], mm],
+            "layout": {"line-join": "round", "line-cap": "round", "line-sort-key": sort_key},
+            "paint": {"line-color": "#ffc0cb" if mm == "tunnel" else "#adadad",
+                      "line-width": 2, **dashed}})
+        if mm == "tunnel":
+            out.append({"id": "man_made-tunnel-line-fill", "type": "line",
+                "source": "roads", "source-layer": "roads",
+                "filter": ["all", ["==", ["get", "man_made"], "tunnel"],
+                                  ["==", ["geometry-type"], "LineString"]],
+                "layout": {"line-join": "round", "line-cap": "round", "line-sort-key": sort_key},
+                "paint": {"line-color": "#adadad", "line-opacity": .3,
+                          "line-width": zoom([(14, 2), (16, 10), (18, 20)])}})
+
+    is_tunnel = ["in", ["get", "tunnel"], ["literal", ROAD_TUNNEL_VALUES]]
+    is_bridge = ["all", ["has", "bridge"], ["!=", ["get", "bridge"], "no"]]
+    variants = {
+        "tunnel":  is_tunnel,
+        "surface": ["all", ["!", is_tunnel], ["!", is_bridge]],
+        "bridge":  ["all", ["!", is_tunnel], is_bridge],
     }
-    for grp,(hw_vals,casing_c,cw,fw) in CLASSES.items():
-        s   = st.get(grp) or {}
-        ap  = s.get("appear_at", base)
-        fc  = c(s.get("color", cfg["color"] or "#ffffff"))
-        hwf = ["any"]+[["==",["get","highway"],v] for v in hw_vals]
-        layout = {"line-cap":"round","line-join":"round",
-                  "line-sort-key":["coalesce",["to-number",["get","layer"]],0]}
-        for variant,extra,op in [("surface",["!=",["get","tunnel"],"yes"],1.0),
-                                   ("tunnel", ["==",["get","tunnel"],"yes"],0.5)]:
-            f = ["all",hwf,extra]
-            out.append({"id":f"roads-casing-{grp}-{variant}","type":"line",
-                "source":"roads","source-layer":"roads","minzoom":ap,
-                "filter":f,"layout":layout,
-                "paint":{"line-color":casing_c,"line-width":zoom(cw),"line-opacity":op,
-                         **({"line-dasharray":[2,2]} if variant=="tunnel" else {})}})
-            out.append({"id":f"roads-fill-{grp}-{variant}","type":"line",
-                "source":"roads","source-layer":"roads","minzoom":ap,
-                "filter":f,"layout":layout,
-                "paint":{"line-color":fc,"line-width":zoom(fw),"line-opacity":op}})
+    resolved = {v: road_subtype(cfg, v) for v in ROAD_ORDER}
 
-    # busway center line
-    busway_s = st.get("busway") or {}
-    busway_ap = busway_s.get("appear_at", base)
-    out.append({"id":"roads-center-busway","type":"line",
-        "source":"roads","source-layer":"roads","minzoom":busway_ap,
-        "filter":["==",["get","highway"],"busway"],
-        "layout":{"line-cap":"butt","line-join":"round",
-                  "line-sort-key":["coalesce",["to-number",["get","layer"]],0]},
-        "paint":{"line-color":"#add19e","line-width":zoom([(busway_ap,.4),(18,2)]),
-                 "line-dasharray":[2,2],
-                 "line-opacity":["case",["==",["get","tunnel"],"yes"],.5,1.0]}})
+    def layer(lid, hw, variant, paint, cap="round"):
+        s = resolved[hw]
+        return {"id": lid, "type": "line",
+                "source": "roads", "source-layer": "roads",
+                "minzoom": s["appear_at"],
+                "filter": ["all", ["==", ["get", "highway"], hw], variants[variant]],
+                "layout": {"line-cap": cap, "line-join": "round", "line-sort-key": sort_key},
+                "paint": paint}
 
-    out.append({"id":"road-labels","type":"symbol",
-        "source":"roads","source-layer":"roads","minzoom":cfg["labels_at"],
-        "filter":["any"]+[["==",["get","highway"],v]
-                          for v in ["primary","secondary","tertiary","residential"]],
-        "layout":{"text-field":["get","name"],"text-font":["Noto Sans Regular"],
-                  "text-size":11,"symbol-placement":"line","text-max-angle":30},
-        "paint":{"text-color":"#333","text-halo-color":"rgba(255,255,255,0.6)",
-                 "text-halo-width":1.5}})
+    def casing_pass(variant):
+        for hw in ROAD_ORDER:
+            s = resolved[hw]
+            if not s["casing"]:
+                continue
+            fill_w = _curve_from(s["widths"], s["appear_at"])
+            if variant == "bridge":
+                col, w, extra = ROAD_BRIDGE_CASING, _casing_curve(fill_w, 1.6), {}
+            elif variant == "tunnel":
+                col, w, extra = s["casing"], _casing_curve(fill_w), {"line-dasharray": [2, 1]}
+            else:
+                col, w, extra = s["casing"], _casing_curve(fill_w), {}
+            out.append(layer(f"roads-{variant}-casing-{hw}", hw, variant,
+                             {"line-color": col, "line-width": zoom(w), **extra},
+                             cap="butt" if variant != "surface" else "round"))
 
-    # ── Flèches de sens unique (issue #41) ──────────────────────────
-    # oneway=yes -> flèche dans le sens du tracé de la géométrie.
-    # oneway=-1 ignoré (déconseillé sur OSM, quasi absent des données).
-    out.append({"id":"road-oneway-arrows","type":"symbol",
-        "source":"roads","source-layer":"roads","minzoom":16,
-        "filter":["==",["get","oneway"],"yes"],
-        "layout":{
-            "symbol-placement":"line",
-            "symbol-spacing":zoom([(16,150),(18,80)]),
-            "text-field":"→",
-            "text-font":["Noto Sans Regular"],
-            "text-size":zoom([(16,10),(18,14)]),
-            "text-rotation-alignment":"map",
-            "text-pitch-alignment":"map",
-            "text-keep-upright":False,
-            "text-allow-overlap":True,
-            "text-ignore-placement":True},
-        "paint":{"text-color":"#666666","text-opacity":0.7,
-                 "text-halo-color":"rgba(255,255,255,0.6)","text-halo-width":1}})
+    def fill_pass(variant):
+        for hw in ROAD_ORDER:
+            s = resolved[hw]
+            w = _curve_from(s["widths"], s["appear_at"])
+            paint = {"line-color": _lighten(s["color"]) if variant == "tunnel" else s["color"],
+                     "line-width": zoom(w)}
+            if hw == "track":
+                paint["line-dasharray"] = [3, 2]
+            if variant != "tunnel" and s["opacity"] is not None \
+                    and abs(float(s["opacity"]) - 1.0) > 0.01:
+                paint["line-opacity"] = float(s["opacity"])
+            out.append(layer(f"roads-{variant}-fill-{hw}", hw, variant, paint,
+                             cap="butt" if hw == "track" else "round"))
+
+    casing_pass("tunnel");  fill_pass("tunnel")
+    casing_pass("surface"); fill_pass("surface")
+
+    bap = resolved["busway"]["appear_at"]
+    out.append({"id": "roads-center-busway", "type": "line",
+        "source": "roads", "source-layer": "roads", "minzoom": bap,
+        "filter": ["match", ["get", "highway"], ["busway"], True, False],
+        "layout": {"line-cap": "butt", "line-join": "round", "line-sort-key": sort_key},
+        "paint": {"line-color": ROAD_BUSWAY_CENTER,
+                  "line-width": zoom(_curve_from([(12, .4), (18, 2)], bap)),
+                  "line-dasharray": [2, 2]}})
+
+    casing_pass("bridge");  fill_pass("bridge")
+
+    out.append({"id": "road-labels", "type": "symbol",
+        "source": "roads", "source-layer": "roads", "minzoom": cfg["labels_at"],
+        "filter": ["match", ["get", "highway"], ROAD_LABEL_VALUES, True, False],
+        "layout": {"text-field": ["get", "name"], "text-font": ["Noto Sans Regular"],
+                   "text-size": zoom([(cfg["labels_at"], 10), (18, 13)]),
+                   "symbol-placement": "line", "text-max-angle": 30},
+        "paint": {"text-color": "#222222", "text-halo-color": "rgba(255,255,255,0.8)",
+                  "text-halo-width": 1.5}})
+
+    out.append({"id": "road-oneway-arrows", "type": "symbol",
+        "source": "roads", "source-layer": "roads", "minzoom": 16,
+        "filter": ["==", ["get", "oneway"], "yes"],
+        "layout": {
+            "symbol-placement": "line",
+            "symbol-spacing": zoom([(16, 150), (18, 80)]),
+            "text-field": "→",
+            "text-font": ["Noto Sans Regular"],
+            "text-size": zoom([(16, 10), (18, 14)]),
+            "text-rotation-alignment": "map",
+            "text-pitch-alignment": "map",
+            "text-keep-upright": False,
+            "text-allow-overlap": True,
+            "text-ignore-placement": True},
+        "paint": {"text-color": "#666666", "text-opacity": 0.7,
+                  "text-halo-color": "rgba(255,255,255,0.6)", "text-halo-width": 1}})
 
     return out
 
@@ -544,37 +654,33 @@ def roads(cfg):
 def pedestrian(cfg):
     col = cfg["color"] or "#97644c"
     st  = cfg["subtypes"]
-    DEFS = {
-        "pedestrian_street":("pedestrian",13,None,  [(13,1.2),(18,6)],  False, "#999"),
-        "pedestrian_fill":  ("pedestrian",13,None,  [(13,.8),(18,4)],   False, "#ededed"),
-        "footway":          ("footway",   14,None,  [(14,.5),(18,1.5)], True,  col),
-        "path":             ("path",      14,None,  [(14,.5),(18,1.5)], True,  col),
-        "steps":            ("steps",     14,None,  [(14,1.5),(18,4)],  True,  col),
-    }
+    ped = {**(st.get("pedestrian_street") or {}), **(st.get("pedestrian") or {})}
+    ap_ped = ped.get("appear_at", 13)
+    ped_fill = c(ped.get("color", "#ededed"))
+    ped_casing = c(ped.get("outline_color", "#999"))
     out = []
-    # casing pour rue piétonne
-    ap_ped = (st.get("pedestrian_street") or {}).get("appear_at", 13)
     out.append({"id":"pedestrian-street-casing","type":"line",
         "source":"pedestrian","source-layer":"pedestrian","minzoom":ap_ped,
         "filter":["==",["get","highway"],"pedestrian"],
         "layout":{"line-cap":"round","line-join":"round"},
-        "paint":{"line-color":"#999","line-width":zoom([(ap_ped,1.2),(18,6)])}})
+        "paint":{"line-color":ped_casing,"line-width":zoom([(ap_ped,1.2),(18,6)])}})
     out.append({"id":"pedestrian-street-fill","type":"line",
         "source":"pedestrian","source-layer":"pedestrian","minzoom":ap_ped,
         "filter":["==",["get","highway"],"pedestrian"],
         "layout":{"line-cap":"round","line-join":"round"},
-        "paint":{"line-color":"#ededed","line-width":zoom([(ap_ped,.8),(18,4)])}})
-    for key,(hw,dz,_,wp,dashed,lc_) in [
-        ("footway",("footway",14,None,[(14,.5),(18,1.5)],True,col)),
-        ("path",   ("path",   14,None,[(14,.5),(18,1.5)],True,col)),
-        ("steps",  ("steps",  14,None,[(14,1.5),(18,4)], True,col)),
+        "paint":{"line-color":ped_fill,"line-width":zoom([(ap_ped,.8),(18,4)])}})
+    for key,dz,wp in [
+        ("footway",14,[(14,.5),(18,1.5)]),
+        ("path",   14,[(14,.5),(18,1.5)]),
+        ("steps",  14,[(14,1.5),(18,4)]),
     ]:
-        ap = (st.get(key) or {}).get("appear_at", dz)
-        p  = {"line-color":lc_,"line-width":zoom(wp)}
-        if dashed: p["line-dasharray"] = [2,2] if key!="steps" else [.2,.5]
+        s  = st.get(key) or {}
+        ap = s.get("appear_at", dz)
+        p  = {"line-color":c(s.get("color", col)),"line-width":zoom(wp)}
+        p["line-dasharray"] = [2,2] if key!="steps" else [.2,.5]
         out.append({"id":f"pedestrian-{key}","type":"line",
             "source":"pedestrian","source-layer":"pedestrian","minzoom":ap,
-            "filter":["==",["get","highway"],hw],"paint":p})
+            "filter":["==",["get","highway"],key],"paint":p})
     return out
 
 
@@ -797,46 +903,100 @@ def poi(cfg):
 # par generate_poi_icons.py à partir de poi.json ET street_furniture.json
 # fusionnés — aucune modification de poi_icons.js n'est nécessaire pour
 # ajouter un nouveau type, seulement de generate_poi_icons.py / map.config.yaml.
+def street_furniture_point_filter(st):
+    by_tag = {}
+    for val, scfg in st.items():
+        tag = (scfg or {}).get("tag") or "amenity"
+        by_tag.setdefault(tag, []).append(val)
+    clauses = []
+    for tag in sorted(by_tag):
+        vals = sorted(by_tag[tag])
+        if vals == [tag]:
+            clauses.append(["has", tag])
+        else:
+            clauses.append(["in", ["get", tag], ["literal", vals]])
+    point = ["==", ["geometry-type"], "Point"]
+    if not clauses:
+        return point
+    return ["all", point, ["any"] + clauses]
+
+
 def street_furniture(cfg):
     st    = cfg["subtypes"]
     ap    = cfg["appear_at"]
-    fence_color = (st.get("fence") or {}).get("color") or "#9c9c9c"
+    fence_color = c((st.get("fence") or {}).get("color") or "#9c9c9c")
 
     icon_expr = ["coalesce",
-        # raffinements d'icône (comme cuisine=*/religion=* pour les POI) :
-        # vending=* affine amenity=vending_machine, door=* affine entrance=*
         ["case",["has","vending"],
                 ["image",["concat","poi-vending-",["get","vending"]]],["image",""]],
         ["case",["has","door"],
                 ["image",["concat","poi-door-",["get","door"]]],["image",""]],
-        # types de base
         ["image",["concat","poi-",["get","amenity"]]],
         ["image",["concat","poi-",["get","barrier"]]],
         ["case",["==",["get","highway"],"street_lamp"],
                 ["image","poi-street_lamp"],["image",""]],
-        # entrance=* : rendu uniforme, quelle que soit la valeur
-        # (yes/home/garage/main/service/exit/emergency… bien trop
-        # hétérogènes pour un jeu d'icônes dédié)
         ["case",["has","entrance"],["image","poi-entrance"],["image",""]]]
 
-    return [
-        {"id":"street-furniture-fence","type":"line",
-         "source":"street_furniture","source-layer":"street_furniture",
-         "minzoom":ap,
-         "filter":["all",["==",["get","barrier"],"fence"],
-                         ["==",["geometry-type"],"LineString"]],
-         "paint":{"line-color":fence_color,
-                  "line-width":zoom([(ap,.5),(18,1.5)]),"line-opacity":.8}},
-        {"id":"street-furniture-icon","type":"symbol",
-         "source":"street_furniture","source-layer":"street_furniture",
-         "minzoom":ap,
-         "filter":["==",["geometry-type"],"Point"],
-         "layout":{"icon-image":icon_expr,
-                   "icon-size":zoom([(ap,.7),(18,1.0)]),
-                   "icon-allow-overlap":False,"icon-padding":2,
-                   "icon-anchor":"center"},
-         "paint":{"icon-opacity":.9}},
-    ]
+    out = []
+    if "fence" in st:
+        out.append({"id":"street-furniture-fence","type":"line",
+            "source":"street_furniture","source-layer":"street_furniture",
+            "minzoom":ap,
+            "filter":["all",["==",["get","barrier"],"fence"],
+                            ["==",["geometry-type"],"LineString"]],
+            "paint":{"line-color":fence_color,
+                     "line-width":zoom([(ap,.5),(18,1.5)]),"line-opacity":.8}})
+    out.append({"id":"street-furniture-icon","type":"symbol",
+        "source":"street_furniture","source-layer":"street_furniture",
+        "minzoom":ap,
+        "filter":street_furniture_point_filter(st),
+        "layout":{"icon-image":icon_expr,
+                  "icon-size":zoom([(ap,.7),(18,1.0)]),
+                  "icon-allow-overlap":False,"icon-padding":2,
+                  "icon-anchor":"center"},
+        "paint":{"icon-opacity":.9}})
+    return out
+
+
+DEFAULT_SUBTYPES = {
+    "water": {
+        "river":  {"tag": "waterway", "appear_at": 10},
+        "canal":  {"tag": "waterway", "appear_at": 10},
+        "stream": {"tag": "waterway", "appear_at": 13},
+        "ditch":  {"tag": "waterway", "appear_at": 14},
+    },
+    "trees": {
+        "hedge":    {"tag": "barrier", "appear_at": 14},
+        "tree_row": {"tag": "natural", "appear_at": 15},
+        "tree":     {"tag": "natural", "appear_at": 17},
+    },
+    "pedestrian": {
+        "pedestrian": {"tag": "highway", "appear_at": 13},
+        "footway":    {"tag": "highway", "appear_at": 14},
+        "path":       {"tag": "highway", "appear_at": 14},
+        "steps":      {"tag": "highway", "appear_at": 14},
+    },
+    "railway": {
+        "rail":      {"tag": "railway", "appear_at": 10},
+        "subway":    {"tag": "railway", "appear_at": 12},
+        "tram":      {"tag": "railway", "appear_at": 13},
+        "miniature": {"tag": "railway", "appear_at": 14},
+    },
+}
+
+
+def with_default_subtypes(config):
+    layers = dict(config.get("layers") or {})
+    for name, defaults in DEFAULT_SUBTYPES.items():
+        raw = dict(layers.get(name) or {})
+        st = {k: dict(v or {}) for k, v in (raw.get("subtypes") or {}).items()}
+        for key, dflt in defaults.items():
+            if key == "pedestrian" and "pedestrian_street" in st and "pedestrian" not in st:
+                st["pedestrian"] = dict(st["pedestrian_street"])
+            st[key] = {**dflt, **(st.get(key) or {})}
+        raw["subtypes"] = st
+        layers[name] = raw
+    return {**config, "layers": layers}
 
 
 # ── Style complet ──────────────────────────────────────────────────────────────
@@ -846,6 +1006,8 @@ SOURCES = ["landuse","roads","buildings","water","green","trees","boundaries",
            "street_furniture"]
 
 def build_style(config):
+    source_hash = config_hash(config)
+    config = with_default_subtypes(config)
     L  = config.get("layers",{})
     M  = config.get("map",{})
     bgc = c(M.get("background","#f2efe9"))
@@ -870,55 +1032,54 @@ def build_style(config):
 
     sources = {n:{"type":"vector","url":f"./{n}.pmtiles.gz",
                   "attribution":"© OpenStreetMap contributors"} for n in SOURCES}
+    meta_map = {k: M[k] for k in ("name","version","center","zoom","background","font","glyphs") if k in M}
     return {"version":8,"name":M.get("name","Map"),
+            "metadata":{"brussels:map":meta_map,
+                        "brussels:config_hash":source_hash},
             "sources":sources,"glyphs":gl,"layers":layers}
+
+
+def config_hash(config):
+    canon = json.dumps(config, sort_keys=True, ensure_ascii=False, separators=(",",":"))
+    return hashlib.sha256(canon.encode("utf-8")).hexdigest()[:12]
 
 
 # ── Granulométrie ──────────────────────────────────────────────────────────────
 
-ROAD_CLASSES = {
-    "motorway": ["motorway","motorway_link"],
-    "trunk":    ["trunk","trunk_link"],
-    "primary":  ["primary","primary_link"],
-    "secondary":["secondary","secondary_link"],
-    "tertiary": ["tertiary","tertiary_link"],
-    "local":    ["residential","unclassified","service","living_street"],
-    "track":    ["track"],
-    "busway":   ["busway"],
-}
+SUBTYPE_ONLY_LAYERS = {"landuse", "trees", "railway", "pedestrian"}
+
 POI_PROPS = ["amenity","shop","tourism","name","name:fr","name:nl",
              "cuisine","opening_hours","addr:street","addr:housenumber","website","religion"]
 
 def build_granulometry(config):
+    config = with_default_subtypes(config)
     L   = config.get("layers",{})
     out = {"_meta":{"generated_by":"build_map.py"},"layers":{}}
-    for name, raw in L.items():
-        raw  = raw or {}
+    names = list(L) + [n for n in SOURCES if n not in L]
+    for name in names:
+        raw  = L.get(name) or {}
         ap   = raw.get("appear_at", 10)
         st   = raw.get("subtypes") or {}
         rules = []
         if name == "roads":
-            # "oneway" est dans LOW (issue #41) : toujours conservé dès
-            # l'apparition de la route, pour permettre le rendu des
-            # flèches de sens unique sur TOUTES les classes (y compris
-            # primary/secondary/tertiary, dont gap+4 >= 18 → pas de tier
-            # HIGH séparé). maxspeed/lanes/access restent réservés au
-            # tier HIGH (haut zoom uniquement).
             LOW  = ["highway","name","ref","tunnel","bridge","layer","oneway"]
             HIGH = LOW + ["maxspeed","lanes","access"]
-            for grp,hw_vals in ROAD_CLASSES.items():
-                gap = (st.get(grp) or {}).get("appear_at", ap)
+            for hw in ROAD_ORDER:
+                gap = road_subtype(raw, hw)["appear_at"]
                 if gap > 10:
-                    rules.append({"match":{"highway":hw_vals},
+                    rules.append({"match":{"highway":[hw]},
                                   "zoom_min":10,"zoom_max":gap-1,"action":"drop"})
                 mid = min(gap+4, 18)
-                rules.append({"match":{"highway":hw_vals},
+                rules.append({"match":{"highway":[hw]},
                               "zoom_min":gap,"zoom_max":mid,"keep_properties":LOW})
                 if mid < 18:
-                    rules.append({"match":{"highway":hw_vals},
+                    rules.append({"match":{"highway":[hw]},
                                   "zoom_min":mid+1,"zoom_max":18,"keep_properties":HIGH})
+            rules.append({"match":{"man_made":["bridge","tunnel"]},
+                          "zoom_min":10,"zoom_max":18,
+                          "keep_properties":["man_made","name","layer","bridge","tunnel"]})
         elif name == "poi":
-            for pt, scfg in st.items():
+            for pt, scfg in sorted(st.items()):
                 scfg = scfg or {}
                 pap  = scfg.get("appear_at", ap)
                 tag  = scfg.get("tag","amenity")
@@ -928,10 +1089,19 @@ def build_granulometry(config):
             if ap > 10:
                 rules.append({"zoom_min":10,"zoom_max":ap-1,"action":"drop"})
             rules.append({"zoom_min":ap,"zoom_max":18,"keep_properties":POI_PROPS})
+        elif name in SUBTYPE_ONLY_LAYERS and st:
+            for stk, scfg in sorted(st.items()):
+                scfg = scfg or {}
+                sap  = scfg.get("appear_at", ap)
+                tag  = scfg.get("tag", name)
+                if sap > 10:
+                    rules.append({"match":{tag:[stk]},"zoom_min":10,"zoom_max":sap-1,"action":"drop"})
+                rules.append({"match":{tag:[stk]},"zoom_min":sap,"zoom_max":18,"keep_properties":"ALL"})
+            rules.append({"zoom_min":10,"zoom_max":18,"action":"drop"})
         else:
             if ap > 10:
                 rules.append({"zoom_min":10,"zoom_max":ap-1,"action":"drop"})
-            for stk, scfg in st.items():
+            for stk, scfg in sorted(st.items()):
                 scfg = scfg or {}
                 sap  = scfg.get("appear_at", ap)
                 tag  = scfg.get("tag", name)

@@ -27,6 +27,7 @@
 
 map:
   name: Map
+  version: "1.0.0"
   center: [4.3517, 50.8503]
   zoom: 13
   background: "#f2efe9"
@@ -136,22 +137,22 @@ layers:
     appear_at: 10
     labels_at: 15
     subtypes:
-      busway: { tag: highway, color: "#add19e", appear_at: 12, opacity: 0.5 }
-      living_street: { tag: highway, color: "#ffffff", appear_at: 13, opacity: 0.5 }
-      motorway: { tag: highway, color: "#e990a0", opacity: 0.5 }
-      motorway_link: { tag: highway, color: "#e990a0", appear_at: 12 }
-      primary: { tag: highway, color: "#fcd6a4", appear_at: 15, opacity: 0.5 }
-      primary_link: { tag: highway, color: "#fcd6a4", appear_at: 13, opacity: 0.5 }
-      residential: { tag: highway, color: "#ffffff", appear_at: 15, opacity: 0.5 }
-      secondary: { tag: highway, color: "#f7fabf", appear_at: 15, opacity: 0.5 }
-      secondary_link: { tag: highway, color: "#f7fabf", appear_at: 14, opacity: 0.5 }
-      service: { tag: highway, color: "#ffffff", appear_at: 13, opacity: 0.5 }
-      tertiary: { tag: highway, color: "#ffffff", appear_at: 15, opacity: 0.5 }
-      tertiary_link: { tag: highway, color: "#ffffff", appear_at: 14, opacity: 0.5 }
-      track: { tag: highway, color: "#996633", appear_at: 13, opacity: 0.5 }
-      trunk: { tag: highway, color: "#f9b29c", opacity: 0.5 }
-      trunk_link: { tag: highway, color: "#f9b29c", appear_at: 12, opacity: 0.5 }
-      unclassified: { tag: highway, color: "#ffffff", appear_at: 13, opacity: 0.5 }
+      motorway:       { tag: highway, color: "#e892a2", outline_color: "#dc2a67", appear_at: 10 }
+      motorway_link:  { tag: highway, color: "#e892a2", outline_color: "#dc2a67", appear_at: 12 }
+      trunk:          { tag: highway, color: "#f9b29c", outline_color: "#c84e2f", appear_at: 10 }
+      trunk_link:     { tag: highway, color: "#f9b29c", outline_color: "#c84e2f", appear_at: 12 }
+      primary:        { tag: highway, color: "#fcd6a4", outline_color: "#a06b00", appear_at: 10 }
+      primary_link:   { tag: highway, color: "#fcd6a4", outline_color: "#a06b00", appear_at: 12 }
+      secondary:      { tag: highway, color: "#f7fabf", outline_color: "#707d05", appear_at: 10 }
+      secondary_link: { tag: highway, color: "#f7fabf", outline_color: "#707d05", appear_at: 13 }
+      tertiary:       { tag: highway, color: "#ffffff", outline_color: "#8f8f8f", appear_at: 11 }
+      tertiary_link:  { tag: highway, color: "#ffffff", outline_color: "#8f8f8f", appear_at: 13 }
+      residential:    { tag: highway, color: "#ffffff", outline_color: "#bbbbbb", appear_at: 12 }
+      unclassified:   { tag: highway, color: "#ffffff", outline_color: "#bbbbbb", appear_at: 12 }
+      living_street:  { tag: highway, color: "#ededed", outline_color: "#c6c6c6", appear_at: 13 }
+      service:        { tag: highway, color: "#ffffff", outline_color: "#bbbbbb", appear_at: 14 }
+      busway:         { tag: highway, color: "#ffffff", outline_color: "#bbbbbb", appear_at: 13 }
+      track:          { tag: highway, color: "#996600", appear_at: 13 }
 
   pedestrian:
     label: Piétons

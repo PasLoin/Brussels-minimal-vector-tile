@@ -91,7 +91,7 @@
 </div>
 
 <script type="module">
-import { togglePanel, updateOsmLink, buildDataPopupHtml } from './map_ui.js';
+import { togglePanel, updateOsmLink, buildDataPopupHtml, buildAttribution } from './map_ui.js';
 import { loadAllPoiIcons } from './poi_icons.js';
 
 // Exposer pour les onclick inline
@@ -102,22 +102,27 @@ const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
 
 /* ── Charger le style ── */
+const dataInfoPromise = fetch('./data-info.json')
+  .then(r => (r.ok ? r.json() : null))
+  .catch(() => null);
+
 fetch('./style.json')
   .then(r => r.json())
-  .then(style => {
+  .then(async style => {
     for (const [name, src] of Object.entries(style.sources)) {
       if (src.url && src.url.endsWith('.pmtiles.gz')) {
         src.url = 'pmtiles://' + new URL(src.url, location.href).href;
       }
     }
-    initMap(style);
+    const dataInfo = await dataInfoPromise;
+    initMap(style, dataInfo);
   })
   .catch(err => {
     console.error('Impossible de charger style.json:', err);
     document.querySelector('.title p').textContent = 'Erreur de chargement du style';
   });
 
-function initMap(style) {
+function initMap(style, dataInfo) {
   const poiIconLayer = style.layers.find(l => l.id === 'poi-icon');
   const leisureIconLayer = style.layers.find(l => l.id === 'leisure-icon');
   const streetFurnitureIconLayer = style.layers.find(l => l.id === 'street-furniture-icon');
@@ -142,9 +147,16 @@ function initMap(style) {
     center: [4.3517, 50.8503], zoom: 13,
     hash: true, maxZoom: 19, minZoom: 10,
     maxPitch: 85,
+    attributionControl: false,
   });
   window.map = map;
   setupSportMarkings(map);
+
+  const customAttribution = buildAttribution(dataInfo, style.metadata);
+  map.addControl(new maplibregl.AttributionControl({
+    compact: false,
+    ...(customAttribution ? { customAttribution } : {}),
+  }), 'bottom-right');
 
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 100, unit: 'metric' }), 'bottom-right');
   map.addControl(new maplibregl.NavigationControl(), 'bottom-right');
