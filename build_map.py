@@ -2,7 +2,7 @@
 """
 build_map.py  —  map.config.yaml → style.json + granulometry.json + pmtiles_params.json
 """
-import argparse, json, sys
+import argparse, hashlib, json, sys
 from pathlib import Path
 
 try:
@@ -403,7 +403,7 @@ def leisure(cfg):
 
     # fill-color : match expression avec couleurs par sous-type
     fill_expr = ["match", ["get","leisure"]]
-    for k in st:
+    for k in sorted(st):
         s = sc(cfg, k)
         if s["color"]: fill_expr += [k, s["color"]]
     fill_expr.append(cfg["color"] or "#def3c0")
@@ -411,7 +411,7 @@ def leisure(cfg):
     # outline-color : match expression avec outline_color si défini
     outline_expr = ["match", ["get","leisure"]]
     has_custom_outline = False
-    for k in st:
+    for k in sorted(st):
         s = sc(cfg, k)
         if s["outline_color"]:
             outline_expr += [k, s["outline_color"]]
@@ -612,7 +612,7 @@ def roads(cfg):
     bap = resolved["busway"]["appear_at"]
     out.append({"id": "roads-center-busway", "type": "line",
         "source": "roads", "source-layer": "roads", "minzoom": bap,
-        "filter": ["==", ["get", "highway"], "busway"],
+        "filter": ["match", ["get", "highway"], ["busway"], True, False],
         "layout": {"line-cap": "butt", "line-join": "round", "line-sort-key": sort_key},
         "paint": {"line-color": ROAD_BUSWAY_CENTER,
                   "line-width": zoom(_curve_from([(12, .4), (18, 2)], bap)),
@@ -654,37 +654,33 @@ def roads(cfg):
 def pedestrian(cfg):
     col = cfg["color"] or "#97644c"
     st  = cfg["subtypes"]
-    DEFS = {
-        "pedestrian_street":("pedestrian",13,None,  [(13,1.2),(18,6)],  False, "#999"),
-        "pedestrian_fill":  ("pedestrian",13,None,  [(13,.8),(18,4)],   False, "#ededed"),
-        "footway":          ("footway",   14,None,  [(14,.5),(18,1.5)], True,  col),
-        "path":             ("path",      14,None,  [(14,.5),(18,1.5)], True,  col),
-        "steps":            ("steps",     14,None,  [(14,1.5),(18,4)],  True,  col),
-    }
+    ped = {**(st.get("pedestrian_street") or {}), **(st.get("pedestrian") or {})}
+    ap_ped = ped.get("appear_at", 13)
+    ped_fill = c(ped.get("color", "#ededed"))
+    ped_casing = c(ped.get("outline_color", "#999"))
     out = []
-    # casing pour rue piétonne
-    ap_ped = (st.get("pedestrian_street") or {}).get("appear_at", 13)
     out.append({"id":"pedestrian-street-casing","type":"line",
         "source":"pedestrian","source-layer":"pedestrian","minzoom":ap_ped,
         "filter":["==",["get","highway"],"pedestrian"],
         "layout":{"line-cap":"round","line-join":"round"},
-        "paint":{"line-color":"#999","line-width":zoom([(ap_ped,1.2),(18,6)])}})
+        "paint":{"line-color":ped_casing,"line-width":zoom([(ap_ped,1.2),(18,6)])}})
     out.append({"id":"pedestrian-street-fill","type":"line",
         "source":"pedestrian","source-layer":"pedestrian","minzoom":ap_ped,
         "filter":["==",["get","highway"],"pedestrian"],
         "layout":{"line-cap":"round","line-join":"round"},
-        "paint":{"line-color":"#ededed","line-width":zoom([(ap_ped,.8),(18,4)])}})
-    for key,(hw,dz,_,wp,dashed,lc_) in [
-        ("footway",("footway",14,None,[(14,.5),(18,1.5)],True,col)),
-        ("path",   ("path",   14,None,[(14,.5),(18,1.5)],True,col)),
-        ("steps",  ("steps",  14,None,[(14,1.5),(18,4)], True,col)),
+        "paint":{"line-color":ped_fill,"line-width":zoom([(ap_ped,.8),(18,4)])}})
+    for key,dz,wp in [
+        ("footway",14,[(14,.5),(18,1.5)]),
+        ("path",   14,[(14,.5),(18,1.5)]),
+        ("steps",  14,[(14,1.5),(18,4)]),
     ]:
-        ap = (st.get(key) or {}).get("appear_at", dz)
-        p  = {"line-color":lc_,"line-width":zoom(wp)}
-        if dashed: p["line-dasharray"] = [2,2] if key!="steps" else [.2,.5]
+        s  = st.get(key) or {}
+        ap = s.get("appear_at", dz)
+        p  = {"line-color":c(s.get("color", col)),"line-width":zoom(wp)}
+        p["line-dasharray"] = [2,2] if key!="steps" else [.2,.5]
         out.append({"id":f"pedestrian-{key}","type":"line",
             "source":"pedestrian","source-layer":"pedestrian","minzoom":ap,
-            "filter":["==",["get","highway"],hw],"paint":p})
+            "filter":["==",["get","highway"],key],"paint":p})
     return out
 
 
@@ -907,46 +903,100 @@ def poi(cfg):
 # par generate_poi_icons.py à partir de poi.json ET street_furniture.json
 # fusionnés — aucune modification de poi_icons.js n'est nécessaire pour
 # ajouter un nouveau type, seulement de generate_poi_icons.py / map.config.yaml.
+def street_furniture_point_filter(st):
+    by_tag = {}
+    for val, scfg in st.items():
+        tag = (scfg or {}).get("tag") or "amenity"
+        by_tag.setdefault(tag, []).append(val)
+    clauses = []
+    for tag in sorted(by_tag):
+        vals = sorted(by_tag[tag])
+        if vals == [tag]:
+            clauses.append(["has", tag])
+        else:
+            clauses.append(["in", ["get", tag], ["literal", vals]])
+    point = ["==", ["geometry-type"], "Point"]
+    if not clauses:
+        return point
+    return ["all", point, ["any"] + clauses]
+
+
 def street_furniture(cfg):
     st    = cfg["subtypes"]
     ap    = cfg["appear_at"]
-    fence_color = (st.get("fence") or {}).get("color") or "#9c9c9c"
+    fence_color = c((st.get("fence") or {}).get("color") or "#9c9c9c")
 
     icon_expr = ["coalesce",
-        # raffinements d'icône (comme cuisine=*/religion=* pour les POI) :
-        # vending=* affine amenity=vending_machine, door=* affine entrance=*
         ["case",["has","vending"],
                 ["image",["concat","poi-vending-",["get","vending"]]],["image",""]],
         ["case",["has","door"],
                 ["image",["concat","poi-door-",["get","door"]]],["image",""]],
-        # types de base
         ["image",["concat","poi-",["get","amenity"]]],
         ["image",["concat","poi-",["get","barrier"]]],
         ["case",["==",["get","highway"],"street_lamp"],
                 ["image","poi-street_lamp"],["image",""]],
-        # entrance=* : rendu uniforme, quelle que soit la valeur
-        # (yes/home/garage/main/service/exit/emergency… bien trop
-        # hétérogènes pour un jeu d'icônes dédié)
         ["case",["has","entrance"],["image","poi-entrance"],["image",""]]]
 
-    return [
-        {"id":"street-furniture-fence","type":"line",
-         "source":"street_furniture","source-layer":"street_furniture",
-         "minzoom":ap,
-         "filter":["all",["==",["get","barrier"],"fence"],
-                         ["==",["geometry-type"],"LineString"]],
-         "paint":{"line-color":fence_color,
-                  "line-width":zoom([(ap,.5),(18,1.5)]),"line-opacity":.8}},
-        {"id":"street-furniture-icon","type":"symbol",
-         "source":"street_furniture","source-layer":"street_furniture",
-         "minzoom":ap,
-         "filter":["==",["geometry-type"],"Point"],
-         "layout":{"icon-image":icon_expr,
-                   "icon-size":zoom([(ap,.7),(18,1.0)]),
-                   "icon-allow-overlap":False,"icon-padding":2,
-                   "icon-anchor":"center"},
-         "paint":{"icon-opacity":.9}},
-    ]
+    out = []
+    if "fence" in st:
+        out.append({"id":"street-furniture-fence","type":"line",
+            "source":"street_furniture","source-layer":"street_furniture",
+            "minzoom":ap,
+            "filter":["all",["==",["get","barrier"],"fence"],
+                            ["==",["geometry-type"],"LineString"]],
+            "paint":{"line-color":fence_color,
+                     "line-width":zoom([(ap,.5),(18,1.5)]),"line-opacity":.8}})
+    out.append({"id":"street-furniture-icon","type":"symbol",
+        "source":"street_furniture","source-layer":"street_furniture",
+        "minzoom":ap,
+        "filter":street_furniture_point_filter(st),
+        "layout":{"icon-image":icon_expr,
+                  "icon-size":zoom([(ap,.7),(18,1.0)]),
+                  "icon-allow-overlap":False,"icon-padding":2,
+                  "icon-anchor":"center"},
+        "paint":{"icon-opacity":.9}})
+    return out
+
+
+DEFAULT_SUBTYPES = {
+    "water": {
+        "river":  {"tag": "waterway", "appear_at": 10},
+        "canal":  {"tag": "waterway", "appear_at": 10},
+        "stream": {"tag": "waterway", "appear_at": 13},
+        "ditch":  {"tag": "waterway", "appear_at": 14},
+    },
+    "trees": {
+        "hedge":    {"tag": "barrier", "appear_at": 14},
+        "tree_row": {"tag": "natural", "appear_at": 15},
+        "tree":     {"tag": "natural", "appear_at": 17},
+    },
+    "pedestrian": {
+        "pedestrian": {"tag": "highway", "appear_at": 13},
+        "footway":    {"tag": "highway", "appear_at": 14},
+        "path":       {"tag": "highway", "appear_at": 14},
+        "steps":      {"tag": "highway", "appear_at": 14},
+    },
+    "railway": {
+        "rail":      {"tag": "railway", "appear_at": 10},
+        "subway":    {"tag": "railway", "appear_at": 12},
+        "tram":      {"tag": "railway", "appear_at": 13},
+        "miniature": {"tag": "railway", "appear_at": 14},
+    },
+}
+
+
+def with_default_subtypes(config):
+    layers = dict(config.get("layers") or {})
+    for name, defaults in DEFAULT_SUBTYPES.items():
+        raw = dict(layers.get(name) or {})
+        st = {k: dict(v or {}) for k, v in (raw.get("subtypes") or {}).items()}
+        for key, dflt in defaults.items():
+            if key == "pedestrian" and "pedestrian_street" in st and "pedestrian" not in st:
+                st["pedestrian"] = dict(st["pedestrian_street"])
+            st[key] = {**dflt, **(st.get(key) or {})}
+        raw["subtypes"] = st
+        layers[name] = raw
+    return {**config, "layers": layers}
 
 
 # ── Style complet ──────────────────────────────────────────────────────────────
@@ -956,6 +1006,8 @@ SOURCES = ["landuse","roads","buildings","water","green","trees","boundaries",
            "street_furniture"]
 
 def build_style(config):
+    source_hash = config_hash(config)
+    config = with_default_subtypes(config)
     L  = config.get("layers",{})
     M  = config.get("map",{})
     bgc = c(M.get("background","#f2efe9"))
@@ -980,20 +1032,32 @@ def build_style(config):
 
     sources = {n:{"type":"vector","url":f"./{n}.pmtiles.gz",
                   "attribution":"© OpenStreetMap contributors"} for n in SOURCES}
+    meta_map = {k: M[k] for k in ("name","version","center","zoom","background","font","glyphs") if k in M}
     return {"version":8,"name":M.get("name","Map"),
+            "metadata":{"brussels:map":meta_map,
+                        "brussels:config_hash":source_hash},
             "sources":sources,"glyphs":gl,"layers":layers}
 
 
+def config_hash(config):
+    canon = json.dumps(config, sort_keys=True, ensure_ascii=False, separators=(",",":"))
+    return hashlib.sha256(canon.encode("utf-8")).hexdigest()[:12]
+
+
 # ── Granulométrie ──────────────────────────────────────────────────────────────
+
+SUBTYPE_ONLY_LAYERS = {"landuse", "trees", "railway", "pedestrian"}
 
 POI_PROPS = ["amenity","shop","tourism","name","name:fr","name:nl",
              "cuisine","opening_hours","addr:street","addr:housenumber","website","religion"]
 
 def build_granulometry(config):
+    config = with_default_subtypes(config)
     L   = config.get("layers",{})
     out = {"_meta":{"generated_by":"build_map.py"},"layers":{}}
-    for name, raw in L.items():
-        raw  = raw or {}
+    names = list(L) + [n for n in SOURCES if n not in L]
+    for name in names:
+        raw  = L.get(name) or {}
         ap   = raw.get("appear_at", 10)
         st   = raw.get("subtypes") or {}
         rules = []
@@ -1015,7 +1079,7 @@ def build_granulometry(config):
                           "zoom_min":10,"zoom_max":18,
                           "keep_properties":["man_made","name","layer","bridge","tunnel"]})
         elif name == "poi":
-            for pt, scfg in st.items():
+            for pt, scfg in sorted(st.items()):
                 scfg = scfg or {}
                 pap  = scfg.get("appear_at", ap)
                 tag  = scfg.get("tag","amenity")
@@ -1025,10 +1089,19 @@ def build_granulometry(config):
             if ap > 10:
                 rules.append({"zoom_min":10,"zoom_max":ap-1,"action":"drop"})
             rules.append({"zoom_min":ap,"zoom_max":18,"keep_properties":POI_PROPS})
+        elif name in SUBTYPE_ONLY_LAYERS and st:
+            for stk, scfg in sorted(st.items()):
+                scfg = scfg or {}
+                sap  = scfg.get("appear_at", ap)
+                tag  = scfg.get("tag", name)
+                if sap > 10:
+                    rules.append({"match":{tag:[stk]},"zoom_min":10,"zoom_max":sap-1,"action":"drop"})
+                rules.append({"match":{tag:[stk]},"zoom_min":sap,"zoom_max":18,"keep_properties":"ALL"})
+            rules.append({"zoom_min":10,"zoom_max":18,"action":"drop"})
         else:
             if ap > 10:
                 rules.append({"zoom_min":10,"zoom_max":ap-1,"action":"drop"})
-            for stk, scfg in st.items():
+            for stk, scfg in sorted(st.items()):
                 scfg = scfg or {}
                 sap  = scfg.get("appear_at", ap)
                 tag  = scfg.get("tag", name)
