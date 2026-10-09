@@ -112,7 +112,7 @@ jobs:
         run: pip install -r requirements.txt --break-system-packages -q
 
       - name: Run round-trip tests
-        run: python3 -m pytest tests/test_roundtrip.py -v --junit-xml=test-results/roundtrip-results.xml
+        run: python3 -m pytest tests/test_roundtrip.py tests/test_idempotence.py -v --junit-xml=test-results/roundtrip-results.xml
 
       - name: Upload roundtrip test results
         if: always()
