@@ -41,7 +41,7 @@ npx playwright install chromium
 - `generate_json.bash` : extrait les couches thématiques depuis le PBF et produit les GeoJSON intermédiaires (`roads.json`, `poi.json`, etc.).
 - `apply_granulometry.py` : filtre les GeoJSON selon les règles LOD générées par `build_map.py`.
 - `filter_geojson.py` : nettoie chaque GeoJSON exporté par osmium (objets référencés hors filtre, doublons ligne/surface des ways fermées, mobilier urbain cartographié en ligne ou surface ramené à un point).
-- `compute_pitch_bearing.py`, `patch_style_pitches.py`, `extract_stib_routes.py`, `merge_buildings.py` : enrichissements appliqués aux GeoJSON ou au style.
+- `compute_pitch_bearing.py`, `extract_stib_routes.py`, `merge_buildings.py` : enrichissements appliqués aux GeoJSON. Le rendu des terrains de sport (section `leisure.sports` du YAML), les motifs (`patterns`) et les paramètres PMTiles (`tiles`) sont générés par `build_map.py` depuis `map.config.yaml`.
 - `generate_poi_icons.py` : génère `www/poi-icons.json` et `missing-icons.txt` à partir des types POI réellement présents.
 - `generate_pmtiles.bash` : convertit les GeoJSON en PMTiles et met à jour `sizepmtiles.md`.
 - `www/` : application statique, style MapLibre, icônes et PMTiles publiables.
@@ -154,12 +154,10 @@ Cette commande lit `brussels_capital_region-latest.osm.pbf`, vérifie que le fic
 
 ```bash
 python3 merge_buildings.py
-python3 patch_style_pitches.py
 python3 generate_poi_icons.py
 ```
 
-- `merge_buildings.py` produit `buildings_merged.json` pour les zooms bas, tout en conservant `buildings_detail.json` pour les zooms hauts.
-- `patch_style_pitches.py` synchronise le style avec les orientations calculées pour les terrains de sport.
+- `merge_buildings.py` produit `buildings_merged.json` pour les zooms bas, tout en conservant `buildings_detail.json` pour les zooms hauts. Il n'est utile que si `buildings.appear_at` est inférieur à `buildings.tiles.detail_from` (13 par défaut) : sinon `pmtiles_params.json` ne référence pas le fichier fusionné.
 - `generate_poi_icons.py` inspecte `poi.json`, résout les icônes locales/CDN disponibles, écrit `www/poi-icons.json`, puis liste les manques dans `missing-icons.txt`.
 
 > `generate_json.bash` lance déjà `compute_pitch_bearing.py` après l'extraction de `leisure.json`. Relancez `compute_pitch_bearing.py` manuellement uniquement si vous modifiez `leisure.json` sans refaire toute l'extraction.
@@ -279,7 +277,6 @@ python3 build_map.py
 ./generate_json.bash
 python3 merge_buildings.py
 python3 apply_granulometry.py
-python3 patch_style_pitches.py
 python3 generate_poi_icons.py
 ./generate_pmtiles.bash
 mv *.pmtiles.gz www/
