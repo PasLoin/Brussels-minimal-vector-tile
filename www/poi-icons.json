@@ -2,7 +2,6 @@
   "_meta": {
     "type_keys": [
       "advertising",
-      "aeroway",
       "amenity",
       "barrier",
       "club",
@@ -297,12 +296,6 @@
     null,
     null
   ],
-  "board": [
-    null,
-    null,
-    null,
-    null
-  ],
   "board_games": [
     null,
     null,
@@ -447,12 +440,6 @@
     null,
     null
   ],
-  "chain": [
-    null,
-    null,
-    null,
-    null
-  ],
   "chapel": [
     null,
     null,
@@ -506,12 +493,6 @@
     null,
     "doctor",
     "hospital"
-  ],
-  "clock": [
-    null,
-    "clock",
-    null,
-    null
   ],
   "clockmaker": [
     null,
@@ -593,12 +574,6 @@
   ],
   "courthouse": [
     "courthouse",
-    null,
-    null,
-    null
-  ],
-  "courtyard": [
-    null,
     null,
     null,
     null
@@ -1515,12 +1490,6 @@
     null,
     null
   ],
-  "defibrillator": [
-    null,
-    null,
-    "defibrillator",
-    "defibrillator"
-  ],
   "deli": [
     null,
     null,
@@ -1821,12 +1790,6 @@
     null,
     null
   ],
-  "elevator": [
-    null,
-    "elevator",
-    "elevator",
-    "elevator"
-  ],
   "embankment": [
     null,
     null,
@@ -1965,12 +1928,6 @@
     null,
     null
   ],
-  "fountain": [
-    null,
-    "fountain",
-    null,
-    null
-  ],
   "frame": [
     null,
     null,
@@ -1988,12 +1945,6 @@
     null,
     "fuel",
     "fuel"
-  ],
-  "full-height_turnstile": [
-    null,
-    null,
-    null,
-    null
   ],
   "funeral_directors": [
     null,
@@ -2154,18 +2105,6 @@
   "hedge": [
     null,
     "hedge",
-    null,
-    null
-  ],
-  "height_restrictor": [
-    null,
-    "height_restrictor",
-    null,
-    null
-  ],
-  "helipad": [
-    null,
-    null,
     null,
     null
   ],
@@ -2374,12 +2313,6 @@
     "lift_gate"
   ],
   "lighting": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "loading_dock": [
     null,
     null,
     null,
@@ -2769,12 +2702,6 @@
     null,
     null
   ],
-  "post_box": [
-    null,
-    "post_box",
-    null,
-    null
-  ],
   "post_office": [
     null,
     "post_box",
@@ -3057,12 +2984,6 @@
     "shop",
     "shop"
   ],
-  "shrub": [
-    null,
-    "shrub",
-    null,
-    null
-  ],
   "shrubbery": [
     null,
     null,
@@ -3201,12 +3122,6 @@
     null,
     null
   ],
-  "survey_point": [
-    null,
-    null,
-    null,
-    null
-  ],
   "swimming_pool": [
     null,
     null,
@@ -3278,12 +3193,6 @@
     null,
     null,
     null
-  ],
-  "toilets": [
-    null,
-    null,
-    null,
-    "toilets"
   ],
   "tool_hire": [
     null,
@@ -3604,12 +3513,6 @@
     null
   ],
   "wholesale": [
-    null,
-    null,
-    null,
-    null
-  ],
-  "wicket_gate": [
     null,
     null,
     null,
