@@ -10,6 +10,10 @@
 #   appear_at      zoom minimum d'apparition
 #   labels_at      zoom minimum des étiquettes (défaut: appear_at+3)
 #   opacity        opacité globale (0.0–1.0)
+#   tiles          paramètres PMTiles (min_zoom, max_zoom, simplification,
+#                  detail_from pour buildings)
+#   sports         leisure uniquement : rendu des terrains par sport_render
+#                  (markings_at, default, values: couleur, contour, longueur)
 #
 # Champs disponibles par sous-type :
 #   tag            tag OSM du filtre (landuse, leisure, natural, highway...)
@@ -20,6 +24,14 @@
 #   outline_color  couleur du contour
 #   appear_at      zoom minimum
 #   opacity        opacité fill (0.0–1.0)
+#   pattern_at     zoom d'apparition du motif (défaut: appear_at)
+#   by             clé OSM secondaire (ex: religion, leaf_type)
+#   by_color       couleur par valeur de la clé "by" (défaut: color)
+#   by_pattern     motif par valeur de la clé "by" (défaut: pattern)
+#   tunnel_color   couleur des tronçons en tunnel (défaut: color éclaircie)
+#
+# Section patterns : motifs SVG chargés par la carte
+#   file, size (px), replace (substitution de couleurs dans le SVG)
 #
 # Modifier CE fichier, pas style.json directement.
 # Regénérer :  python3 build_map.py
@@ -35,6 +47,14 @@ map:
   glyphs: "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf"
 
 
+patterns:
+  grave_yard_christian: { file: assets/patterns/grave_yard_christian.svg, size: 32 }
+  grave_yard_generic: { file: assets/patterns/grave_yard_generic.svg, size: 32 }
+  grave_yard_jewish: { file: assets/patterns/grave_yard_jewish.svg, size: 32 }
+  grave_yard_muslim: { file: assets/patterns/grave_yard_muslim.svg, size: 32 }
+  green-hatch: { file: assets/military_hatch.svg, size: 20, replace: { "#bd4a72": "#a9ccac" } }
+  military-hatch: { file: assets/military_hatch.svg, size: 20 }
+
 layers:
 
   landuse:
@@ -44,33 +64,24 @@ layers:
     subtypes:
       allotments: { tag: landuse, color: "#9cad95", opacity: 0.9 }
       brownfield: { tag: landuse, color: "#b3a392", opacity: 0.5 }
-      cemetery: { tag: landuse, color: "#576e5a", opacity: 0.9 }
+      cemetery: { tag: landuse, color: "#aacbaf", pattern: grave_yard_generic, pattern_at: 13, by: religion, by_pattern: { christian: grave_yard_christian, jewish: grave_yard_jewish, muslim: grave_yard_muslim } }
       commercial: { tag: landuse, color: "#f2dad9" }
       construction: { tag: landuse, color: "#b3a392", opacity: 0.95 }
-      # depot : pas de rendu dédié dans osm-carto -> on reprend la teinte
-      # "industriel" déjà utilisée pour railway/industrial (dépôts STIB/SNCB)
       depot: { tag: landuse, color: "#ebdbe8" }
       education: { tag: landuse, color: "#ffe894" }
       farmland: { tag: landuse, color: "#add15a", opacity: 0.95 }
       farmyard: { tag: landuse, color: "#f0d3ad", opacity: 0.95 }
-      # garages : couleur osm-carto @garages
       garages: { tag: landuse, color: "#dfddce" }
       greenfield: { tag: landuse, color: "#cfeca8", opacity: 0.5 }
       industrial: { tag: landuse, color: "#ebdbe8" }
       landfill: { tag: landuse, color: "#b3a392", opacity: 0.5 }
       military: { tag: landuse, color: "#bd4a72", pattern: military-hatch, opacity: 0.1 }
-      # quarry : couleur osm-carto @quarry + contour (darken 10%)
       quarry: { tag: landuse, color: "#c5c3c3", outline_color: "#b0aeae" }
       railway: { tag: landuse, color: "#ebdbe8" }
-      # recreation_ground : osm-carto le rend comme @leisure (vert clair
-      # proche de @park) -> teinte "loisirs" claire
       recreation_ground: { tag: landuse, color: "#c8facc" }
-      # religious : couleur osm-carto @place_of_worship + contour (darken 30%)
       religious: { tag: landuse, color: "#d0d0d0", outline_color: "#919191" }
       residential: { tag: landuse }
       retail: { tag: landuse, color: "#ffd6d1" }
-      # village_green : osm-carto le rend comme @grass -> même teinte que
-      # green-grass dans cette app
       village_green: { tag: landuse, color: "#cdebb0" }
 
   water:
@@ -93,7 +104,7 @@ layers:
       forest: { tag: landuse, color_private: "#d9ecd2" }
       garden: { tag: leisure, color: "#cfeca8", color_private: "#a4c775", pattern_private: green-hatch }
       grass: { tag: landuse, color: "#cdebb0", color_private: "#eaf6df" }
-      # heath (natural=heath) : couleur osm-carto @heath
+      grassland: { tag: natural, color: "#cdebb0", color_private: "#eaf6df" }
       heath: { tag: natural, color: "#d6d99f" }
       meadow: { tag: landuse, color: "#cdebb0", color_private: "#eaf6df" }
       park: { tag: leisure, color: "#a9ccac", color_private: "#94b597", pattern_private: green-hatch }
@@ -107,8 +118,8 @@ layers:
     appear_at: 14
     labels_at: 16
     subtypes:
-      hedge: { tag: barrier, opacity: 0.85 }
-      tree: { tag: natural, appear_at: 17 }
+      hedge: { tag: barrier, color: "#6ba048", opacity: 0.85 }
+      tree: { tag: natural, color: "#7eb36a", appear_at: 17, by: leaf_type, by_color: { broadleaved: "#6cae50", needleleaved: "#5f9f50" } }
       tree_row: { tag: natural, color: "#8fbc77", appear_at: 16, opacity: 0.55 }
 
   buildings:
@@ -129,11 +140,17 @@ layers:
       outdoor_seating: { tag: leisure, color: "#e6e1d9" }
       pitch: { tag: leisure, color: "#6fb792", outline_color: "#6fb792" }
       playground: { tag: leisure, color: "#c2e1c2" }
+    sports:
+      markings_at: 17
+      default: { color: "#8ad3af", outline_color: "#6fb792", length: 50 }
+      values:
+        basketball: { color: "#c47a4a", outline_color: "#9e5e33", length: 28 }
+        boules: { color: "#c4a86a", outline_color: "#9e8a4e", length: 15 }
+        soccer: { color: "#5a9e4b", outline_color: "#3d7a32", length: 105 }
+        tennis: { color: "#4a7c3f", outline_color: "#3a6530", length: 24 }
 
   roads:
     label: Routes
-    color: "#adadad"
-    border_color: "#ffc0cb"
     appear_at: 10
     labels_at: 15
     subtypes:
@@ -175,9 +192,9 @@ layers:
     appear_at: 10
     subtypes:
       miniature: { tag: railway, color: "#999999", appear_at: 14 }
-      rail: { tag: railway, color: "#787878", appear_at: 13, opacity: 0.15 }
-      subway: { tag: railway, color: "#999999", appear_at: 12, opacity: 0.15 }
-      tram: { tag: railway, color: "#444444", appear_at: 13, opacity: 0.15 }
+      rail: { tag: railway, color: "#787878", tunnel_color: "#c0c0c0", appear_at: 13 }
+      subway: { tag: railway, color: "#999999", tunnel_color: "#b0b0b0", appear_at: 12 }
+      tram: { tag: railway, color: "#444444", tunnel_color: "#b0b0b0", appear_at: 13 }
 
   public_transport:
     label: Transport STIB
@@ -195,10 +212,7 @@ layers:
     appear_at: 14
     labels_at: 15
 
-  # Mobilier urbain / micro-mapping (issue #51) : bench, bollard,
-  # street lamp, entrance, doors, barriers, waste baskets, vending
-  # machines... Tags très denses (qq dizaines de milliers de nœuds
-  # sur Bxl) -> réservé au zoom maximum (z18), pmtiles séparé.
+
   street_furniture:
     label: Mobilier urbain
     color: "#555555"
