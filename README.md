@@ -40,6 +40,7 @@ npx playwright install chromium
 - `retro_style.py` : ingénierie inverse d'un `style.json` existant → `map.config.yaml` (bootstrap ou import).
 - `generate_json.bash` : extrait les couches thématiques depuis le PBF et produit les GeoJSON intermédiaires (`roads.json`, `poi.json`, etc.).
 - `apply_granulometry.py` : filtre les GeoJSON selon les règles LOD générées par `build_map.py`.
+- `filter_geojson.py` : nettoie chaque GeoJSON exporté par osmium (objets référencés hors filtre, doublons ligne/surface des ways fermées, mobilier urbain cartographié en ligne ou surface ramené à un point).
 - `compute_pitch_bearing.py`, `patch_style_pitches.py`, `extract_stib_routes.py`, `merge_buildings.py` : enrichissements appliqués aux GeoJSON ou au style.
 - `generate_poi_icons.py` : génère `www/poi-icons.json` et `missing-icons.txt` à partir des types POI réellement présents.
 - `generate_pmtiles.bash` : convertit les GeoJSON en PMTiles et met à jour `sizepmtiles.md`.

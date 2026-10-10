@@ -115,6 +115,8 @@ def parse_color_expr(expr):
             pub  = val_false if isinstance(val_false, str) and val_false.startswith("#") else None
             priv = val_true  if isinstance(val_true,  str) and val_true.startswith("#")  else None
             return pub, priv
+        if isinstance(val_false, str) and val_false.startswith("#"):
+            return val_false, None
 
     if op in ("match", "interpolate"):
         last = expr[-1]

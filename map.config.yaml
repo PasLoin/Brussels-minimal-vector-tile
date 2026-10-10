@@ -159,8 +159,8 @@ layers:
     color: "#999"
     appear_at: 13
     subtypes:
-      footway: { tag: highway, color: "#97644c", appear_at: 14 }
-      path: { tag: highway, color: "#97644c", appear_at: 14 }
+      footway: { tag: highway, color: "#fa8072", outline_color: "#ffffff", appear_at: 14 }
+      path: { tag: highway, color: "#fa8072", outline_color: "#ffffff", appear_at: 14 }
       pedestrian: { tag: highway, color: "#ededed" }
       steps: { tag: highway, color: "#97644c", appear_at: 14 }
 
