@@ -93,6 +93,7 @@
 <script type="module">
 import { togglePanel, updateOsmLink, buildDataPopupHtml, buildAttribution } from './map_ui.js';
 import { loadAllPoiIcons } from './poi_icons.js';
+import { loadPatterns } from './patterns.js';
 
 // Exposer pour les onclick inline
 window._togglePanel = togglePanel;
@@ -162,7 +163,10 @@ function initMap(style, dataInfo) {
   map.addControl(new maplibregl.NavigationControl(), 'bottom-right');
 
   map.on('load', async () => {
-    await loadAllPoiIcons(map);
+    await Promise.all([
+      loadPatterns(map, (style.metadata || {})['brussels:patterns']),
+      loadAllPoiIcons(map),
+    ]);
     map.setLayoutProperty('poi-icon', 'visibility', 'visible');
     if (map.getLayer('leisure-icon')) map.setLayoutProperty('leisure-icon', 'visibility', 'visible');
     if (map.getLayer('street-furniture-icon')) map.setLayoutProperty('street-furniture-icon', 'visibility', 'visible');

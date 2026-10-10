@@ -14,7 +14,36 @@
       "font": "#734a08",
       "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf"
     },
-    "brussels:config_hash": "260161c16133"
+    "brussels:config_hash": "b5e4e66c5b37",
+    "brussels:patterns": {
+      "grave_yard_christian": {
+        "file": "assets/patterns/grave_yard_christian.svg",
+        "size": 32
+      },
+      "grave_yard_generic": {
+        "file": "assets/patterns/grave_yard_generic.svg",
+        "size": 32
+      },
+      "grave_yard_jewish": {
+        "file": "assets/patterns/grave_yard_jewish.svg",
+        "size": 32
+      },
+      "grave_yard_muslim": {
+        "file": "assets/patterns/grave_yard_muslim.svg",
+        "size": 32
+      },
+      "green-hatch": {
+        "file": "assets/military_hatch.svg",
+        "size": 20,
+        "replace": {
+          "#bd4a72": "#a9ccac"
+        }
+      },
+      "military-hatch": {
+        "file": "assets/military_hatch.svg",
+        "size": 20
+      }
+    }
   },
   "sources": {
     "landuse": {
@@ -339,8 +368,38 @@
         "cemetery"
       ],
       "paint": {
-        "fill-color": "#576e5a",
-        "fill-opacity": 0.9
+        "fill-color": "#aacbaf"
+      }
+    },
+    {
+      "id": "landuse-cemetery-hatch",
+      "type": "fill",
+      "source": "landuse",
+      "source-layer": "landuse",
+      "minzoom": 13,
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "cemetery"
+      ],
+      "paint": {
+        "fill-pattern": [
+          "match",
+          [
+            "get",
+            "religion"
+          ],
+          "christian",
+          "grave_yard_christian",
+          "jewish",
+          "grave_yard_jewish",
+          "muslim",
+          "grave_yard_muslim",
+          "grave_yard_generic"
+        ]
       }
     },
     {
@@ -581,23 +640,41 @@
       "source": "green",
       "source-layer": "green",
       "filter": [
-        "any",
+        "==",
         [
-          "==",
-          [
-            "get",
-            "landuse"
-          ],
-          "forest"
+          "get",
+          "landuse"
         ],
-        [
-          "==",
+        "forest"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
           [
-            "get",
-            "natural"
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
           ],
-          "wood"
+          "#d9ecd2",
+          "#add19e"
         ]
+      }
+    },
+    {
+      "id": "green-wood",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "natural"
+        ],
+        "wood"
       ],
       "paint": {
         "fill-color": [
@@ -686,31 +763,70 @@
       "source": "green",
       "source-layer": "green",
       "filter": [
-        "any",
+        "==",
         [
-          "==",
-          [
-            "get",
-            "landuse"
-          ],
-          "grass"
+          "get",
+          "landuse"
         ],
-        [
-          "==",
+        "grass"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
           [
-            "get",
-            "landuse"
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
           ],
-          "meadow"
-        ],
-        [
-          "==",
-          [
-            "get",
-            "natural"
-          ],
-          "grassland"
+          "#eaf6df",
+          "#cdebb0"
         ]
+      }
+    },
+    {
+      "id": "green-grassland",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "natural"
+        ],
+        "grassland"
+      ],
+      "paint": {
+        "fill-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "access"
+            ],
+            "private"
+          ],
+          "#eaf6df",
+          "#cdebb0"
+        ]
+      }
+    },
+    {
+      "id": "green-meadow",
+      "type": "fill",
+      "source": "green",
+      "source-layer": "green",
+      "filter": [
+        "==",
+        [
+          "get",
+          "landuse"
+        ],
+        "meadow"
       ],
       "paint": {
         "fill-color": [
@@ -1333,12 +1449,16 @@
       "filter": [
         "all",
         [
-          "==",
+          "match",
           [
             "get",
             "leisure"
           ],
-          "pitch"
+          [
+            "pitch"
+          ],
+          true,
+          false
         ],
         [
           "has",
@@ -1359,14 +1479,14 @@
             "get",
             "sport_render"
           ],
-          "soccer",
-          "#5a9e4b",
-          "tennis",
-          "#4a7c3f",
           "basketball",
           "#c47a4a",
           "boules",
           "#c4a86a",
+          "soccer",
+          "#5a9e4b",
+          "tennis",
+          "#4a7c3f",
           "#8ad3af"
         ],
         "fill-opacity": 1.0
@@ -1380,12 +1500,16 @@
       "filter": [
         "all",
         [
-          "==",
+          "match",
           [
             "get",
             "leisure"
           ],
-          "pitch"
+          [
+            "pitch"
+          ],
+          true,
+          false
         ],
         [
           "has",
@@ -1406,14 +1530,14 @@
             "get",
             "sport_render"
           ],
-          "soccer",
-          "#3d7a32",
-          "tennis",
-          "#3a6530",
           "basketball",
           "#9e5e33",
           "boules",
           "#9e8a4e",
+          "soccer",
+          "#3d7a32",
+          "tennis",
+          "#3a6530",
           "#6fb792"
         ],
         "line-width": 0.8
@@ -1786,7 +1910,7 @@
       }
     },
     {
-      "id": "trees-row-broadleaved",
+      "id": "trees-row-symbols",
       "type": "symbol",
       "source": "trees",
       "source-layer": "trees",
@@ -1801,20 +1925,16 @@
           "LineString"
         ],
         [
-          "==",
+          "match",
           [
             "get",
             "natural"
           ],
-          "tree_row"
-        ],
-        [
-          "==",
           [
-            "get",
-            "leaf_type"
+            "tree_row"
           ],
-          "broadleaved"
+          true,
+          false
         ]
       ],
       "layout": {
@@ -1832,80 +1952,17 @@
           18,
           32
         ],
-        "text-field": "●",
-        "text-font": [
-          "Noto Sans Regular"
-        ],
-        "text-size": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          17,
-          9,
-          18,
-          13
-        ],
         "text-rotation-alignment": "map",
-        "text-allow-overlap": false
-      },
-      "paint": {
-        "text-color": "#6cae50",
-        "text-halo-color": "#f2efe9",
-        "text-halo-width": 0.8
-      }
-    },
-    {
-      "id": "trees-row-needleleaved",
-      "type": "symbol",
-      "source": "trees",
-      "source-layer": "trees",
-      "minzoom": 17,
-      "filter": [
-        "all",
-        [
-          "==",
-          [
-            "geometry-type"
-          ],
-          "LineString"
-        ],
-        [
-          "==",
-          [
-            "get",
-            "natural"
-          ],
-          "tree_row"
-        ],
-        [
-          "==",
+        "text-field": [
+          "match",
           [
             "get",
             "leaf_type"
           ],
-          "needleleaved"
-        ]
-      ],
-      "layout": {
-        "symbol-placement": "line",
-        "symbol-spacing": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          17,
-          48,
-          18,
-          32
+          "needleleaved",
+          "▲",
+          "●"
         ],
-        "text-field": "▲",
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -1918,103 +1975,67 @@
             "zoom"
           ],
           17,
-          9,
-          18,
-          13
-        ],
-        "text-rotation-alignment": "map",
-        "text-allow-overlap": false
-      },
-      "paint": {
-        "text-color": "#5f9f50",
-        "text-halo-color": "#f2efe9",
-        "text-halo-width": 0.8
-      }
-    },
-    {
-      "id": "trees-row-default",
-      "type": "symbol",
-      "source": "trees",
-      "source-layer": "trees",
-      "minzoom": 17,
-      "filter": [
-        "all",
-        [
-          "==",
           [
-            "geometry-type"
-          ],
-          "LineString"
-        ],
-        [
-          "==",
-          [
-            "get",
-            "natural"
-          ],
-          "tree_row"
-        ],
-        [
-          "!",
-          [
-            "in",
+            "case",
             [
-              "get",
-              "leaf_type"
-            ],
-            [
-              "literal",
+              "in",
               [
-                "broadleaved",
-                "needleleaved"
+                "get",
+                "leaf_type"
+              ],
+              [
+                "literal",
+                [
+                  "broadleaved",
+                  "needleleaved"
+                ]
               ]
-            ]
+            ],
+            9,
+            8
+          ],
+          18,
+          [
+            "case",
+            [
+              "in",
+              [
+                "get",
+                "leaf_type"
+              ],
+              [
+                "literal",
+                [
+                  "broadleaved",
+                  "needleleaved"
+                ]
+              ]
+            ],
+            13,
+            12
           ]
-        ]
-      ],
-      "layout": {
-        "symbol-placement": "line",
-        "symbol-spacing": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          17,
-          48,
-          18,
-          32
         ],
-        "text-field": "●",
-        "text-font": [
-          "Noto Sans Regular"
-        ],
-        "text-size": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          17,
-          8,
-          18,
-          12
-        ],
-        "text-rotation-alignment": "map",
         "text-allow-overlap": false
       },
       "paint": {
-        "text-color": "#7eb36a",
+        "text-color": [
+          "match",
+          [
+            "get",
+            "leaf_type"
+          ],
+          "broadleaved",
+          "#6cae50",
+          "needleleaved",
+          "#5f9f50",
+          "#7eb36a"
+        ],
         "text-halo-color": "#f2efe9",
         "text-halo-width": 0.8
       }
     },
     {
-      "id": "trees-tree-broadleaved",
+      "id": "trees-tree",
       "type": "symbol",
       "source": "trees",
       "source-layer": "trees",
@@ -2035,18 +2056,19 @@
             "natural"
           ],
           "tree"
-        ],
-        [
-          "==",
+        ]
+      ],
+      "layout": {
+        "text-field": [
+          "match",
           [
             "get",
             "leaf_type"
           ],
-          "broadleaved"
-        ]
-      ],
-      "layout": {
-        "text-field": "●",
+          "needleleaved",
+          "▲",
+          "●"
+        ],
         "text-font": [
           "Noto Sans Regular"
         ],
@@ -2059,139 +2081,61 @@
             "zoom"
           ],
           17,
-          10,
-          18,
-          14
-        ],
-        "text-allow-overlap": false
-      },
-      "paint": {
-        "text-color": "#6cae50",
-        "text-halo-color": "#f2efe9",
-        "text-halo-width": 0.9
-      }
-    },
-    {
-      "id": "trees-tree-needleleaved",
-      "type": "symbol",
-      "source": "trees",
-      "source-layer": "trees",
-      "minzoom": 17,
-      "filter": [
-        "all",
-        [
-          "==",
           [
-            "geometry-type"
-          ],
-          "Point"
-        ],
-        [
-          "==",
-          [
-            "get",
-            "natural"
-          ],
-          "tree"
-        ],
-        [
-          "==",
-          [
-            "get",
-            "leaf_type"
-          ],
-          "needleleaved"
-        ]
-      ],
-      "layout": {
-        "text-field": "▲",
-        "text-font": [
-          "Noto Sans Regular"
-        ],
-        "text-size": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          17,
-          10,
-          18,
-          14
-        ],
-        "text-allow-overlap": false
-      },
-      "paint": {
-        "text-color": "#5f9f50",
-        "text-halo-color": "#f2efe9",
-        "text-halo-width": 0.9
-      }
-    },
-    {
-      "id": "trees-tree-default",
-      "type": "symbol",
-      "source": "trees",
-      "source-layer": "trees",
-      "minzoom": 17,
-      "filter": [
-        "all",
-        [
-          "==",
-          [
-            "geometry-type"
-          ],
-          "Point"
-        ],
-        [
-          "==",
-          [
-            "get",
-            "natural"
-          ],
-          "tree"
-        ],
-        [
-          "!",
-          [
-            "in",
+            "case",
             [
-              "get",
-              "leaf_type"
-            ],
-            [
-              "literal",
+              "in",
               [
-                "broadleaved",
-                "needleleaved"
+                "get",
+                "leaf_type"
+              ],
+              [
+                "literal",
+                [
+                  "broadleaved",
+                  "needleleaved"
+                ]
               ]
-            ]
-          ]
-        ]
-      ],
-      "layout": {
-        "text-field": "●",
-        "text-font": [
-          "Noto Sans Regular"
-        ],
-        "text-size": [
-          "interpolate",
-          [
-            "linear"
+            ],
+            10,
+            9
           ],
-          [
-            "zoom"
-          ],
-          17,
-          9,
           18,
-          13
+          [
+            "case",
+            [
+              "in",
+              [
+                "get",
+                "leaf_type"
+              ],
+              [
+                "literal",
+                [
+                  "broadleaved",
+                  "needleleaved"
+                ]
+              ]
+            ],
+            14,
+            13
+          ]
         ],
         "text-allow-overlap": false
       },
       "paint": {
-        "text-color": "#7eb36a",
+        "text-color": [
+          "match",
+          [
+            "get",
+            "leaf_type"
+          ],
+          "broadleaved",
+          "#6cae50",
+          "needleleaved",
+          "#5f9f50",
+          "#7eb36a"
+        ],
         "text-halo-color": "#f2efe9",
         "text-halo-width": 0.9
       }
@@ -2213,22 +2157,17 @@
           "rail"
         ],
         [
-          "any",
+          "in",
           [
-            "==",
-            [
-              "get",
-              "tunnel"
-            ],
-            "yes"
+            "get",
+            "tunnel"
           ],
           [
-            "==",
+            "literal",
             [
-              "get",
-              "tunnel"
-            ],
-            "building_passage"
+              "yes",
+              "building_passage"
+            ]
           ]
         ]
       ],
@@ -2274,22 +2213,17 @@
           "rail"
         ],
         [
-          "any",
+          "in",
           [
-            "==",
-            [
-              "get",
-              "tunnel"
-            ],
-            "yes"
+            "get",
+            "tunnel"
           ],
           [
-            "==",
+            "literal",
             [
-              "get",
-              "tunnel"
-            ],
-            "building_passage"
+              "yes",
+              "building_passage"
+            ]
           ]
         ]
       ],
@@ -2335,22 +2269,17 @@
           "subway"
         ],
         [
-          "any",
+          "in",
           [
-            "==",
-            [
-              "get",
-              "tunnel"
-            ],
-            "yes"
+            "get",
+            "tunnel"
           ],
           [
-            "==",
+            "literal",
             [
-              "get",
-              "tunnel"
-            ],
-            "building_passage"
+              "yes",
+              "building_passage"
+            ]
           ]
         ]
       ],
@@ -2396,22 +2325,17 @@
           "tram"
         ],
         [
-          "any",
+          "in",
           [
-            "==",
-            [
-              "get",
-              "tunnel"
-            ],
-            "yes"
+            "get",
+            "tunnel"
           ],
           [
-            "==",
+            "literal",
             [
-              "get",
-              "tunnel"
-            ],
-            "building_passage"
+              "yes",
+              "building_passage"
+            ]
           ]
         ]
       ],
@@ -2457,20 +2381,21 @@
           "rail"
         ],
         [
-          "!=",
+          "!",
           [
-            "get",
-            "tunnel"
-          ],
-          "yes"
-        ],
-        [
-          "!=",
-          [
-            "get",
-            "tunnel"
-          ],
-          "building_passage"
+            "in",
+            [
+              "get",
+              "tunnel"
+            ],
+            [
+              "literal",
+              [
+                "yes",
+                "building_passage"
+              ]
+            ]
+          ]
         ],
         [
           "!=",
@@ -2522,20 +2447,21 @@
           "rail"
         ],
         [
-          "!=",
+          "!",
           [
-            "get",
-            "tunnel"
-          ],
-          "yes"
-        ],
-        [
-          "!=",
-          [
-            "get",
-            "tunnel"
-          ],
-          "building_passage"
+            "in",
+            [
+              "get",
+              "tunnel"
+            ],
+            [
+              "literal",
+              [
+                "yes",
+                "building_passage"
+              ]
+            ]
+          ]
         ],
         [
           "!=",
@@ -2575,31 +2501,18 @@
       "filter": [
         "all",
         [
-          "any",
+          "match",
           [
-            "==",
-            [
-              "get",
-              "railway"
-            ],
-            "rail"
+            "get",
+            "railway"
           ],
           [
-            "==",
-            [
-              "get",
-              "railway"
-            ],
+            "rail",
+            "subway",
             "tram"
           ],
-          [
-            "==",
-            [
-              "get",
-              "railway"
-            ],
-            "subway"
-          ]
+          true,
+          false
         ],
         [
           "==",
@@ -2742,20 +2655,21 @@
           "subway"
         ],
         [
-          "!=",
+          "!",
           [
-            "get",
-            "tunnel"
-          ],
-          "yes"
-        ],
-        [
-          "!=",
-          [
-            "get",
-            "tunnel"
-          ],
-          "building_passage"
+            "in",
+            [
+              "get",
+              "tunnel"
+            ],
+            [
+              "literal",
+              [
+                "yes",
+                "building_passage"
+              ]
+            ]
+          ]
         ],
         [
           "!=",
@@ -2848,20 +2762,21 @@
           "tram"
         ],
         [
-          "!=",
+          "!",
           [
-            "get",
-            "tunnel"
-          ],
-          "yes"
-        ],
-        [
-          "!=",
-          [
-            "get",
-            "tunnel"
-          ],
-          "building_passage"
+            "in",
+            [
+              "get",
+              "tunnel"
+            ],
+            [
+              "literal",
+              [
+                "yes",
+                "building_passage"
+              ]
+            ]
+          ]
         ],
         [
           "!=",
@@ -2954,20 +2869,21 @@
           "miniature"
         ],
         [
-          "!=",
+          "!",
           [
-            "get",
-            "tunnel"
-          ],
-          "yes"
-        ],
-        [
-          "!=",
-          [
-            "get",
-            "tunnel"
-          ],
-          "building_passage"
+            "in",
+            [
+              "get",
+              "tunnel"
+            ],
+            [
+              "literal",
+              [
+                "yes",
+                "building_passage"
+              ]
+            ]
+          ]
         ],
         [
           "!=",
@@ -12825,12 +12741,16 @@
       "filter": [
         "all",
         [
-          "==",
+          "match",
           [
             "get",
             "leisure"
           ],
-          "pitch"
+          [
+            "pitch"
+          ],
+          true,
+          false
         ],
         [
           "has",
@@ -12914,14 +12834,14 @@
                   "get",
                   "sport_render"
                 ],
-                "tennis",
-                24,
-                "soccer",
-                105,
                 "basketball",
                 28,
                 "boules",
                 15,
+                "soccer",
+                105,
+                "tennis",
+                24,
                 50
               ]
             ],
@@ -12946,14 +12866,14 @@
                   "get",
                   "sport_render"
                 ],
-                "tennis",
-                24,
-                "soccer",
-                105,
                 "basketball",
                 28,
                 "boules",
                 15,
+                "soccer",
+                105,
+                "tennis",
+                24,
                 50
               ]
             ],

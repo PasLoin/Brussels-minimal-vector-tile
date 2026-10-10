@@ -32,6 +32,7 @@ def lc(layers, name):
         "opacity":      r.get("opacity", 1.0),
         "subtypes":     r.get("subtypes") or {},
         "extrusion_3d": r.get("extrusion_3d", False),
+        "sports":       r.get("sports"),
     }
 
 def sc(cfg, key):
@@ -46,7 +47,23 @@ def sc(cfg, key):
         "outline_color": c(s.get("outline_color")),
         "appear_at":     s.get("appear_at", cfg["appear_at"]),
         "opacity":       s.get("opacity",   cfg["opacity"]),
+        "by":            s.get("by"),
+        "by_color":      {k: c(v) for k, v in (s.get("by_color") or {}).items()},
+        "by_pattern":    dict(s.get("by_pattern") or {}),
+        "pattern_at":    s.get("pattern_at"),
+        "tunnel_color":  c(s.get("tunnel_color")),
     }
+
+
+def by_expr(s, field, default):
+    values = s.get(field) or {}
+    if not s.get("by") or not values:
+        return default
+    expr = ["match", ["get", s["by"]]]
+    for k in sorted(values):
+        expr += [k, values[k]]
+    expr.append(default)
+    return expr
 
 def zoom(pairs):
     if len(pairs) == 1: return pairs[0][1]
@@ -94,7 +111,7 @@ def landuse(cfg):
         l = {"id": f"landuse-{val}", "type": "fill",
              "source": "landuse", "source-layer": "landuse",
              "filter": ["==", ["get", tag], val],
-             "paint": {"fill-color": s["color"]}}
+             "paint": {"fill-color": by_expr(s, "by_color", s["color"])}}
         if s["appear_at"] > 10: l["minzoom"] = s["appear_at"]
         if abs(s["opacity"] - 1.0) > 0.01: l["paint"]["fill-opacity"] = s["opacity"]
         out.append(l)
@@ -103,9 +120,9 @@ def landuse(cfg):
             out.append({
                 "id": f"landuse-{val}-hatch", "type": "fill",
                 "source": "landuse", "source-layer": "landuse",
-                "minzoom": s["appear_at"],
+                "minzoom": s["pattern_at"] or s["appear_at"],
                 "filter": ["==", ["get", tag], val],
-                "paint": {"fill-pattern": s["pattern"]}
+                "paint": {"fill-pattern": by_expr(s, "by_pattern", s["pattern"])}
             })
         # Contour (ex: religious, quarry — façon osm-carto)
         if s["outline_color"]:
@@ -126,21 +143,8 @@ def landuse(cfg):
 # de fleurs). On dessine donc park/garden en premier (fond), puis les
 # inclusions par-dessus, pour qu'elles restent visibles à l'intérieur d'un
 # park.
-FILTERS = {
-    # — fonds (souvent de grandes zones, ex: parcs publics) —
-    "park":      ["==", ["get","leisure"], "park"],
-    "garden":    ["==", ["get","leisure"], "garden"],
-    # — inclusions, dessinées par-dessus —
-    "forest":    ["any", ["==",["get","landuse"],"forest"], ["==",["get","natural"],"wood"]],
-    "scrub":     ["==", ["get","natural"], "scrub"],
-    "shrubbery": ["==", ["get","natural"], "shrubbery"],
-    "heath":     ["==", ["get","natural"], "heath"],
-    # grass : couvre aussi natural=grassland (même rendu qu'osm-carto @grass)
-    "grass":     ["any", ["==",["get","landuse"],"grass"],  ["==",["get","landuse"],"meadow"],
-                          ["==",["get","natural"],"grassland"]],
-    "flowerbed": ["==", ["get","landuse"], "flowerbed"],
-    "wood":      None,  # couvert par forest
-}
+GREEN_RENDER_ORDER = ["park", "garden", "forest", "wood", "scrub", "shrubbery",
+                      "heath", "grass", "grassland", "meadow", "flowerbed"]
 
 def green(cfg):
     out = []
@@ -149,10 +153,12 @@ def green(cfg):
     # Collecter les sous-types qui ont un pattern_private pour le layer composite
     hatch_vals = []
 
-    for val, filt in FILTERS.items():
-        if filt is None: continue   # wood couvert par forest
+    order = [v for v in GREEN_RENDER_ORDER if v in st]
+    order += sorted(v for v in st if v not in order)
+    for val in order:
         s = sc(cfg, val)
         if not s["color"]: continue
+        filt = ["==", ["get", s["tag"] or "leisure"], val]
 
         col_expr = color_or_case(s["color"], s["color_private"])
         l = {"id": f"green-{val}", "type": "fill",
@@ -247,73 +253,72 @@ def water(cfg):
 
 # ── TREES ─────────────────────────────────────────────────────────────────────
 
-def trees(cfg):
-    col = cfg["color"] or "#6cae50"
-    st  = cfg["subtypes"]
-    ha  = (st.get("hedge")    or {}).get("appear_at", 14)
-    ra  = (st.get("tree_row") or {}).get("appear_at", 15)
-    ta  = (st.get("tree")     or {}).get("appear_at", 17)
+TREE_SYMBOLS = {"needleleaved": "▲"}
+TREE_SYMBOL_DEFAULT = "●"
+TREE_LEAF_TYPES = ["broadleaved", "needleleaved"]
+
+
+def _tree_symbol_layout(z0, sizes):
+    known = ["in", ["get", "leaf_type"], ["literal", TREE_LEAF_TYPES]]
+    field = ["match", ["get", "leaf_type"]]
+    for k in sorted(TREE_SYMBOLS):
+        field += [k, TREE_SYMBOLS[k]]
+    field.append(TREE_SYMBOL_DEFAULT)
+    (a_known, a_other), (b_known, b_other) = sizes
+    size = ["interpolate", ["linear"], ["zoom"],
+            z0, ["case", known, a_known, a_other],
+            18, ["case", known, b_known, b_other]]
+    return {"text-field": field, "text-font": ["Noto Sans Regular"],
+            "text-size": size, "text-allow-overlap": False}
+
+
+TREE_DEFAULT_COLORS = {"hedge": "#6ba048", "tree_row": "#8fbc77", "tree": "#7eb36a"}
+
+
+def trees(cfg, halo="#f2efe9"):
+    def resolved(key):
+        s = sc(cfg, key)
+        s["color"] = s["color"] or TREE_DEFAULT_COLORS[key]
+        return s
+    hedge = resolved("hedge")
+    row   = resolved("tree_row")
+    tree  = resolved("tree")
+    ha, ra, ta = hedge["appear_at"], row["appear_at"], tree["appear_at"]
+    leaf_color = by_expr(tree, "by_color", tree["color"])
+
+    def line(lid, value, tag, s, widths):
+        paint = {"line-color": s["color"], "line-width": zoom(widths)}
+        if abs(float(s["opacity"]) - 1.0) > 0.01:
+            paint["line-opacity"] = float(s["opacity"])
+        return {"id": lid, "type": "line", "source": "trees", "source-layer": "trees",
+                "minzoom": s["appear_at"],
+                "filter": ["all", ["==", ["geometry-type"], "LineString"],
+                                  ["==", ["get", tag], value]],
+                "layout": {"line-cap": "round", "line-join": "round"},
+                "paint": paint}
+
+    row_symbols = {"id": "trees-row-symbols", "type": "symbol",
+        "source": "trees", "source-layer": "trees", "minzoom": ra + 1,
+        "filter": ["all", ["==", ["geometry-type"], "LineString"],
+                          ["match", ["get", "natural"], ["tree_row"], True, False]],
+        "layout": {"symbol-placement": "line",
+                   "symbol-spacing": zoom([(ra + 1, 48), (18, 32)]),
+                   "text-rotation-alignment": "map",
+                   **_tree_symbol_layout(ra + 1, ((9, 8), (13, 12)))},
+        "paint": {"text-color": leaf_color, "text-halo-color": halo, "text-halo-width": .8}}
+
+    tree_symbols = {"id": "trees-tree", "type": "symbol",
+        "source": "trees", "source-layer": "trees", "minzoom": ta,
+        "filter": ["all", ["==", ["geometry-type"], "Point"],
+                          ["==", ["get", "natural"], "tree"]],
+        "layout": _tree_symbol_layout(ta, ((10, 9), (14, 13))),
+        "paint": {"text-color": leaf_color, "text-halo-color": halo, "text-halo-width": .9}}
+
     return [
-        {"id":"trees-hedge","type":"line",
-         "source":"trees","source-layer":"trees","minzoom":ha,
-         "filter":["all",["==",["geometry-type"],"LineString"],["==",["get","barrier"],"hedge"]],
-         "layout":{"line-cap":"round","line-join":"round"},
-         "paint":{"line-color":"#6ba048","line-width":zoom([(ha,.8),(18,3.5)]),"line-opacity":0.85}},
-        # tree_row : line de fond + symboles par leaf_type
-        {"id":"trees-row-line","type":"line",
-         "source":"trees","source-layer":"trees","minzoom":ra,
-         "filter":["all",["==",["geometry-type"],"LineString"],["==",["get","natural"],"tree_row"]],
-         "layout":{"line-cap":"round","line-join":"round"},
-         "paint":{"line-color":"#8fbc77","line-width":zoom([(ra,.5),(18,1.5)]),"line-opacity":0.55}},
-        {"id":"trees-row-broadleaved","type":"symbol",
-         "source":"trees","source-layer":"trees","minzoom":ra+1,
-         "filter":["all",["==",["geometry-type"],"LineString"],["==",["get","natural"],"tree_row"],
-                         ["==",["get","leaf_type"],"broadleaved"]],
-         "layout":{"symbol-placement":"line","symbol-spacing":zoom([(ra+1,48),(18,32)]),
-                   "text-field":"●","text-font":["Noto Sans Regular"],
-                   "text-size":zoom([(ra+1,9),(18,13)]),
-                   "text-rotation-alignment":"map","text-allow-overlap":False},
-         "paint":{"text-color":"#6cae50","text-halo-color":"#f2efe9","text-halo-width":.8}},
-        {"id":"trees-row-needleleaved","type":"symbol",
-         "source":"trees","source-layer":"trees","minzoom":ra+1,
-         "filter":["all",["==",["geometry-type"],"LineString"],["==",["get","natural"],"tree_row"],
-                         ["==",["get","leaf_type"],"needleleaved"]],
-         "layout":{"symbol-placement":"line","symbol-spacing":zoom([(ra+1,48),(18,32)]),
-                   "text-field":"▲","text-font":["Noto Sans Regular"],
-                   "text-size":zoom([(ra+1,9),(18,13)]),
-                   "text-rotation-alignment":"map","text-allow-overlap":False},
-         "paint":{"text-color":"#5f9f50","text-halo-color":"#f2efe9","text-halo-width":.8}},
-        {"id":"trees-row-default","type":"symbol",
-         "source":"trees","source-layer":"trees","minzoom":ra+1,
-         "filter":["all",["==",["geometry-type"],"LineString"],["==",["get","natural"],"tree_row"],
-                         ["!",["in",["get","leaf_type"],["literal",["broadleaved","needleleaved"]]]]],
-         "layout":{"symbol-placement":"line","symbol-spacing":zoom([(ra+1,48),(18,32)]),
-                   "text-field":"●","text-font":["Noto Sans Regular"],
-                   "text-size":zoom([(ra+1,8),(18,12)]),
-                   "text-rotation-alignment":"map","text-allow-overlap":False},
-         "paint":{"text-color":"#7eb36a","text-halo-color":"#f2efe9","text-halo-width":.8}},
-        # Arbres individuels par leaf_type
-        {"id":"trees-tree-broadleaved","type":"symbol",
-         "source":"trees","source-layer":"trees","minzoom":ta,
-         "filter":["all",["==",["geometry-type"],"Point"],["==",["get","natural"],"tree"],
-                         ["==",["get","leaf_type"],"broadleaved"]],
-         "layout":{"text-field":"●","text-font":["Noto Sans Regular"],
-                   "text-size":zoom([(ta,10),(18,14)]),"text-allow-overlap":False},
-         "paint":{"text-color":"#6cae50","text-halo-color":"#f2efe9","text-halo-width":.9}},
-        {"id":"trees-tree-needleleaved","type":"symbol",
-         "source":"trees","source-layer":"trees","minzoom":ta,
-         "filter":["all",["==",["geometry-type"],"Point"],["==",["get","natural"],"tree"],
-                         ["==",["get","leaf_type"],"needleleaved"]],
-         "layout":{"text-field":"▲","text-font":["Noto Sans Regular"],
-                   "text-size":zoom([(ta,10),(18,14)]),"text-allow-overlap":False},
-         "paint":{"text-color":"#5f9f50","text-halo-color":"#f2efe9","text-halo-width":.9}},
-        {"id":"trees-tree-default","type":"symbol",
-         "source":"trees","source-layer":"trees","minzoom":ta,
-         "filter":["all",["==",["geometry-type"],"Point"],["==",["get","natural"],"tree"],
-                         ["!",["in",["get","leaf_type"],["literal",["broadleaved","needleleaved"]]]]],
-         "layout":{"text-field":"●","text-font":["Noto Sans Regular"],
-                   "text-size":zoom([(ta,9),(18,13)]),"text-allow-overlap":False},
-         "paint":{"text-color":"#7eb36a","text-halo-color":"#f2efe9","text-halo-width":.9}},
+        line("trees-hedge", "hedge", hedge["tag"] or "barrier", hedge, [(ha, .8), (18, 3.5)]),
+        line("trees-row-line", "tree_row", row["tag"] or "natural", row, [(ra, .5), (18, 1.5)]),
+        row_symbols,
+        tree_symbols,
     ]
 
 
@@ -407,6 +412,8 @@ def leisure(cfg):
         s = sc(cfg, k)
         if s["color"]: fill_expr += [k, s["color"]]
     fill_expr.append(cfg["color"] or "#def3c0")
+    if len(fill_expr) == 3:
+        fill_expr = fill_expr[2]
 
     # outline-color : match expression avec outline_color si défini
     outline_expr = ["match", ["get","leisure"]]
@@ -418,7 +425,7 @@ def leisure(cfg):
             has_custom_outline = True
     outline_expr.append("#adadad")
 
-    return [
+    out = [
         {"id":"leisure-fill","type":"fill",
          "source":"leisure","source-layer":"leisure",
          "filter":["==",["geometry-type"],"Polygon"],
@@ -429,6 +436,78 @@ def leisure(cfg):
          "paint":{"line-color": outline_expr if has_custom_outline else "#adadad",
                   "line-width":.5}},
     ]
+    return out + pitch_surfaces(cfg.get("sports"))
+
+
+SPORT_RENDER_KEY = "sport_render"
+
+
+def _sport_values(sports, field, default):
+    values = sports.get("values") or {}
+    expr = ["match", ["get", SPORT_RENDER_KEY]]
+    for k in sorted(values):
+        v = (values[k] or {}).get(field)
+        if v is not None:
+            expr += [k, c(v) if isinstance(v, str) else v]
+    if len(expr) == 2:
+        return default
+    expr.append(default)
+    return expr
+
+
+def _pitch_filter(geometry):
+    return ["all", ["match", ["get", "leisure"], ["pitch"], True, False],
+                   ["has", SPORT_RENDER_KEY],
+                   ["==", ["geometry-type"], geometry]]
+
+
+def pitch_surfaces(sports):
+    if not sports:
+        return []
+    dflt = sports.get("default") or {}
+    return [
+        {"id": "pitch-sport-fill", "type": "fill",
+         "source": "leisure", "source-layer": "leisure",
+         "filter": _pitch_filter("Polygon"),
+         "paint": {"fill-color": _sport_values(sports, "color", c(dflt.get("color", "#8ad3af"))),
+                   "fill-opacity": 1.0}},
+        {"id": "pitch-sport-outline", "type": "line",
+         "source": "leisure", "source-layer": "leisure",
+         "filter": _pitch_filter("Polygon"),
+         "paint": {"line-color": _sport_values(sports, "outline_color",
+                                               c(dflt.get("outline_color", "#6fb792"))),
+                   "line-width": 0.8}},
+    ]
+
+
+def pitch_markings(sports):
+    if not sports:
+        return []
+    dflt = sports.get("default") or {}
+    length = ["case", ["has", "pitch_length"], ["get", "pitch_length"],
+              _sport_values(sports, "length", dflt.get("length", 50))]
+    z0 = sports.get("markings_at", 17)
+    return [{
+        "id": "pitch-markings", "type": "symbol",
+        "source": "leisure", "source-layer": "leisure", "minzoom": z0,
+        "filter": _pitch_filter("Point"),
+        "layout": {
+            "icon-image": ["case",
+                ["all", ["==", ["get", SPORT_RENDER_KEY], "basketball"],
+                        ["==", ["get", "hoops"], "1"]],
+                "sport-markings-basketball-1hoop",
+                ["concat", "sport-markings-", ["get", SPORT_RENDER_KEY]]],
+            "icon-rotation-alignment": "map",
+            "icon-pitch-alignment": "map",
+            "icon-rotate": ["coalesce", ["get", "bearing"], 0],
+            "icon-size": ["interpolate", ["exponential", 2], ["zoom"],
+                          z0, ["*", length, round(0.01220 * 2 ** (z0 - 17), 6)],
+                          z0 + 1, ["*", length, round(0.02442 * 2 ** (z0 - 17), 6)]],
+            "icon-allow-overlap": True,
+            "icon-ignore-placement": True,
+            "symbol-placement": "point"},
+        "paint": {"icon-opacity": ["interpolate", ["linear"], ["zoom"], z0, 0.7, z0 + 1, 0.95]},
+    }]
 
 
 ROAD_ORDER = [
@@ -497,6 +576,7 @@ def road_subtype(cfg_or_layer, value):
         "casing":  c(merged.get("outline_color", casing)) if casing or "outline_color" in merged else None,
         "appear_at": int(merged.get("appear_at", max(ap, layer_ap))),
         "opacity": merged.get("opacity"),
+        "tunnel_color": c(merged.get("tunnel_color")),
         "widths":  widths,
     }
 
@@ -596,7 +676,8 @@ def roads(cfg):
         for hw in ROAD_ORDER:
             s = resolved[hw]
             w = _curve_from(s["widths"], s["appear_at"])
-            paint = {"line-color": _lighten(s["color"]) if variant == "tunnel" else s["color"],
+            tunnel_col = s["tunnel_color"] or _lighten(s["color"])
+            paint = {"line-color": tunnel_col if variant == "tunnel" else s["color"],
                      "line-width": zoom(w)}
             if hw == "track":
                 paint["line-dasharray"] = [3, 2]
@@ -794,85 +875,91 @@ def cycleway(cfg):
 
 # ── RAILWAY ───────────────────────────────────────────────────────────────────
 
+RAILWAY_DEFS = {
+    "rail":      ([(10, 2), (18, 7)], [(10, .8), (18, 2)]),
+    "subway":    (None,               [(12, .8), (18, 2)]),
+    "tram":      (None,               [(13, .5), (18, 1.5)]),
+    "miniature": (None,               [(14, .3), (18, 1)]),
+}
+RAILWAY_TUNNEL_VALUES = ["yes", "building_passage"]
+RAILWAY_BRIDGE_CASING = "#000000"
+
+
 def railway(cfg):
-    st  = cfg["subtypes"]
     out = []
-    DEFS = {
-        "rail":      ([(10,2),(18,7)],[(10,.8),(18,2)],10),
-        "subway":    (None,           [(12,.8),(18,2)],12),
-        "tram":      (None,           [(13,.5),(18,1.5)],13),
-        "miniature": (None,           [(14,.3),(18,1)],14),
-    }
-    # Tunnels
-    for rw in ["rail","subway","tram"]:
-        s   = st.get(rw) or {}
-        col = c(s.get("color"))
-        if not col: continue
-        ap  = s.get("appear_at", DEFS[rw][2])
-        filt_t = ["all",["==",["get","railway"],rw],
-                        ["any",["==",["get","tunnel"],"yes"],
-                               ["==",["get","tunnel"],"building_passage"]]]
+    resolved = {}
+    for rw in RAILWAY_DEFS:
+        s = sc(cfg, rw)
+        if s["color"]:
+            resolved[rw] = s
+
+    def opacity(s, paint):
+        if abs(float(s["opacity"]) - 1.0) > 0.01:
+            paint["line-opacity"] = float(s["opacity"])
+        return paint
+
+    is_tunnel = ["in", ["get", "tunnel"], ["literal", RAILWAY_TUNNEL_VALUES]]
+    for rw in ["rail", "subway", "tram"]:
+        if rw not in resolved:
+            continue
+        s = resolved[rw]
+        ap = s["appear_at"]
+        tcol = s["tunnel_color"] or _lighten(s["color"])
+        filt_t = ["all", ["==", ["get", "railway"], rw], is_tunnel]
         if rw == "rail":
             out += [
-                {"id":f"railway-tunnel-{rw}-casing","type":"line",
-                 "source":"railway","source-layer":"railway","minzoom":ap,"filter":filt_t,
-                 "layout":{"line-join":"round"},
-                 "paint":{"line-color":"#c0c0c0","line-width":zoom([(ap,3),(18,7)]),
-                          "line-dasharray":[.2,4],"line-opacity":.4}},
-                {"id":f"railway-tunnel-{rw}-core","type":"line",
-                 "source":"railway","source-layer":"railway","minzoom":ap,"filter":filt_t,
-                 "layout":{"line-join":"round"},
-                 "paint":{"line-color":"#c0c0c0","line-width":zoom([(ap,.8),(18,2)]),
-                          "line-dasharray":[5,3],"line-opacity":.5}},
+                {"id": f"railway-tunnel-{rw}-casing", "type": "line",
+                 "source": "railway", "source-layer": "railway", "minzoom": ap, "filter": filt_t,
+                 "layout": {"line-join": "round"},
+                 "paint": {"line-color": tcol, "line-width": zoom([(ap, 3), (18, 7)]),
+                           "line-dasharray": [.2, 4], "line-opacity": .4}},
+                {"id": f"railway-tunnel-{rw}-core", "type": "line",
+                 "source": "railway", "source-layer": "railway", "minzoom": ap, "filter": filt_t,
+                 "layout": {"line-join": "round"},
+                 "paint": {"line-color": tcol, "line-width": zoom([(ap, .8), (18, 2)]),
+                           "line-dasharray": [5, 3], "line-opacity": .5}},
             ]
         else:
-            out.append({"id":f"railway-tunnel-{rw}","type":"line",
-                "source":"railway","source-layer":"railway","minzoom":ap,"filter":filt_t,
-                "layout":{"line-join":"round"},
-                "paint":{"line-color":"#b0b0b0","line-width":zoom(DEFS[rw][1]),
-                         "line-dasharray":[5,3],"line-opacity":.4 if rw=="tram" else .5}})
+            out.append({"id": f"railway-tunnel-{rw}", "type": "line",
+                "source": "railway", "source-layer": "railway", "minzoom": ap, "filter": filt_t,
+                "layout": {"line-join": "round"},
+                "paint": {"line-color": tcol, "line-width": zoom(RAILWAY_DEFS[rw][1]),
+                          "line-dasharray": [5, 3], "line-opacity": .4 if rw == "tram" else .5}})
 
-    # Surface + ponts
-    for rw,(ties_w,core_w,dz) in DEFS.items():
-        s   = st.get(rw) or {}
-        col = c(s.get("color"))
-        ap  = s.get("appear_at", dz)
-        if not col: continue
-        filt_s = ["all",["==",["get","railway"],rw],
-                        ["!=",["get","tunnel"],"yes"],
-                        ["!=",["get","tunnel"],"building_passage"],
-                        ["!=",["get","bridge"],"yes"]]
-        filt_b = ["all",["==",["get","railway"],rw],["==",["get","bridge"],"yes"]]
-
-        if ties_w:
-            for suffix, filt in [("",filt_s),("-bridge",filt_b)]:
+    for rw, (ties_w, core_w) in RAILWAY_DEFS.items():
+        if rw not in resolved:
+            continue
+        s = resolved[rw]
+        col, ap = s["color"], s["appear_at"]
+        filt_s = ["all", ["==", ["get", "railway"], rw], ["!", is_tunnel],
+                         ["!=", ["get", "bridge"], "yes"]]
+        filt_b = ["all", ["==", ["get", "railway"], rw], ["==", ["get", "bridge"], "yes"]]
+        for suffix, filt in [("", filt_s), ("-bridge", filt_b)]:
+            if ties_w:
                 if suffix == "-bridge":
-                    out.append({"id":f"railway-bridge-casing","type":"line",
-                        "source":"railway","source-layer":"railway","minzoom":ap,
-                        "filter":["all",["any"]+[["==",["get","railway"],r]
-                                                  for r in ["rail","tram","subway"]],
-                                        ["==",["get","bridge"],"yes"]],
-                        "layout":{"line-join":"round"},
-                        "paint":{"line-color":"#000000","line-width":zoom([(ap,4),(18,9)]),
-                                 "line-opacity":.15}})
-                out.append({"id":f"railway-{rw}{suffix}-ties","type":"line",
-                    "source":"railway","source-layer":"railway","minzoom":ap,"filter":filt,
-                    "layout":{"line-join":"round"},
-                    "paint":{"line-color":col,"line-width":zoom(ties_w),"line-dasharray":[.2,4]}})
-                out.append({"id":f"railway-{rw}{suffix}-core","type":"line",
-                    "source":"railway","source-layer":"railway","minzoom":ap,"filter":filt,
-                    "layout":{"line-join":"round"},
-                    "paint":{"line-color":col,"line-width":zoom(core_w)}})
-        else:
-            for suffix, filt in [("",filt_s),("-bridge",filt_b)]:
-                out.append({"id":f"railway-{rw}{suffix}","type":"line",
-                    "source":"railway","source-layer":"railway","minzoom":ap,"filter":filt,
-                    "layout":{"line-join":"round"},
-                    "paint":{"line-color":col,"line-width":zoom(core_w)}})
+                    out.append({"id": "railway-bridge-casing", "type": "line",
+                        "source": "railway", "source-layer": "railway", "minzoom": ap,
+                        "filter": ["all", ["match", ["get", "railway"], ["rail", "subway", "tram"], True, False],
+                                          ["==", ["get", "bridge"], "yes"]],
+                        "layout": {"line-join": "round"},
+                        "paint": {"line-color": RAILWAY_BRIDGE_CASING,
+                                  "line-width": zoom([(ap, 4), (18, 9)]), "line-opacity": .15}})
+                out.append({"id": f"railway-{rw}{suffix}-ties", "type": "line",
+                    "source": "railway", "source-layer": "railway", "minzoom": ap, "filter": filt,
+                    "layout": {"line-join": "round"},
+                    "paint": opacity(s, {"line-color": col, "line-width": zoom(ties_w),
+                                         "line-dasharray": [.2, 4]})})
+                out.append({"id": f"railway-{rw}{suffix}-core", "type": "line",
+                    "source": "railway", "source-layer": "railway", "minzoom": ap, "filter": filt,
+                    "layout": {"line-join": "round"},
+                    "paint": opacity(s, {"line-color": col, "line-width": zoom(core_w)})})
+            else:
+                out.append({"id": f"railway-{rw}{suffix}", "type": "line",
+                    "source": "railway", "source-layer": "railway", "minzoom": ap, "filter": filt,
+                    "layout": {"line-join": "round"},
+                    "paint": opacity(s, {"line-color": col, "line-width": zoom(core_w)})})
     return out
 
-
-# ── PUBLIC TRANSPORT ──────────────────────────────────────────────────────────
 
 def public_transport(cfg):
     col = cfg["color"] or "#e3004f"
@@ -993,7 +1080,7 @@ def street_furniture_point_filter(st):
 def street_furniture(cfg):
     st    = cfg["subtypes"]
     ap    = cfg["appear_at"]
-    fence_color = c((st.get("fence") or {}).get("color") or "#9c9c9c")
+    fence_color = c((st.get("fence") or {}).get("color") or cfg["color"] or "#9c9c9c")
 
     icon_expr = ["coalesce",
         ["case",["has","vending"],
@@ -1035,8 +1122,8 @@ DEFAULT_SUBTYPES = {
         "ditch":  {"tag": "waterway", "appear_at": 14},
     },
     "trees": {
-        "hedge":    {"tag": "barrier", "appear_at": 14},
-        "tree_row": {"tag": "natural", "appear_at": 15},
+        "hedge":    {"tag": "barrier", "appear_at": 14, "opacity": 0.85},
+        "tree_row": {"tag": "natural", "appear_at": 15, "opacity": 0.55},
         "tree":     {"tag": "natural", "appear_at": 17},
     },
     "pedestrian": {
@@ -1044,6 +1131,10 @@ DEFAULT_SUBTYPES = {
         "footway":    {"tag": "highway", "appear_at": 14},
         "path":       {"tag": "highway", "appear_at": 14},
         "steps":      {"tag": "highway", "appear_at": 14},
+    },
+    "green": {
+        "wood":      {"tag": "natural", "color": "#add19e"},
+        "grassland": {"tag": "natural", "color": "#cdebb0"},
     },
     "railway": {
         "rail":      {"tag": "railway", "appear_at": 10},
@@ -1070,6 +1161,40 @@ def with_default_subtypes(config):
 
 # ── Style complet ──────────────────────────────────────────────────────────────
 
+DEFAULT_PATTERNS = {
+    "military-hatch":      {"file": "assets/military_hatch.svg", "size": 20},
+    "green-hatch":         {"file": "assets/military_hatch.svg", "size": 20,
+                            "replace": {"#bd4a72": "#a9ccac"}},
+    "grave_yard_generic":   {"file": "assets/patterns/grave_yard_generic.svg", "size": 32},
+    "grave_yard_christian": {"file": "assets/patterns/grave_yard_christian.svg", "size": 32},
+    "grave_yard_jewish":    {"file": "assets/patterns/grave_yard_jewish.svg", "size": 32},
+    "grave_yard_muslim":    {"file": "assets/patterns/grave_yard_muslim.svg", "size": 32},
+}
+
+
+def _pattern_names(expr):
+    if isinstance(expr, str):
+        return {expr}
+    if isinstance(expr, list) and expr and expr[0] == "match":
+        names = set()
+        for i, item in enumerate(expr[2:], start=2):
+            if (i % 2 == 1 or i == len(expr) - 1) and isinstance(item, str):
+                names.add(item)
+        return names
+    return set()
+
+
+def resolve_patterns(config, layers):
+    declared = {**DEFAULT_PATTERNS, **(config.get("patterns") or {})}
+    used = set()
+    for l in layers:
+        used |= _pattern_names((l.get("paint") or {}).get("fill-pattern"))
+    missing = sorted(used - set(declared))
+    if missing:
+        print(f"⚠  motifs utilisés mais non déclarés dans patterns: {missing}", file=sys.stderr)
+    return {name: declared[name] for name in sorted(used) if name in declared}
+
+
 SOURCES = ["landuse","roads","buildings","water","green","trees","boundaries",
            "poi","pedestrian","cycleway","railway","public_transport","leisure",
            "street_furniture"]
@@ -1089,22 +1214,28 @@ def build_style(config):
     layers += water(lc(L,"water"))
     layers += leisure(lc(L,"leisure"))
     layers += buildings(lc(L,"buildings"))
-    layers += trees(lc(L,"trees"))
+    layers += trees(lc(L,"trees"), bgc)
     layers += railway(lc(L,"railway"))
     layers += public_transport(lc(L,"public_transport"))
     layers += roads(lc(L,"roads"))
     layers += pedestrian(lc(L,"pedestrian"))
     layers += cycleway(lc(L,"cycleway"))
     layers += boundaries(lc(L,"boundaries"))
+    layers += pitch_markings(lc(L,"leisure")["sports"])
     layers += poi(lc(L,"poi"))
     layers += street_furniture(lc(L,"street_furniture"))
 
     sources = {n:{"type":"vector","url":f"./{n}.pmtiles.gz",
                   "attribution":"© OpenStreetMap contributors"} for n in SOURCES}
     meta_map = {k: M[k] for k in ("name","version","center","zoom","background","font","glyphs") if k in M}
+    meta_tiles = {n: dict(raw["tiles"]) for n, raw in L.items() if (raw or {}).get("tiles")}
+    metadata = {"brussels:map": meta_map,
+                "brussels:config_hash": source_hash,
+                "brussels:patterns": resolve_patterns(config, layers)}
+    if meta_tiles:
+        metadata["brussels:tiles"] = meta_tiles
     return {"version":8,"name":M.get("name","Map"),
-            "metadata":{"brussels:map":meta_map,
-                        "brussels:config_hash":source_hash},
+            "metadata":metadata,
             "sources":sources,"glyphs":gl,"layers":layers}
 
 
@@ -1178,23 +1309,69 @@ def build_granulometry(config):
                 if sap > ap:
                     rules.append({"match":{tag:[stk]},"zoom_min":ap,"zoom_max":sap-1,"action":"drop"})
             rules.append({"zoom_min":ap,"zoom_max":18,"keep_properties":"ALL"})
+        if name == "buildings":
+            out["layers"][name] = {"files": {
+                i["file"]: [{"zoom_min": i["min_zoom"], "zoom_max": i["max_zoom"],
+                             "keep_properties": "ALL"}]
+                for i in tile_inputs(config, "buildings")}}
+            continue
         out["layers"][name] = {"rules":rules}
     return out
 
 
+PMTILES_DEFAULTS = {
+    "landuse":          {"max_zoom": 18, "simplification": 2},
+    "roads":            {"max_zoom": 18, "simplification": 2},
+    "water":            {"max_zoom": 18, "simplification": 2},
+    "green":            {"max_zoom": 18, "simplification": 2},
+    "trees":            {"max_zoom": 18, "simplification": 2},
+    "leisure":          {"max_zoom": 18, "simplification": 2},
+    "boundaries":       {"max_zoom": 14, "simplification": 10},
+    "poi":              {"max_zoom": 16, "simplification": 10},
+    "pedestrian":       {"max_zoom": 18, "simplification": 10},
+    "cycleway":         {"max_zoom": 18, "simplification": 10},
+    "railway":          {"max_zoom": 18, "simplification": 10},
+    "public_transport": {"max_zoom": 16, "simplification": 10},
+    "street_furniture": {"max_zoom": 18, "simplification": 10},
+    "buildings":        {"max_zoom": 18, "simplification": 2, "detail_from": 13},
+    "building_parts":   {"min_zoom": 13, "max_zoom": 18, "simplification": 2},
+}
+
+
+def tile_settings(config, name):
+    raw = ((config.get("layers") or {}).get(name) or {}).get("tiles") or {}
+    return {"min_zoom": 10, **PMTILES_DEFAULTS.get(name, {"max_zoom": 18, "simplification": 10}), **raw}
+
+
+def tile_inputs(config, name):
+    t = tile_settings(config, name)
+    if name != "buildings":
+        return [{"file": f"{name}.json", "min_zoom": t["min_zoom"], "max_zoom": t["max_zoom"]}]
+    ap = ((config.get("layers") or {}).get("buildings") or {}).get("appear_at", 10)
+    start = max(t["min_zoom"], ap)
+    detail_from = max(t["detail_from"], start)
+    inputs = []
+    if start < detail_from:
+        inputs.append({"file": "buildings_merged.json", "min_zoom": start,
+                       "max_zoom": detail_from - 1})
+    inputs.append({"file": "buildings_detail.json", "min_zoom": detail_from,
+                   "max_zoom": t["max_zoom"]})
+    return inputs
+
+
 def build_pmtiles_params(config):
-    L   = config.get("layers",{})
-    out = {}
-    for name, raw in L.items():
-        raw  = raw or {}
-        ap   = raw.get("appear_at", 10)
-        st   = raw.get("subtypes") or {}
-        first = min([ap]+[(s or {}).get("appear_at", ap) for s in st.values()])
-        out[name] = {"zoom_min":10,"zoom_max":18,"first_visible":first}
+    out = {"_meta": {"generated_by": "build_map.py"}, "layers": {}}
+    for name in PMTILES_DEFAULTS:
+        t = tile_settings(config, name)
+        inputs = tile_inputs(config, name)
+        out["layers"][name] = {
+            "min_zoom": min(i["min_zoom"] for i in inputs),
+            "max_zoom": max(i["max_zoom"] for i in inputs),
+            "simplification": t["simplification"],
+            "inputs": inputs,
+        }
     return out
 
-
-# ── Main ───────────────────────────────────────────────────────────────────────
 
 def main():
     p = argparse.ArgumentParser()
@@ -1219,7 +1396,9 @@ def main():
     if only in (None,"granulometry"):
         g = build_granulometry(config)
         Path(args.gran_out).write_text(json.dumps(g,indent=2,ensure_ascii=False))
-        print(f"✓  {args.gran_out}  ({sum(len(v['rules']) for v in g['layers'].values())} règles)")
+        n_rules = sum(len(v.get("rules", [])) + sum(len(r) for r in v.get("files", {}).values())
+                      for v in g["layers"].values())
+        print(f"✓  {args.gran_out}  ({n_rules} règles)")
     if only in (None,"pmtiles"):
         pm = build_pmtiles_params(config)
         Path(args.pmtiles_out).write_text(json.dumps(pm,indent=2,ensure_ascii=False))

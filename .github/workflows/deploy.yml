@@ -109,7 +109,12 @@ jobs:
 
       # ── Étape 5 : Fusionner les bâtiments ─────────────────────────────────────────────
       - name: Merge touching buildings
-        run: python3 merge_buildings.py
+        run: |
+          if python3 -c "import json,sys; p=json.load(open('pmtiles_params.json')); sys.exit(0 if any(i['file']=='buildings_merged.json' for i in p['layers']['buildings']['inputs']) else 1)"; then
+            python3 merge_buildings.py
+          else
+            echo "ℹ️  buildings.appear_at >= tiles.detail_from : pas de bâtiments fusionnés"
+          fi
 
       # ── Étape 6 : Granulométrie (LOD) ─────────────────────────────────────────────────
       - name: Apply granulometry (LOD filtering)
@@ -125,18 +130,7 @@ jobs:
 
       # ── Étape 7 : Générer les PMTiles (inclut street_furniture.pmtiles.gz, issue #51) ──
       - name: Generate PMTiles
-        run: |
-          # Si pmtiles_params.json existe, injecter les zoom min/max dans le bash
-          if [ -f pmtiles_params.json ]; then
-            echo "→ Paramètres zoom lus depuis pmtiles_params.json"
-            export PMTILES_PARAMS="pmtiles_params.json"
-          fi
-          bash generate_pmtiles.bash
-
-      # ── Étape 8 : Appliquer les marquages terrains de sport ───────────────────────────
-      # (idempotent — n'écrase pas les couches si déjà présentes)
-      - name: Ensure pitch sport layers in style
-        run: python3 patch_style_pitches.py www/style.json
+        run: PMTILES_PARAMS=pmtiles_params.json bash generate_pmtiles.bash
 
       # ── Étape 9 : Commit des artefacts ────────────────────────────────────────────────
       # Uniquement sur main : sur une branche de travail, on build et on déploie

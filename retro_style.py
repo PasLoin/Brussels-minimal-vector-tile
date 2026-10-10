@@ -21,6 +21,8 @@ try:
 except ImportError:
     print("✗  pip install pyyaml", file=sys.stderr); sys.exit(1)
 
+from build_map import _lighten
+
 # ── Groupes : préfixes de layer-id → nom de couche ────────────────────────────
 
 GROUPS = {
@@ -200,18 +202,38 @@ def filter_values(filt, tag):
     return []
 
 
-def refers_to_property(expr):
+LABEL_KEYS = ("name", "ref")
+
+
+def is_label_key(key):
+    return isinstance(key, str) and (key in LABEL_KEYS or key.startswith(("name:", "addr:")))
+
+
+def refers_to_label(expr):
     if isinstance(expr, list):
-        if expr and expr[0] == "get":
+        if len(expr) == 2 and expr[0] == "get" and is_label_key(expr[1]):
             return True
-        return any(refers_to_property(e) for e in expr)
+        return any(refers_to_label(e) for e in expr)
     return False
 
 
 def is_label_layer(layer):
     if layer.get("type") != "symbol":
         return False
-    return refers_to_property(layer.get("layout", {}).get("text-field"))
+    return refers_to_label(layer.get("layout", {}).get("text-field"))
+
+
+def parse_by(expr, group_tags):
+    if (isinstance(expr, list) and len(expr) >= 5 and expr[0] == "match"
+            and isinstance(expr[1], list) and len(expr[1]) == 2 and expr[1][0] == "get"
+            and expr[1][1] not in group_tags and not is_label_key(expr[1][1])):
+        mapping = {}
+        for label, out in zip(expr[2:-1:2], expr[3:-1:2]):
+            if isinstance(label, str) and isinstance(out, str):
+                mapping[label] = out
+        if mapping and isinstance(expr[-1], str):
+            return expr[1][1], mapping, expr[-1]
+    return None
 
 
 def is_variant_layer(layer):
@@ -356,9 +378,12 @@ def analyse_group(name, style_layers):
                 continue
             vals = filter_values(filt, tag)
             for v in vals:
-                col, col_priv = parse_color_expr(paint.get("fill-color") or
-                                                  paint.get("line-color") or
-                                                  paint.get("circle-color"))
+                color_expr = (paint.get("fill-color") or paint.get("line-color") or
+                              paint.get("circle-color") or paint.get("text-color"))
+                col, col_priv = parse_color_expr(color_expr)
+                by_col = parse_by(color_expr, tags_to_check)
+                if by_col:
+                    col = by_col[2]
                 op = parse_opacity(paint)
 
                 if v not in subtypes:
@@ -367,6 +392,8 @@ def analyse_group(name, style_layers):
                 subtypes[v]["appear_at"] = min(subtypes[v].get("appear_at", lz), lz)
 
                 if variant:
+                    if "tunnel" in l["id"] and not casing and col:
+                        subtypes[v]["tunnel_color"] = col
                     continue
                 if casing or outline:
                     if col:
@@ -377,10 +404,19 @@ def analyse_group(name, style_layers):
                     subtypes[v]["color"] = col
                 if col_priv:
                     subtypes[v]["color_private"] = col_priv
+                if by_col:
+                    subtypes[v]["by"] = by_col[0]
+                    subtypes[v]["by_color"] = by_col[1]
+                by_pat = parse_by(pattern, tags_to_check)
+                if by_pat:
+                    subtypes[v]["by"] = by_pat[0]
+                    subtypes[v]["by_pattern"] = by_pat[1]
+                    pattern = by_pat[2]
                 if pattern and is_private_layer:
                     subtypes[v]["pattern_private"] = str(pattern)
                 elif pattern and not is_private_layer:
                     subtypes[v]["pattern"] = str(pattern)
+                    subtypes[v]["pattern_at"] = lz
                 if op is not None and abs(op - 1.0) > 0.01:
                     subtypes[v]["opacity"] = op
                 if v in outline_map and "outline_color" not in subtypes[v]:
@@ -410,8 +446,11 @@ def analyse_group(name, style_layers):
     cleaned = {}
     for k, v in subtypes.items():
         entry = {"tag": v["tag"]}
-        for prop in ("color", "color_private", "pattern", "pattern_private",
-                     "outline_color", "appear_at", "opacity"):
+        if "tunnel_color" in v and "color" in v and v["tunnel_color"] == _lighten(v["color"]):
+            del v["tunnel_color"]
+        if "pattern_at" in v and v["pattern_at"] == v.get("appear_at"):
+            del v["pattern_at"]
+        for prop in FIELD_ORDER[1:]:
             if prop in v:
                 entry[prop] = v[prop]
         cleaned[k] = entry
@@ -430,25 +469,85 @@ def analyse_group(name, style_layers):
 # ── Sérialisation YAML ────────────────────────────────────────────────────────
 
 FIELD_ORDER = [
-    "tag", "color", "color_private", "pattern", "pattern_private",
-    "outline_color", "appear_at", "labels_at", "opacity"
+    "tag", "color", "color_private", "tunnel_color", "pattern", "pattern_private",
+    "pattern_at", "outline_color", "appear_at", "labels_at", "opacity",
+    "by", "by_color", "by_pattern"
 ]
 
 
+def flow_value(v):
+    if isinstance(v, dict):
+        return "{ " + ", ".join(f"{flow_key(k)}: {flow_value(x)}" for k, x in sorted(v.items())) + " }"
+    if isinstance(v, str):
+        if v.startswith("#") or not re.fullmatch(r"[A-Za-z0-9_./-]+", v):
+            return json.dumps(v, ensure_ascii=False)
+        return v
+    if isinstance(v, bool):
+        return "true" if v else "false"
+    return str(v)
+
+
+def flow_key(k):
+    k = str(k)
+    return k if re.fullmatch(r"[A-Za-z0-9_-]+", k) else json.dumps(k, ensure_ascii=False)
+
+
 def format_subtype_inline(scfg):
-    """Sérialise un dict sous-type en ligne inline YAML."""
-    parts = []
-    for f in FIELD_ORDER:
-        if f not in scfg:
-            continue
-        v = scfg[f]
-        if isinstance(v, str) and v.startswith("#"):
-            parts.append(f'{f}: "{v}"')
-        elif isinstance(v, str):
-            parts.append(f'{f}: {v}')
-        else:
-            parts.append(f'{f}: {v}')
+    parts = [f"{f}: {flow_value(scfg[f])}" for f in FIELD_ORDER if f in scfg]
     return "{ " + ", ".join(parts) + " }"
+
+
+def parse_sports(style_layers):
+    by_id = {l["id"]: l for l in style_layers}
+    fill = by_id.get("pitch-sport-fill")
+    if not fill:
+        return None
+    values = defaultdict(dict)
+    default = {}
+
+    def collect(expr, field):
+        if isinstance(expr, list) and expr and expr[0] == "match":
+            for label, out in zip(expr[2:-1:2], expr[3:-1:2]):
+                values[label][field] = out
+            default[field] = expr[-1]
+        elif expr is not None:
+            default[field] = expr
+
+    collect(fill.get("paint", {}).get("fill-color"), "color")
+    outline = by_id.get("pitch-sport-outline")
+    if outline:
+        collect(outline.get("paint", {}).get("line-color"), "outline_color")
+    sports = {}
+    markings = by_id.get("pitch-markings")
+    if markings:
+        sports["markings_at"] = int(markings.get("minzoom", 17))
+        size = markings.get("layout", {}).get("icon-size")
+        try:
+            length = size[4][1][3]
+            collect(length, "length")
+        except (TypeError, IndexError):
+            pass
+    sports["default"] = default
+    sports["values"] = {k: dict(v) for k, v in sorted(values.items())}
+    return sports
+
+
+def dump_sports(sports):
+    lines = ["    sports:"]
+    if "markings_at" in sports:
+        lines.append(f"      markings_at: {sports['markings_at']}")
+    order = ("color", "outline_color", "length")
+    def entry(d):
+        return "{ " + ", ".join(f"{k}: {flow_value(d[k])}" for k in order if k in d) + " }"
+    lines.append(f"      default: {entry(sports['default'])}")
+    if sports["values"]:
+        lines.append("      values:")
+        for k, v in sports["values"].items():
+            lines.append(f"        {k}: {entry(v)}")
+    return lines
+
+
+NO_LAYER_COLOR = {"roads"}
 
 
 def dump_layer(name, info):
@@ -461,9 +560,9 @@ def dump_layer(name, info):
 
     lines.append(f"  {name}:")
     lines.append(f"    label: {label}")
-    if col:
+    if col and name not in NO_LAYER_COLOR:
         lines.append(f'    color: "{col}"')
-    if bc:
+    if bc and name not in NO_LAYER_COLOR:
         lines.append(f'    border_color: "{bc}"')
     if not info["visible"]:
         lines.append(f"    visible: false")
@@ -472,10 +571,14 @@ def dump_layer(name, info):
     lines.append(f"    appear_at: {appear}")
     if la and la != appear + 3:
         lines.append(f"    labels_at: {la}")
+    if info.get("tiles"):
+        lines.append(f"    tiles: {flow_value(info['tiles'])}")
     if info["subtypes"]:
         lines.append(f"    subtypes:")
         for val, scfg in sorted(info["subtypes"].items()):
             lines.append(f"      {val}: {format_subtype_inline(scfg)}")
+    if info.get("sports"):
+        lines += dump_sports(info["sports"])
     return "\n".join(lines)
 
 
@@ -514,11 +617,18 @@ def main():
     map_zoom = style.get("zoom", map_meta.get("zoom", 13))
     map_font = map_meta.get("font", "#734a08")
 
+    metadata = style.get("metadata") or {}
+    meta_tiles = metadata.get("brussels:tiles") or {}
+    meta_patterns = metadata.get("brussels:patterns") or {}
     groups = {}
     for name in GROUPS:
         info = analyse_group(name, style_layers)
         if not info:
             continue
+        if name in meta_tiles:
+            info["tiles"] = meta_tiles[name]
+        if name == "leisure":
+            info["sports"] = parse_sports(style_layers)
         groups[name] = info
         st_n = len(info["subtypes"])
         specials = sum(
@@ -544,6 +654,10 @@ def main():
         "#   appear_at      zoom minimum d'apparition",
         "#   labels_at      zoom minimum des étiquettes (défaut: appear_at+3)",
         "#   opacity        opacité globale (0.0–1.0)",
+        "#   tiles          paramètres PMTiles (min_zoom, max_zoom, simplification,",
+        "#                  detail_from pour buildings)",
+        "#   sports         leisure uniquement : rendu des terrains par sport_render",
+        "#                  (markings_at, default, values: couleur, contour, longueur)",
         "#",
         "# Champs disponibles par sous-type :",
         "#   tag            tag OSM du filtre (landuse, leisure, natural, highway...)",
@@ -554,6 +668,14 @@ def main():
         "#   outline_color  couleur du contour",
         "#   appear_at      zoom minimum",
         "#   opacity        opacité fill (0.0–1.0)",
+        "#   pattern_at     zoom d'apparition du motif (défaut: appear_at)",
+        "#   by             clé OSM secondaire (ex: religion, leaf_type)",
+        "#   by_color       couleur par valeur de la clé \"by\" (défaut: color)",
+        "#   by_pattern     motif par valeur de la clé \"by\" (défaut: pattern)",
+        "#   tunnel_color   couleur des tronçons en tunnel (défaut: color éclaircie)",
+        "#",
+        "# Section patterns : motifs SVG chargés par la carte",
+        "#   file, size (px), replace (substitution de couleurs dans le SVG)",
         "#",
         "# Modifier CE fichier, pas style.json directement.",
         "# Regénérer :  python3 build_map.py",
@@ -570,9 +692,14 @@ def main():
         f'  background: "{bg}"',
         f'  font: "{map_font}"',
         f'  glyphs: "{glyphs}"',
-        "", "",
-        "layers:", "",
+        "",
     ]
+    if meta_patterns:
+        out_lines.append("patterns:")
+        for pname, pcfg in sorted(meta_patterns.items()):
+            out_lines.append(f"  {flow_key(pname)}: {flow_value(pcfg)}")
+        out_lines.append("")
+    out_lines += ["layers:", ""]
 
     for name, info in groups.items():
         out_lines.append(dump_layer(name, info))
