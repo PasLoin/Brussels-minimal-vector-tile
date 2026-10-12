@@ -114,7 +114,17 @@ def load_geojson(path):
 
 
 def process_layer(name, rules, dry_run):
-    path = Path(f"{name}.json")
+    return process_file(Path(f"{name}.json"), rules, dry_run)
+
+
+def layer_jobs(name, cfg):
+    files = cfg.get("files")
+    if files:
+        return [(f"{name} ({fname})", Path(fname), rules) for fname, rules in files.items()]
+    return [(name, Path(f"{name}.json"), cfg.get("rules", []))]
+
+
+def process_file(path, rules, dry_run):
     if not path.exists():
         return {"error": f"{path} introuvable"}
 
@@ -175,26 +185,26 @@ def main():
             print(f"  ⚠  {name} absent de {gran_path}")
             continue
 
-        rules = cfg.get("rules", [])
-        print(f"→ {name}  ({len(rules)} règles)", end="  ")
-        stats = process_layer(name, rules, args.dry_run)
+        for label, path, rules in layer_jobs(name, cfg):
+            print(f"→ {label}  ({len(rules)} règles)", end="  ")
+            stats = process_file(path, rules, args.dry_run)
 
-        if "error" in stats:
-            print(f"✗  {stats['error']}")
-            rows.append(f"| {name} | — | — | ✗ |")
-            continue
+            if "error" in stats:
+                print(f"✗  {stats['error']}")
+                rows.append(f"| {label} | — | — | ✗ |")
+                continue
 
-        pct = round(100 * stats["out"] / stats["in"]) if stats["in"] else 0
-        exp = f" +{stats['expanded']} splits" if stats["expanded"] else ""
-        mark = "○" if args.dry_run else "✓"
-        print(f"{mark}  {stats['in']} → {stats['out']}  "
-              f"({stats['dropped']} drop{exp})")
+            pct = round(100 * stats["out"] / stats["in"]) if stats["in"] else 0
+            exp = f" +{stats['expanded']} splits" if stats["expanded"] else ""
+            mark = "○" if args.dry_run else "✓"
+            print(f"{mark}  {stats['in']} → {stats['out']}  "
+                  f"({stats['dropped']} drop{exp})")
 
-        total_in   += stats["in"]
-        total_out  += stats["out"]
-        total_drop += stats["dropped"]
-        rows.append(f"| {name} | {stats['in']} | {stats['out']} "
-                    f"| {stats['dropped']} | {pct}% |")
+            total_in   += stats["in"]
+            total_out  += stats["out"]
+            total_drop += stats["dropped"]
+            rows.append(f"| {label} | {stats['in']} | {stats['out']} "
+                        f"| {stats['dropped']} | {pct}% |")
 
     # Rapport Markdown
     pct_total = round(100 * total_out / total_in) if total_in else 0

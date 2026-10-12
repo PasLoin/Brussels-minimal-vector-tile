@@ -193,7 +193,7 @@ def main():
 
         # Copier hoops s'il existe (issue #39 : terrain de basketball
         # avec un seul panier -> demi-terrain -> rendu SVG différent,
-        # cf. icon-image dans patch_style_pitches.py)
+        # cf. icon-image de pitch_markings() dans build_map.py)
         if props.get("hoops"):
             point_props["hoops"] = props["hoops"]
 
