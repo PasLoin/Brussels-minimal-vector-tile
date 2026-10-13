@@ -1,17 +1,4 @@
 #!/usr/bin/env python3
-"""
-apply_granulometry.py
-─────────────────────
-Lit granulometry.json (généré par build_map.py) et filtre les fichiers
-GeoJSON en ajoutant des hints tippecanoe par feature (minzoom/maxzoom).
-
-Usage :
-  python3 apply_granulometry.py                      # tous les layers
-  python3 apply_granulometry.py --layers roads,poi   # layers spécifiques
-  python3 apply_granulometry.py --dry-run            # rapport sans écriture
-  python3 apply_granulometry.py --gran granulometry.json
-"""
-
 import argparse, json, sys
 from pathlib import Path
 
@@ -44,11 +31,23 @@ def filter_props(props, keep):
     return {k: v for k, v in props.items() if k in keep}
 
 
+def existing_range(feat):
+    hint = feat.get("tippecanoe") or {}
+    lo = hint.get("minzoom")
+    hi = hint.get("maxzoom")
+    return (lo if isinstance(lo, (int, float)) else float("-inf"),
+            hi if isinstance(hi, (int, float)) else float("inf"))
+
+
 def process(feat, rules):
     props = feat.get("properties") or {}
+    lo, hi = existing_range(feat)
     segments = []
 
     for zmin, zmax in ZOOM_BLOCKS:
+        if zmax < lo or zmin > hi:
+            continue
+        zmin, zmax = int(max(zmin, lo)), int(min(zmax, hi))
         for rule in rules:
             rmin = rule.get("zoom_min", 10)
             rmax = rule.get("zoom_max", 18)
@@ -64,22 +63,25 @@ def process(feat, rules):
     if not segments:
         return []
 
-    # Fusionner les blocs consécutifs avec le même keep
     merged = []
     a_zmin, a_zmax, a_keep = segments[0]
     for zmin, zmax, keep in segments[1:]:
-        if keep == a_keep:
+        if keep == a_keep and zmin == a_zmax + 1:
             a_zmax = zmax
         else:
             merged.append((a_zmin, a_zmax, a_keep))
             a_zmin, a_zmax, a_keep = zmin, zmax, keep
     merged.append((a_zmin, a_zmax, a_keep))
 
+    base_hint = dict(feat.get("tippecanoe") or {})
     out = []
     for zmin, zmax, keep in merged:
+        hint = dict(base_hint)
+        hint["minzoom"] = zmin
+        hint["maxzoom"] = zmax
         f = {"type": "Feature", "geometry": feat.get("geometry"),
              "properties": filter_props(props, keep),
-             "tippecanoe": {"minzoom": zmin, "maxzoom": zmax}}
+             "tippecanoe": hint}
         if feat.get("id") is not None:
             f["id"] = feat["id"]
         out.append(f)
@@ -87,20 +89,14 @@ def process(feat, rules):
 
 
 def load_geojson(path):
-    """
-    Charge un fichier GeoJSON en gérant deux formats :
-      - FeatureCollection standard  {"type":"FeatureCollection","features":[...]}
-      - Newline-delimited JSON       une Feature JSON par ligne (format extract_stib_routes.py)
-    Retourne (data, is_ndjson).
-    """
     text = path.read_text()
-    # Tenter le parsing standard d'abord
     try:
         data = json.loads(text)
+        if isinstance(data, dict) and data.get("type") == "Feature":
+            return {"type": "FeatureCollection", "features": [data]}, True
         return data, False
     except json.JSONDecodeError:
         pass
-    # Fallback : NDJSON — une feature par ligne non vide
     feats = []
     for line in text.splitlines():
         line = line.strip()
@@ -143,10 +139,7 @@ def process_file(path, rules, dry_run):
     if not dry_run:
         data["features"] = out
         if was_ndjson:
-            # Réécrire en NDJSON pour rester compatible avec tippecanoe
-            path.write_text(
-                "\n".join(json.dumps(f, ensure_ascii=False) for f in out) + "\n"
-            )
+            path.write_text("".join(json.dumps(f, ensure_ascii=False) + "\n" for f in out))
         else:
             path.write_text(json.dumps(data, ensure_ascii=False))
 
@@ -191,7 +184,7 @@ def main():
 
             if "error" in stats:
                 print(f"✗  {stats['error']}")
-                rows.append(f"| {label} | — | — | ✗ |")
+                rows.append(f"| {label} | — | — | — | ✗ |")
                 continue
 
             pct = round(100 * stats["out"] / stats["in"]) if stats["in"] else 0
@@ -206,7 +199,6 @@ def main():
             rows.append(f"| {label} | {stats['in']} | {stats['out']} "
                         f"| {stats['dropped']} | {pct}% |")
 
-    # Rapport Markdown
     pct_total = round(100 * total_out / total_in) if total_in else 0
     report = ["# Granulometry report", "",
               f"Config: `{args.gran}`",
