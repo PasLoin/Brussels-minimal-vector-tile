@@ -43,6 +43,416 @@
         "file": "assets/military_hatch.svg",
         "size": 20
       }
+    },
+    "brussels:lazy": {
+      "before": "public_transport-label",
+      "level_height": 3.0,
+      "slab": 0.3,
+      "volume_ratio": 0.9,
+      "sources": {
+        "building_parts": {
+          "type": "vector",
+          "url": "./building_parts.pmtiles.gz",
+          "attribution": "© OpenStreetMap contributors"
+        },
+        "indoor": {
+          "type": "vector",
+          "url": "./indoor.pmtiles.gz",
+          "attribution": "© OpenStreetMap contributors"
+        }
+      },
+      "layers": [
+        {
+          "id": "building-parts-3d",
+          "type": "fill-extrusion",
+          "source": "building_parts",
+          "source-layer": "building_parts",
+          "minzoom": 13,
+          "metadata": {
+            "brussels:group": "building_parts"
+          },
+          "layout": {
+            "visibility": "none"
+          },
+          "paint": {
+            "fill-extrusion-color": [
+              "to-color",
+              [
+                "coalesce",
+                [
+                  "get",
+                  "building:colour"
+                ],
+                "#fce1c5"
+              ],
+              "#fce1c5"
+            ],
+            "fill-extrusion-base": [
+              "case",
+              [
+                "has",
+                "min_height"
+              ],
+              [
+                "to-number",
+                [
+                  "get",
+                  "min_height"
+                ],
+                0
+              ],
+              [
+                "has",
+                "building:min_level"
+              ],
+              [
+                "*",
+                [
+                  "to-number",
+                  [
+                    "get",
+                    "building:min_level"
+                  ],
+                  0
+                ],
+                3
+              ],
+              0
+            ],
+            "fill-extrusion-height": [
+              "max",
+              [
+                "case",
+                [
+                  "has",
+                  "height"
+                ],
+                [
+                  "to-number",
+                  [
+                    "get",
+                    "height"
+                  ],
+                  9
+                ],
+                [
+                  "has",
+                  "building:levels"
+                ],
+                [
+                  "*",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "building:levels"
+                    ],
+                    3
+                  ],
+                  3
+                ],
+                [
+                  "+",
+                  [
+                    "case",
+                    [
+                      "has",
+                      "min_height"
+                    ],
+                    [
+                      "to-number",
+                      [
+                        "get",
+                        "min_height"
+                      ],
+                      0
+                    ],
+                    [
+                      "has",
+                      "building:min_level"
+                    ],
+                    [
+                      "*",
+                      [
+                        "to-number",
+                        [
+                          "get",
+                          "building:min_level"
+                        ],
+                        0
+                      ],
+                      3
+                    ],
+                    0
+                  ],
+                  9
+                ]
+              ],
+              [
+                "+",
+                [
+                  "case",
+                  [
+                    "has",
+                    "min_height"
+                  ],
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "min_height"
+                    ],
+                    0
+                  ],
+                  [
+                    "has",
+                    "building:min_level"
+                  ],
+                  [
+                    "*",
+                    [
+                      "to-number",
+                      [
+                        "get",
+                        "building:min_level"
+                      ],
+                      0
+                    ],
+                    3
+                  ],
+                  0
+                ],
+                1
+              ]
+            ],
+            "fill-extrusion-opacity": 0.85
+          }
+        },
+        {
+          "id": "indoor-3d-floor",
+          "type": "fill-extrusion",
+          "source": "indoor",
+          "source-layer": "indoor",
+          "minzoom": 15,
+          "metadata": {
+            "brussels:group": "indoor",
+            "brussels:extrusion": "slab"
+          },
+          "filter": [
+            "in",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "literal",
+              [
+                "platform",
+                "footway",
+                "corridor",
+                "pedestrian",
+                "steps",
+                "room",
+                "area"
+              ]
+            ]
+          ],
+          "layout": {
+            "visibility": "none"
+          },
+          "paint": {
+            "fill-extrusion-color": [
+              "match",
+              [
+                "get",
+                "kind"
+              ],
+              "area",
+              "#e6dfcb",
+              "corridor",
+              "#f2c38c",
+              "elevator",
+              "#3d7cc9",
+              "footway",
+              "#f2c38c",
+              "pedestrian",
+              "#e9dcc2",
+              "platform",
+              "#b7a4e3",
+              "room",
+              "#efe6d2",
+              "steps",
+              "#d9822b",
+              "wall",
+              "#7a7a7a",
+              "#e6dfcb"
+            ],
+            "fill-extrusion-opacity": 0.9,
+            "fill-extrusion-base": [
+              "*",
+              [
+                "-",
+                [
+                  "max",
+                  0,
+                  [
+                    "min",
+                    99,
+                    [
+                      "to-number",
+                      [
+                        "get",
+                        "level_min"
+                      ],
+                      0
+                    ]
+                  ]
+                ],
+                0
+              ],
+              3.0
+            ],
+            "fill-extrusion-height": [
+              "+",
+              [
+                "*",
+                [
+                  "-",
+                  [
+                    "max",
+                    0,
+                    [
+                      "min",
+                      99,
+                      [
+                        "to-number",
+                        [
+                          "get",
+                          "level_max"
+                        ],
+                        0
+                      ]
+                    ]
+                  ],
+                  0
+                ],
+                3.0
+              ],
+              0.3
+            ]
+          }
+        },
+        {
+          "id": "indoor-3d-volume",
+          "type": "fill-extrusion",
+          "source": "indoor",
+          "source-layer": "indoor",
+          "minzoom": 15,
+          "metadata": {
+            "brussels:group": "indoor",
+            "brussels:extrusion": "volume"
+          },
+          "filter": [
+            "in",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "literal",
+              [
+                "room",
+                "wall",
+                "elevator"
+              ]
+            ]
+          ],
+          "layout": {
+            "visibility": "none"
+          },
+          "paint": {
+            "fill-extrusion-color": [
+              "match",
+              [
+                "get",
+                "kind"
+              ],
+              "area",
+              "#e6dfcb",
+              "corridor",
+              "#f2c38c",
+              "elevator",
+              "#3d7cc9",
+              "footway",
+              "#f2c38c",
+              "pedestrian",
+              "#e9dcc2",
+              "platform",
+              "#b7a4e3",
+              "room",
+              "#efe6d2",
+              "steps",
+              "#d9822b",
+              "wall",
+              "#7a7a7a",
+              "#e6dfcb"
+            ],
+            "fill-extrusion-opacity": 0.35,
+            "fill-extrusion-base": [
+              "*",
+              [
+                "-",
+                [
+                  "max",
+                  0,
+                  [
+                    "min",
+                    99,
+                    [
+                      "to-number",
+                      [
+                        "get",
+                        "level_min"
+                      ],
+                      0
+                    ]
+                  ]
+                ],
+                0
+              ],
+              3.0
+            ],
+            "fill-extrusion-height": [
+              "+",
+              [
+                "*",
+                [
+                  "-",
+                  [
+                    "max",
+                    0,
+                    [
+                      "min",
+                      99,
+                      [
+                        "to-number",
+                        [
+                          "get",
+                          "level_max"
+                        ],
+                        0
+                      ]
+                    ]
+                  ],
+                  0
+                ],
+                3.0
+              ],
+              2.7
+            ]
+          }
+        }
+      ]
     }
   },
   "sources": {
@@ -1554,259 +1964,6 @@
       }
     },
     {
-      "id": "buildings-3d",
-      "type": "fill-extrusion",
-      "source": "buildings",
-      "source-layer": "buildings",
-      "minzoom": 13,
-      "layout": {
-        "visibility": "none"
-      },
-      "filter": [
-        "all",
-        [
-          "==",
-          [
-            "get",
-            "lod"
-          ],
-          "detail"
-        ],
-        [
-          "!=",
-          [
-            "get",
-            "covered_by_parts"
-          ],
-          "yes"
-        ]
-      ],
-      "paint": {
-        "fill-extrusion-color": [
-          "case",
-          [
-            "==",
-            [
-              "get",
-              "building"
-            ],
-            "roof"
-          ],
-          "#6b4f3a",
-          "#fce1c5"
-        ],
-        "fill-extrusion-base": [
-          "case",
-          [
-            "all",
-            [
-              "==",
-              [
-                "get",
-                "building"
-              ],
-              "roof"
-            ],
-            [
-              "!",
-              [
-                "any",
-                [
-                  "has",
-                  "height"
-                ],
-                [
-                  "has",
-                  "min_height"
-                ],
-                [
-                  "has",
-                  "building:levels"
-                ],
-                [
-                  "has",
-                  "building:min_level"
-                ]
-              ]
-            ]
-          ],
-          7.2,
-          [
-            "case",
-            [
-              "has",
-              "min_height"
-            ],
-            [
-              "to-number",
-              [
-                "get",
-                "min_height"
-              ],
-              0
-            ],
-            [
-              "has",
-              "building:min_level"
-            ],
-            [
-              "*",
-              [
-                "to-number",
-                [
-                  "get",
-                  "building:min_level"
-                ],
-                0
-              ],
-              3
-            ],
-            0
-          ]
-        ],
-        "fill-extrusion-height": [
-          "case",
-          [
-            "all",
-            [
-              "==",
-              [
-                "get",
-                "building"
-              ],
-              "roof"
-            ],
-            [
-              "!",
-              [
-                "any",
-                [
-                  "has",
-                  "height"
-                ],
-                [
-                  "has",
-                  "min_height"
-                ],
-                [
-                  "has",
-                  "building:levels"
-                ],
-                [
-                  "has",
-                  "building:min_level"
-                ]
-              ]
-            ]
-          ],
-          7.5,
-          [
-            "case",
-            [
-              "has",
-              "height"
-            ],
-            [
-              "to-number",
-              [
-                "get",
-                "height"
-              ],
-              6
-            ],
-            [
-              "has",
-              "building:levels"
-            ],
-            [
-              "+",
-              [
-                "case",
-                [
-                  "has",
-                  "min_height"
-                ],
-                [
-                  "to-number",
-                  [
-                    "get",
-                    "min_height"
-                  ],
-                  0
-                ],
-                [
-                  "has",
-                  "building:min_level"
-                ],
-                [
-                  "*",
-                  [
-                    "to-number",
-                    [
-                      "get",
-                      "building:min_level"
-                    ],
-                    0
-                  ],
-                  3
-                ],
-                0
-              ],
-              [
-                "*",
-                [
-                  "to-number",
-                  [
-                    "get",
-                    "building:levels"
-                  ],
-                  2
-                ],
-                3
-              ]
-            ],
-            [
-              "+",
-              [
-                "case",
-                [
-                  "has",
-                  "min_height"
-                ],
-                [
-                  "to-number",
-                  [
-                    "get",
-                    "min_height"
-                  ],
-                  0
-                ],
-                [
-                  "has",
-                  "building:min_level"
-                ],
-                [
-                  "*",
-                  [
-                    "to-number",
-                    [
-                      "get",
-                      "building:min_level"
-                    ],
-                    0
-                  ],
-                  3
-                ],
-                0
-              ],
-              7.5
-            ]
-          ]
-        ],
-        "fill-extrusion-opacity": 0.75
-      }
-    },
-    {
       "id": "buildings-outline",
       "type": "line",
       "source": "buildings",
@@ -3020,37 +3177,6 @@
           5
         ],
         "line-opacity": 0.85
-      }
-    },
-    {
-      "id": "public_transport-label",
-      "type": "symbol",
-      "source": "public_transport",
-      "source-layer": "public_transport",
-      "minzoom": 13,
-      "layout": {
-        "text-field": [
-          "get",
-          "ref"
-        ],
-        "text-font": [
-          "Noto Sans Regular"
-        ],
-        "text-size": 11,
-        "symbol-placement": "line",
-        "text-max-angle": 30
-      },
-      "paint": {
-        "text-color": [
-          "coalesce",
-          [
-            "get",
-            "colour:text"
-          ],
-          "#000000"
-        ],
-        "text-halo-color": "rgba(255,255,255,0.85)",
-        "text-halo-width": 1.5
       }
     },
     {
@@ -10914,120 +11040,6 @@
       }
     },
     {
-      "id": "road-labels",
-      "type": "symbol",
-      "source": "roads",
-      "source-layer": "roads",
-      "minzoom": 15,
-      "filter": [
-        "match",
-        [
-          "get",
-          "highway"
-        ],
-        [
-          "motorway",
-          "trunk",
-          "primary",
-          "secondary",
-          "tertiary",
-          "residential",
-          "unclassified",
-          "living_street"
-        ],
-        true,
-        false
-      ],
-      "layout": {
-        "text-field": [
-          "get",
-          "name"
-        ],
-        "text-font": [
-          "Noto Sans Regular"
-        ],
-        "text-size": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          15,
-          10,
-          18,
-          13
-        ],
-        "symbol-placement": "line",
-        "text-max-angle": 30
-      },
-      "paint": {
-        "text-color": "#222222",
-        "text-halo-color": "rgba(255,255,255,0.8)",
-        "text-halo-width": 1.5
-      }
-    },
-    {
-      "id": "road-oneway-arrows",
-      "type": "symbol",
-      "source": "roads",
-      "source-layer": "roads",
-      "minzoom": 16,
-      "filter": [
-        "==",
-        [
-          "get",
-          "oneway"
-        ],
-        "yes"
-      ],
-      "layout": {
-        "symbol-placement": "line",
-        "symbol-spacing": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          16,
-          150,
-          18,
-          80
-        ],
-        "text-field": "→",
-        "text-font": [
-          "Noto Sans Regular"
-        ],
-        "text-size": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          16,
-          10,
-          18,
-          14
-        ],
-        "text-rotation-alignment": "map",
-        "text-pitch-alignment": "map",
-        "text-keep-upright": false,
-        "text-allow-overlap": true,
-        "text-ignore-placement": true
-      },
-      "paint": {
-        "text-color": "#666666",
-        "text-opacity": 0.7,
-        "text-halo-color": "rgba(255,255,255,0.6)",
-        "text-halo-width": 1
-      }
-    },
-    {
       "id": "pedestrian-street-casing",
       "type": "line",
       "source": "pedestrian",
@@ -12658,6 +12670,466 @@
       }
     },
     {
+      "id": "boundaries",
+      "type": "line",
+      "source": "boundaries",
+      "source-layer": "boundaries",
+      "minzoom": 10,
+      "paint": {
+        "line-color": "#ac46ac",
+        "line-width": 1,
+        "line-dasharray": [
+          5,
+          5
+        ],
+        "line-opacity": 0.7
+      }
+    },
+    {
+      "id": "street-furniture-fence",
+      "type": "line",
+      "source": "street_furniture",
+      "source-layer": "street_furniture",
+      "minzoom": 17,
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "barrier"
+          ],
+          "fence"
+        ],
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ]
+      ],
+      "paint": {
+        "line-color": "#9c9c9c",
+        "line-width": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          17,
+          0.5,
+          18,
+          1.5
+        ],
+        "line-opacity": 0.8
+      }
+    },
+    {
+      "id": "buildings-3d",
+      "type": "fill-extrusion",
+      "source": "buildings",
+      "source-layer": "buildings",
+      "minzoom": 13,
+      "layout": {
+        "visibility": "none"
+      },
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "lod"
+          ],
+          "detail"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "covered_by_parts"
+          ],
+          "yes"
+        ]
+      ],
+      "paint": {
+        "fill-extrusion-color": [
+          "case",
+          [
+            "==",
+            [
+              "get",
+              "building"
+            ],
+            "roof"
+          ],
+          "#6b4f3a",
+          "#fce1c5"
+        ],
+        "fill-extrusion-base": [
+          "case",
+          [
+            "all",
+            [
+              "==",
+              [
+                "get",
+                "building"
+              ],
+              "roof"
+            ],
+            [
+              "!",
+              [
+                "any",
+                [
+                  "has",
+                  "height"
+                ],
+                [
+                  "has",
+                  "min_height"
+                ],
+                [
+                  "has",
+                  "building:levels"
+                ],
+                [
+                  "has",
+                  "building:min_level"
+                ]
+              ]
+            ]
+          ],
+          7.2,
+          [
+            "case",
+            [
+              "has",
+              "min_height"
+            ],
+            [
+              "to-number",
+              [
+                "get",
+                "min_height"
+              ],
+              0
+            ],
+            [
+              "has",
+              "building:min_level"
+            ],
+            [
+              "*",
+              [
+                "to-number",
+                [
+                  "get",
+                  "building:min_level"
+                ],
+                0
+              ],
+              3
+            ],
+            0
+          ]
+        ],
+        "fill-extrusion-height": [
+          "case",
+          [
+            "all",
+            [
+              "==",
+              [
+                "get",
+                "building"
+              ],
+              "roof"
+            ],
+            [
+              "!",
+              [
+                "any",
+                [
+                  "has",
+                  "height"
+                ],
+                [
+                  "has",
+                  "min_height"
+                ],
+                [
+                  "has",
+                  "building:levels"
+                ],
+                [
+                  "has",
+                  "building:min_level"
+                ]
+              ]
+            ]
+          ],
+          7.5,
+          [
+            "max",
+            [
+              "case",
+              [
+                "has",
+                "height"
+              ],
+              [
+                "to-number",
+                [
+                  "get",
+                  "height"
+                ],
+                6
+              ],
+              [
+                "has",
+                "building:levels"
+              ],
+              [
+                "*",
+                [
+                  "to-number",
+                  [
+                    "get",
+                    "building:levels"
+                  ],
+                  2
+                ],
+                3
+              ],
+              [
+                "+",
+                [
+                  "case",
+                  [
+                    "has",
+                    "min_height"
+                  ],
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "min_height"
+                    ],
+                    0
+                  ],
+                  [
+                    "has",
+                    "building:min_level"
+                  ],
+                  [
+                    "*",
+                    [
+                      "to-number",
+                      [
+                        "get",
+                        "building:min_level"
+                      ],
+                      0
+                    ],
+                    3
+                  ],
+                  0
+                ],
+                7.5
+              ]
+            ],
+            [
+              "+",
+              [
+                "case",
+                [
+                  "has",
+                  "min_height"
+                ],
+                [
+                  "to-number",
+                  [
+                    "get",
+                    "min_height"
+                  ],
+                  0
+                ],
+                [
+                  "has",
+                  "building:min_level"
+                ],
+                [
+                  "*",
+                  [
+                    "to-number",
+                    [
+                      "get",
+                      "building:min_level"
+                    ],
+                    0
+                  ],
+                  3
+                ],
+                0
+              ],
+              1
+            ]
+          ]
+        ],
+        "fill-extrusion-opacity": 0.75
+      }
+    },
+    {
+      "id": "public_transport-label",
+      "type": "symbol",
+      "source": "public_transport",
+      "source-layer": "public_transport",
+      "minzoom": 13,
+      "layout": {
+        "text-field": [
+          "get",
+          "ref"
+        ],
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": 11,
+        "symbol-placement": "line",
+        "text-max-angle": 30
+      },
+      "paint": {
+        "text-color": [
+          "coalesce",
+          [
+            "get",
+            "colour:text"
+          ],
+          "#000000"
+        ],
+        "text-halo-color": "rgba(255,255,255,0.85)",
+        "text-halo-width": 1.5
+      }
+    },
+    {
+      "id": "road-labels",
+      "type": "symbol",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 15,
+      "filter": [
+        "match",
+        [
+          "get",
+          "highway"
+        ],
+        [
+          "motorway",
+          "trunk",
+          "primary",
+          "secondary",
+          "tertiary",
+          "residential",
+          "unclassified",
+          "living_street"
+        ],
+        true,
+        false
+      ],
+      "layout": {
+        "text-field": [
+          "get",
+          "name"
+        ],
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          15,
+          10,
+          18,
+          13
+        ],
+        "symbol-placement": "line",
+        "text-max-angle": 30
+      },
+      "paint": {
+        "text-color": "#222222",
+        "text-halo-color": "rgba(255,255,255,0.8)",
+        "text-halo-width": 1.5
+      }
+    },
+    {
+      "id": "road-oneway-arrows",
+      "type": "symbol",
+      "source": "roads",
+      "source-layer": "roads",
+      "minzoom": 16,
+      "filter": [
+        "==",
+        [
+          "get",
+          "oneway"
+        ],
+        "yes"
+      ],
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          16,
+          150,
+          18,
+          80
+        ],
+        "text-field": "→",
+        "text-font": [
+          "Noto Sans Regular"
+        ],
+        "text-size": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          16,
+          10,
+          18,
+          14
+        ],
+        "text-rotation-alignment": "map",
+        "text-pitch-alignment": "map",
+        "text-keep-upright": false,
+        "text-allow-overlap": true,
+        "text-ignore-placement": true
+      },
+      "paint": {
+        "text-color": "#666666",
+        "text-opacity": 0.7,
+        "text-halo-color": "rgba(255,255,255,0.6)",
+        "text-halo-width": 1
+      }
+    },
+    {
       "id": "cycleway-oneway-arrows",
       "type": "symbol",
       "source": "cycleway",
@@ -12714,22 +13186,6 @@
         "text-opacity": 0.95,
         "text-halo-color": "#0000ff",
         "text-halo-width": 1.5
-      }
-    },
-    {
-      "id": "boundaries",
-      "type": "line",
-      "source": "boundaries",
-      "source-layer": "boundaries",
-      "minzoom": 10,
-      "paint": {
-        "line-color": "#ac46ac",
-        "line-width": 1,
-        "line-dasharray": [
-          5,
-          5
-        ],
-        "line-opacity": 0.7
       }
     },
     {
@@ -13180,48 +13636,6 @@
         "text-color": "#734a08",
         "text-halo-color": "rgba(255,255,255,0.8)",
         "text-halo-width": 1.2
-      }
-    },
-    {
-      "id": "street-furniture-fence",
-      "type": "line",
-      "source": "street_furniture",
-      "source-layer": "street_furniture",
-      "minzoom": 17,
-      "filter": [
-        "all",
-        [
-          "==",
-          [
-            "get",
-            "barrier"
-          ],
-          "fence"
-        ],
-        [
-          "==",
-          [
-            "geometry-type"
-          ],
-          "LineString"
-        ]
-      ],
-      "paint": {
-        "line-color": "#9c9c9c",
-        "line-width": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "zoom"
-          ],
-          17,
-          0.5,
-          18,
-          1.5
-        ],
-        "line-opacity": 0.8
       }
     },
     {
