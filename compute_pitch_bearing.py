@@ -1,40 +1,24 @@
-#!/usr/bin/env python3
-"""
-compute_pitch_bearing.py
-────────────────────────
-Post-traitement de leisure.json :
-  - Pour chaque way leisure=pitch avec un sport connu,
-    calcule l'orientation (bearing de l'axe long) et les dimensions.
-  - Stocke bearing, pitch_length, pitch_width, sport_render dans les propriétés.
-
-Le bearing est exprimé pour icon-rotate de MapLibre GL
-(rotation-alignment=map) : degrés CW, 0 = axe long pointe vers l'est
-(car le SVG est dessiné en paysage).
-"""
 import json
 import math
 import sys
 
-# Sports supportés (extensible)
 KNOWN_SPORTS = {"tennis", "soccer", "football", "basketball", "boules"}
 
-# Alias de normalisation pour le rendu
 SPORT_ALIAS = {"football": "soccer"}
+
+DERIVED_KEYS = ("bearing", "pitch_length", "pitch_width", "sport_render")
 
 
 def dx_meters(lon1, lat1, lon2, lat2):
-    """Distance est-ouest en mètres."""
     avg_lat = math.radians((lat1 + lat2) / 2)
     return (lon2 - lon1) * 111_320 * math.cos(avg_lat)
 
 
 def dy_meters(lat1, lat2):
-    """Distance nord-sud en mètres."""
     return (lat2 - lat1) * 110_540
 
 
 def edge_info(p1, p2):
-    """Longueur (m) et bearing (° CW depuis le nord) d'un segment."""
     dx = dx_meters(p1[0], p1[1], p2[0], p2[1])
     dy = dy_meters(p1[1], p2[1])
     length = math.hypot(dx, dy)
@@ -43,7 +27,6 @@ def edge_info(p1, p2):
 
 
 def centroid_of_ring(ring):
-    """Centroïde du polygone (pour placer l'icône)."""
     xs = [p[0] for p in ring[:-1]]
     ys = [p[1] for p in ring[:-1]]
     if not xs:
@@ -52,23 +35,13 @@ def centroid_of_ring(ring):
 
 
 def process_polygon(coords):
-    """Analyse un polygone de terrain : bearing, longueur, largeur.
-
-    Stratégie :
-      1. Trouver l'orientation via l'arête la plus longue.
-      2. Projeter TOUS les sommets sur l'axe long et l'axe perpendiculaire.
-      3. Utiliser l'étendue (max − min) de chaque projection.
-    Cela corrige le cas courant où un bord de 24 m est découpé
-    en plusieurs segments par des nœuds intermédiaires OSM.
-    """
     ring = coords[0]
     if len(ring) < 4:
         return None
 
-    # ── 1. Convertir tous les sommets en mètres (repère local) ──
     ref_lon, ref_lat = ring[0][0], ring[0][1]
     pts_m = []
-    for p in ring[:-1]:                       # exclure la fermeture
+    for p in ring[:-1]:
         mx = dx_meters(ref_lon, ref_lat, p[0], p[1])
         my = dy_meters(ref_lat, p[1])
         pts_m.append((mx, my))
@@ -76,7 +49,6 @@ def process_polygon(coords):
     if len(pts_m) < 3:
         return None
 
-    # ── 2. Orientation : arête la plus longue ──
     edges = []
     for i in range(len(pts_m)):
         j = (i + 1) % len(pts_m)
@@ -87,14 +59,13 @@ def process_polygon(coords):
 
     edges.sort(key=lambda e: e[0], reverse=True)
     _, best_ex, best_ey = edges[0]
-    angle_rad = math.atan2(best_ex, best_ey)  # depuis le nord, CW
+    angle_rad = math.atan2(best_ex, best_ey)
 
-    # ── 3. Projeter tous les sommets sur cet axe ──
     cos_a = math.cos(angle_rad)
     sin_a = math.sin(angle_rad)
 
-    proj_long = []   # projection sur l'axe long
-    proj_perp = []   # projection sur l'axe perpendiculaire
+    proj_long = []
+    proj_perp = []
     for mx, my in pts_m:
         proj_long.append(mx * sin_a + my * cos_a)
         proj_perp.append(mx * cos_a - my * sin_a)
@@ -102,12 +73,10 @@ def process_polygon(coords):
     pitch_length = max(proj_long) - min(proj_long)
     pitch_width  = max(proj_perp) - min(proj_perp)
 
-    # S'assurer que length ≥ width
     if pitch_width > pitch_length:
         pitch_length, pitch_width = pitch_width, pitch_length
         angle_rad += math.pi / 2
 
-    # ── 4. Bearing → icon-rotate ──
     norm_bearing = math.degrees(angle_rad) % 180
     icon_rotate = (norm_bearing - 90) % 360
     if icon_rotate > 180:
@@ -121,7 +90,6 @@ def process_polygon(coords):
 
 
 def polygon_centroid(coords):
-    """Centroïde géographique (lon, lat) d'un polygone."""
     ring = coords[0]
     pts = ring[:-1] if ring[0] == ring[-1] and len(ring) > 1 else ring
     if not pts:
@@ -131,27 +99,41 @@ def polygon_centroid(coords):
     return [lon, lat]
 
 
+def is_generated_point(feat):
+    geom = feat.get("geometry") or {}
+    props = feat.get("properties") or {}
+    return (geom.get("type") == "Point"
+            and props.get("leisure") == "pitch"
+            and "sport_render" in props)
+
+
 def main():
-    src = "leisure.json"
+    src = sys.argv[1] if len(sys.argv) > 1 else "leisure.json"
     with open(src) as f:
         data = json.load(f)
 
-    features = data.get("features", [])
+    original = data.get("features", [])
+    features = [f for f in original if not is_generated_point(f)]
+    removed = len(original) - len(features)
+
     new_points = []
     enriched = 0
 
     for feat in features:
-        props = feat.get("properties", {})
+        props = feat.setdefault("properties", {})
         if props.get("leisure") != "pitch":
             continue
 
-        raw_sport = props.get("sport", "")
-        sports = {s.strip().lower() for s in raw_sport.replace(",", ";").split(";")}
+        for key in DERIVED_KEYS:
+            props.pop(key, None)
+
+        raw_sport = props.get("sport") or ""
+        sports = {s.strip().lower() for s in str(raw_sport).replace(",", ";").split(";")}
         matched = sports & KNOWN_SPORTS
         if not matched:
             continue
 
-        geom = feat.get("geometry", {})
+        geom = feat.get("geometry") or {}
         result = None
         centroid = None
 
@@ -173,13 +155,11 @@ def main():
         canon = sorted(matched)[0]
         sport_render = SPORT_ALIAS.get(canon, canon)
 
-        # Enrichir le polygone (pour le fill/outline)
         props["bearing"] = result["bearing"]
         props["pitch_length"] = result["pitch_length"]
         props["pitch_width"] = result["pitch_width"]
         props["sport_render"] = sport_render
 
-        # Créer un Point au centroïde (pour le marquage)
         point_props = {
             "leisure": "pitch",
             "sport_render": sport_render,
@@ -187,13 +167,9 @@ def main():
             "pitch_length": result["pitch_length"],
             "pitch_width": result["pitch_width"],
         }
-        # Copier le nom s'il existe
         if props.get("name"):
             point_props["name"] = props["name"]
 
-        # Copier hoops s'il existe (issue #39 : terrain de basketball
-        # avec un seul panier -> demi-terrain -> rendu SVG différent,
-        # cf. icon-image de pitch_markings() dans build_map.py)
         if props.get("hoops"):
             point_props["hoops"] = props["hoops"]
 
@@ -205,13 +181,14 @@ def main():
 
         enriched += 1
 
-    # Ajouter les points à la collection
     features.extend(new_points)
+    data["features"] = features
 
     with open(src, "w") as f:
         json.dump(data, f, ensure_ascii=False)
 
-    print(f"  {enriched} terrains enrichis + {len(new_points)} points centroïdes ajoutés")
+    note = f" ({removed} anciens points centroïdes remplacés)" if removed else ""
+    print(f"  {enriched} terrains enrichis + {len(new_points)} points centroïdes ajoutés{note}")
 
 
 if __name__ == "__main__":
