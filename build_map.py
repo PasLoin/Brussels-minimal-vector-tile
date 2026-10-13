@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-"""
-build_map.py  —  map.config.yaml → style.json + granulometry.json + pmtiles_params.json
-"""
 import argparse, hashlib, json, sys
 from pathlib import Path
 
@@ -10,7 +7,6 @@ try:
 except ImportError:
     print("✗  pip install pyyaml", file=sys.stderr); sys.exit(1)
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
 
 COLORS = {"white":"#ffffff","black":"#000000","transparent":"rgba(0,0,0,0)"}
 
@@ -36,7 +32,6 @@ def lc(layers, name):
     }
 
 def sc(cfg, key):
-    """Config d'un sous-type avec tous les champs optionnels."""
     s = cfg["subtypes"].get(key) or {}
     return {
         "tag":           s.get("tag"),
@@ -72,25 +67,14 @@ def zoom(pairs):
     return e
 
 def color_or_case(col, col_private):
-    """Retourne une expression MapLibre color ou case access=private."""
     if col_private:
         return ["case", ["==", ["get", "access"], "private"], col_private, col]
     return col
 
 
-# ── LANDUSE ───────────────────────────────────────────────────────────────────
-
-# Ordre de rendu des sous-types landuse : les zones "de fond" (larges,
-# souvent étendues sur tout un quartier) sont dessinées en premier, les
-# zones "d'inclusion" plus ponctuelles (brownfield, greenfield, allotments,
-# garages, etc.) sont dessinées PAR-DESSUS, pour rester visibles même
-# lorsqu'elles sont entièrement entourées par un grand polygone
-# landuse=residential/industrial/... (suite issue #37).
 LANDUSE_RENDER_ORDER = [
-    # — fonds larges —
     "residential", "industrial", "commercial", "retail",
     "railway", "education", "farmland", "farmyard",
-    # — inclusions ponctuelles, dessinées par-dessus —
     "brownfield", "greenfield", "construction", "landfill",
     "allotments", "cemetery", "garages", "depot", "quarry",
     "religious", "recreation_ground", "village_green", "military",
@@ -98,9 +82,6 @@ LANDUSE_RENDER_ORDER = [
 
 def landuse(cfg):
     out = []
-    # Ordre explicite : fonds larges d'abord, inclusions ponctuelles
-    # par-dessus. Les sous-types non listés (extensions futures du
-    # config) sont ajoutés en dernier, par sécurité.
     order = [v for v in LANDUSE_RENDER_ORDER if v in cfg["subtypes"]]
     order += [v for v in cfg["subtypes"] if v not in order]
 
@@ -115,7 +96,6 @@ def landuse(cfg):
         if s["appear_at"] > 10: l["minzoom"] = s["appear_at"]
         if abs(s["opacity"] - 1.0) > 0.01: l["paint"]["fill-opacity"] = s["opacity"]
         out.append(l)
-        # Pattern par-dessus (ex: military-hatch)
         if s["pattern"]:
             out.append({
                 "id": f"landuse-{val}-hatch", "type": "fill",
@@ -124,7 +104,6 @@ def landuse(cfg):
                 "filter": ["==", ["get", tag], val],
                 "paint": {"fill-pattern": by_expr(s, "by_pattern", s["pattern"])}
             })
-        # Contour (ex: religious, quarry — façon osm-carto)
         if s["outline_color"]:
             ol = {"id": f"landuse-{val}-outline", "type": "line",
                   "source": "landuse", "source-layer": "landuse",
@@ -135,14 +114,6 @@ def landuse(cfg):
     return out
 
 
-# ── GREEN ─────────────────────────────────────────────────────────────────────
-
-# Ordre de rendu des sous-types green : "park" et "garden" sont souvent de
-# grandes zones (parcs publics) qui CONTIENNENT des inclusions plus
-# spécifiques (forêt, pelouse/meadow/grassland, lande, broussailles, massifs
-# de fleurs). On dessine donc park/garden en premier (fond), puis les
-# inclusions par-dessus, pour qu'elles restent visibles à l'intérieur d'un
-# park.
 GREEN_RENDER_ORDER = ["park", "garden", "forest", "wood", "scrub", "shrubbery",
                       "heath", "grass", "grassland", "meadow", "flowerbed"]
 
@@ -150,7 +121,6 @@ def green(cfg):
     out = []
     st = cfg["subtypes"]
 
-    # Collecter les sous-types qui ont un pattern_private pour le layer composite
     hatch_vals = []
 
     order = [v for v in GREEN_RENDER_ORDER if v in st]
@@ -172,7 +142,6 @@ def green(cfg):
         if s["pattern_private"]:
             hatch_vals.append((val, s["pattern_private"], s["appear_at"]))
 
-    # Layer pattern_private composite — un seul layer par pattern regroupant tous les sous-types
     from collections import defaultdict
     by_pattern = defaultdict(list)
     for val, pat, _ap in hatch_vals:
@@ -194,8 +163,6 @@ def green(cfg):
     return out
 
 
-# ── WATER ─────────────────────────────────────────────────────────────────────
-
 def water(cfg):
     col = cfg["color"] or "#aad3df"
     st  = cfg["subtypes"]
@@ -214,11 +181,6 @@ def water(cfg):
                         ["==",["geometry-type"],"Polygon"]],
         "paint":{"fill-color": c(wetland.get("color","#d4e2c6")),
                  "fill-opacity": wetland.get("opacity", 0.5)}})
-    # waterway=river/canal/stream/ditch : un tronçon en tunnel=culvert
-    # doit avoir le MÊME rendu qu'un tronçon en tunnel=yes (hachuré, cf.
-    # water-tunnel-casing/core ci-dessous, qui couvrent déjà yes ET
-    # culvert) — on l'exclut donc ici pour éviter le double-rendu
-    # (ligne pleine + hachures superposées).
     for ww,(w,dz) in {"river":([(10,1),(18,12)],10),"canal":([(10,1),(18,10)],10),
                        "stream":([(13,.5),(18,3)],13),"ditch":([(14,.3),(18,2)],14)}.items():
         az = (st.get(ww) or {}).get("appear_at", dz)
@@ -229,7 +191,6 @@ def water(cfg):
                             ["!=",["get","tunnel"],"culvert"],
                             ["==",["geometry-type"],"LineString"]],
             "paint":{"line-color":col,"line-width":zoom(w)}})
-    # Contour polygones eau + tunnels eau
     out.append({"id":"water-line","type":"line",
         "source":"water","source-layer":"water",
         "filter":["all",["!=",["get","tunnel"],"culvert"],["!=",["get","tunnel"],"yes"],
@@ -250,8 +211,6 @@ def water(cfg):
                  "line-width":zoom([(13,1),(18,4)])}})
     return out
 
-
-# ── TREES ─────────────────────────────────────────────────────────────────────
 
 TREE_SYMBOLS = {"needleleaved": "▲"}
 TREE_SYMBOL_DEFAULT = "●"
@@ -322,51 +281,34 @@ def trees(cfg, halo="#f2efe9"):
     ]
 
 
-# ── BUILDINGS ─────────────────────────────────────────────────────────────────
+LEVEL_HEIGHT = 3
+
+
+def extrusion_exprs(height_fallback, levels_fallback, no_info_height):
+    base = ["case",
+        ["has", "min_height"], ["to-number", ["get", "min_height"], 0],
+        ["has", "building:min_level"], ["*", ["to-number", ["get", "building:min_level"], 0], LEVEL_HEIGHT],
+        0]
+    top = ["case",
+        ["has", "height"], ["to-number", ["get", "height"], height_fallback],
+        ["has", "building:levels"], ["*", ["to-number", ["get", "building:levels"], levels_fallback], LEVEL_HEIGHT],
+        ["+", base, no_info_height]]
+    return base, ["max", top, ["+", base, 1]]
+
 
 def buildings(cfg):
     col = cfg["color"] or "#fce1c5"
     bc  = cfg["border_color"] or "#d4a574"
     ap  = cfg["appear_at"]
 
-    # Base de l'extrusion : 0 normalement, sauf bâtiment surélevé
-    # (passage carrossable / allée vers l'intérieur d'îlot) taggé
-    # directement min_height/building:min_level, sans building:part.
-    base_expr = ["case",
-        ["has", "min_height"], ["to-number", ["get", "min_height"], 0],
-        ["has", "building:min_level"], ["*", ["to-number", ["get", "building:min_level"], 0], 3],
-        0]
+    base_expr, normal_height_expr = extrusion_exprs(6, 2, 7.5)
 
-    # Le bâtiment porte-t-il une info de hauteur exploitable quelconque ?
     has_height_info = ["any",
         ["has", "height"], ["has", "min_height"],
         ["has", "building:levels"], ["has", "building:min_level"]]
 
     is_roof = ["==", ["get", "building"], "roof"]
-
-    # building=roof sans AUCUNE info exploitable (souvent juste
-    # layer=1) -> flotte au MINIMUM à la même hauteur que le fallback
-    # générique d'un bâtiment simple sans données (base 0 + 7.5m),
-    # plutôt qu'une valeur arbitrairement basse qui le plaque contre
-    # le bâtiment support en dessous (confirmé visuellement : avant
-    # ces changements, ce type d'auvent flottait correctement à
-    # mi-hauteur du bâtiment, pas au sol).
     is_untagged_roof = ["all", is_roof, ["!", has_height_info]]
-
-    normal_height_expr = ["case",
-        ["has", "height"], ["to-number", ["get", "height"], 6],
-        ["has", "building:levels"], ["+", base_expr,
-            ["*", ["to-number", ["get", "building:levels"], 2], 3]],
-        ["+", base_expr, 7.5]]
-
-    # Différenciation visuelle des auvents/verrières (building=roof) :
-    # un building=roof peut être posé exactement à la même position
-    # qu'un AUTRE bâtiment OSM distinct en dessous (le vrai support).
-    # Couleur nettement plus saturée que la teinte bâtiment standard
-    # pour rester identifiable même proche en hauteur d'un volume
-    # voisin — fill-extrusion-opacity ne supporte QUE des expressions
-    # de zoom (pas de data expression), donc toute la différenciation
-    # passe par la couleur.
     roof_color = "#6b4f3a"
 
     out = [{"id":"buildings-fill","type":"fill",
@@ -376,19 +318,6 @@ def buildings(cfg):
         out.append({"id":"buildings-3d","type":"fill-extrusion",
             "source":"buildings","source-layer":"buildings","minzoom":ap,
             "layout":{"visibility":"none"},
-            # lod="detail" (issue z15-18 leak) : exclut explicitement
-            # les features du palier fusionné (lod=merged, ajouté par
-            # merge_buildings.py), au cas où tippecanoe en laisserait
-            # fuiter au-delà de leur tranche de zoom prévue z10-12 —
-            # filtre robuste, indépendant des réglages tippecanoe.
-            # covered_by_parts!=yes (issue #40) : un bâtiment
-            # entièrement recouvert par ses building:part (relation
-            # explicite ou heuristique géométrique ≥90%, cf.
-            # compute_building_coverage.py) ne doit pas être extrudé
-            # ici, sous peine de silhouette dédoublée avec
-            # building-parts-3d. Le rendu 2D (buildings-fill/
-            # buildings-outline) reste inchangé pour tous les
-            # bâtiments, quels que soient lod/covered_by_parts.
             "filter": ["all",
                 ["==", ["get", "lod"], "detail"],
                 ["!=", ["get", "covered_by_parts"], "yes"]],
@@ -401,12 +330,105 @@ def buildings(cfg):
         "paint":{"line-color":bc,"line-width":.5}})
     return out
 
-# ── LEISURE ───────────────────────────────────────────────────────────────────
+
+def building_parts_layers(cfg):
+    col = cfg["color"] or "#fce1c5"
+    base, top = extrusion_exprs(9, 3, 9)
+    return [{"id": "building-parts-3d", "type": "fill-extrusion",
+             "source": "building_parts", "source-layer": "building_parts", "minzoom": 13,
+             "metadata": {"brussels:group": "building_parts"},
+             "layout": {"visibility": "none"},
+             "paint": {"fill-extrusion-color": ["to-color", ["coalesce", ["get", "building:colour"], col], col],
+                       "fill-extrusion-base": base,
+                       "fill-extrusion-height": top,
+                       "fill-extrusion-opacity": 0.85}}]
+
+
+INDOOR_DEFAULTS = {
+    "appear_at": 15,
+    "level_height": 3.0,
+    "slab": 0.3,
+    "volume_ratio": 0.9,
+    "floor_opacity": 0.9,
+    "volume_opacity": 0.35,
+    "colors": {
+        "platform": "#b7a4e3", "footway": "#f2c38c", "corridor": "#f2c38c",
+        "pedestrian": "#e9dcc2", "steps": "#d9822b", "room": "#efe6d2",
+        "area": "#e6dfcb", "wall": "#7a7a7a", "elevator": "#3d7cc9",
+    },
+}
+INDOOR_VOLUME_KINDS = ["room", "wall", "elevator"]
+INDOOR_FLOOR_KINDS = ["platform", "footway", "corridor", "pedestrian", "steps", "room", "area"]
+INDOOR_DEFAULT_WINDOW = {"lo": 0, "hi": 99, "offset": 0}
+
+
+def indoor_settings(config):
+    raw = ((config.get("layers") or {}).get("indoor") or {})
+    colors = dict(INDOOR_DEFAULTS["colors"])
+    for kind, scfg in (raw.get("subtypes") or {}).items():
+        if (scfg or {}).get("color"):
+            colors[kind] = c(scfg["color"])
+    out = {k: raw.get(k, v) for k, v in INDOOR_DEFAULTS.items() if k != "colors"}
+    out["colors"] = colors
+    return out
+
+
+def indoor_level_expr(field, window, level_height):
+    clamped = ["max", window["lo"], ["min", window["hi"], ["to-number", ["get", field], 0]]]
+    return ["*", ["-", clamped, window["offset"]], level_height]
+
+
+def indoor_paint(extrusion, window, settings):
+    h = settings["level_height"]
+    base = indoor_level_expr("level_min", window, h)
+    top = indoor_level_expr("level_max", window, h)
+    extra = settings["slab"] if extrusion == "slab" else round(h * settings["volume_ratio"], 3)
+    return {"fill-extrusion-base": base, "fill-extrusion-height": ["+", top, extra]}
+
+
+def indoor_layers(settings):
+    colors = settings["colors"]
+    color_expr = ["match", ["get", "kind"]]
+    for kind in sorted(colors):
+        color_expr += [kind, colors[kind]]
+    color_expr.append(colors["area"])
+    out = []
+    for lid, extrusion, kinds, opacity in (
+            ("indoor-3d-floor", "slab", INDOOR_FLOOR_KINDS, settings["floor_opacity"]),
+            ("indoor-3d-volume", "volume", INDOOR_VOLUME_KINDS, settings["volume_opacity"])):
+        paint = {"fill-extrusion-color": color_expr, "fill-extrusion-opacity": opacity}
+        paint.update(indoor_paint(extrusion, INDOOR_DEFAULT_WINDOW, settings))
+        out.append({"id": lid, "type": "fill-extrusion",
+                    "source": "indoor", "source-layer": "indoor",
+                    "minzoom": settings["appear_at"],
+                    "metadata": {"brussels:group": "indoor", "brussels:extrusion": extrusion},
+                    "filter": ["in", ["get", "kind"], ["literal", kinds]],
+                    "layout": {"visibility": "none"},
+                    "paint": paint})
+    return out
+
+
+def lazy_layers(config, buildings_cfg, before):
+    settings = indoor_settings(config)
+    attribution = "© OpenStreetMap contributors"
+    return {
+        "before": before,
+        "level_height": settings["level_height"],
+        "slab": settings["slab"],
+        "volume_ratio": settings["volume_ratio"],
+        "sources": {
+            "building_parts": {"type": "vector", "url": "./building_parts.pmtiles.gz",
+                               "attribution": attribution},
+            "indoor": {"type": "vector", "url": "./indoor.pmtiles.gz",
+                       "attribution": attribution},
+        },
+        "layers": building_parts_layers(buildings_cfg) + indoor_layers(settings),
+    }
+
 
 def leisure(cfg):
     st = cfg["subtypes"]
 
-    # fill-color : match expression avec couleurs par sous-type
     fill_expr = ["match", ["get","leisure"]]
     for k in sorted(st):
         s = sc(cfg, k)
@@ -415,7 +437,6 @@ def leisure(cfg):
     if len(fill_expr) == 3:
         fill_expr = fill_expr[2]
 
-    # outline-color : match expression avec outline_color si défini
     outline_expr = ["match", ["get","leisure"]]
     has_custom_outline = False
     for k in sorted(st):
@@ -730,8 +751,6 @@ def roads(cfg):
     return out
 
 
-# ── PEDESTRIAN ────────────────────────────────────────────────────────────────
-
 FOOTWAY_NOACCESS = "#bbbbbb"
 FOOTWAY_WIDTHS = [(14, 0.7), (15, 1.0), (16, 1.3), (18, 1.3), (19, 1.6)]
 FOOTWAY_BACKGROUND = 2.0
@@ -834,8 +853,6 @@ def pedestrian(cfg):
     return out
 
 
-# ── CYCLEWAY ──────────────────────────────────────────────────────────────────
-
 def cycleway(cfg):
     col = cfg["color"] or "#0000ff"
     out = [{"id":"cycleway","type":"line",
@@ -844,15 +861,6 @@ def cycleway(cfg):
                  "line-width":zoom([(cfg["appear_at"],.8),(18,2)]),
                  "line-dasharray":[3,3]}}]
 
-    # ── Flèches de sens unique sur pistes cyclables (issue #41) ──────
-    # oneway=yes -> piste à sens unique : flèche dans le sens du tracé.
-    # Pas de flèche -> bidirectionnelle (convention standard).
-    # "oneway" est déjà conservé par apply_granulometry (couche
-    # cycleway sans sous-types -> keep_properties: "ALL").
-    #
-    # Rendu : flèche blanche + halo dans la couleur de la piste, plutôt
-    # que flèche colorée semi-transparente (invisible sur la ligne
-    # bleue en pointillés de même couleur).
     out.append({"id":"cycleway-oneway-arrows","type":"symbol",
         "source":"cycleway","source-layer":"cycleway","minzoom":16,
         "filter":["==",["get","oneway"],"yes"],
@@ -872,8 +880,6 @@ def cycleway(cfg):
 
     return out
 
-
-# ── RAILWAY ───────────────────────────────────────────────────────────────────
 
 RAILWAY_DEFS = {
     "rail":      ([(10, 2), (18, 7)], [(10, .8), (18, 2)]),
@@ -984,16 +990,12 @@ def public_transport(cfg):
     ]
 
 
-# ── BOUNDARIES ────────────────────────────────────────────────────────────────
-
 def boundaries(cfg):
     return [{"id":"boundaries","type":"line",
         "source":"boundaries","source-layer":"boundaries","minzoom":cfg["appear_at"],
         "paint":{"line-color":cfg["color"] or "#ac46ac","line-width":1,
                  "line-dasharray":[5,5],"line-opacity":.7}}]
 
-
-# ── POI ───────────────────────────────────────────────────────────────────────
 
 def poi(cfg):
     fc = cfg["color"] or "#734a08"
@@ -1022,7 +1024,6 @@ def poi(cfg):
              "text-offset":[0,1.2],"text-anchor":"top","text-optional":True},
          "paint":{"icon-opacity":.9,"text-color":fc,
                   "text-halo-color":"rgba(255,255,255,0.8)","text-halo-width":1.2}},
-        # leisure-icon (POI sur source leisure)
         {"id":"leisure-icon","type":"symbol",
          "source":"leisure","source-layer":"leisure","minzoom":ap,
          "filter":["!=",["get","leisure"],"playground"],
@@ -1045,20 +1046,6 @@ def poi(cfg):
     ]
 
 
-# ── STREET FURNITURE (mobilier urbain, issue #51) ─────────────────────────────
-#
-# bench, lounger, waste_basket, vending_machine (amenity) ; bollard,
-# gate, bus_trap, cycle_barrier, lift_gate, planter, fence (barrier) ;
-# street_lamp (highway) ; entrance=* (toute valeur). Géométrie mixte :
-# Point pour tout sauf barrier=fence qui reste une LineString (même
-# principe que trees.json : tree=Point, tree_row/hedge=LineString).
-#
-# L'expression icon-image ci-dessous est un FALLBACK statique : comme
-# pour poi-icon/leisure-icon, www/poi_icons.js la regénère au chargement
-# depuis www/poi-icons.json (_meta.type_keys/special_cases), construits
-# par generate_poi_icons.py à partir de poi.json ET street_furniture.json
-# fusionnés — aucune modification de poi_icons.js n'est nécessaire pour
-# ajouter un nouveau type, seulement de generate_poi_icons.py / map.config.yaml.
 def street_furniture_point_filter(st):
     by_tag = {}
     for val, scfg in st.items():
@@ -1159,8 +1146,6 @@ def with_default_subtypes(config):
     return {**config, "layers": layers}
 
 
-# ── Style complet ──────────────────────────────────────────────────────────────
-
 DEFAULT_PATTERNS = {
     "military-hatch":      {"file": "assets/military_hatch.svg", "size": 20},
     "green-hatch":         {"file": "assets/military_hatch.svg", "size": 20,
@@ -1199,6 +1184,21 @@ SOURCES = ["landuse","roads","buildings","water","green","trees","boundaries",
            "poi","pedestrian","cycleway","railway","public_transport","leisure",
            "street_furniture"]
 
+LABEL_LAYER_IDS = [
+    "public_transport-label", "road-labels", "road-oneway-arrows",
+    "cycleway-oneway-arrows", "pitch-markings", "poi-circle", "poi-icon",
+    "leisure-icon", "street-furniture-icon",
+]
+
+
+def order_layers(layers):
+    labels = set(LABEL_LAYER_IDS)
+    ground = [l for l in layers if l["type"] != "fill-extrusion" and l["id"] not in labels]
+    extrusions = [l for l in layers if l["type"] == "fill-extrusion"]
+    on_top = [l for l in layers if l["id"] in labels]
+    return ground + extrusions + on_top, (on_top[0]["id"] if on_top else None)
+
+
 def build_style(config):
     source_hash = config_hash(config)
     config = with_default_subtypes(config)
@@ -1224,6 +1224,7 @@ def build_style(config):
     layers += pitch_markings(lc(L,"leisure")["sports"])
     layers += poi(lc(L,"poi"))
     layers += street_furniture(lc(L,"street_furniture"))
+    layers, first_label = order_layers(layers)
 
     sources = {n:{"type":"vector","url":f"./{n}.pmtiles.gz",
                   "attribution":"© OpenStreetMap contributors"} for n in SOURCES}
@@ -1234,6 +1235,7 @@ def build_style(config):
                 "brussels:patterns": resolve_patterns(config, layers)}
     if meta_tiles:
         metadata["brussels:tiles"] = meta_tiles
+    metadata["brussels:lazy"] = lazy_layers(config, lc(L, "buildings"), first_label)
     return {"version":8,"name":M.get("name","Map"),
             "metadata":metadata,
             "sources":sources,"glyphs":gl,"layers":layers}
@@ -1243,8 +1245,6 @@ def config_hash(config):
     canon = json.dumps(config, sort_keys=True, ensure_ascii=False, separators=(",",":"))
     return hashlib.sha256(canon.encode("utf-8")).hexdigest()[:12]
 
-
-# ── Granulométrie ──────────────────────────────────────────────────────────────
 
 SUBTYPE_ONLY_LAYERS = {"landuse", "trees", "railway", "pedestrian"}
 
@@ -1335,6 +1335,7 @@ PMTILES_DEFAULTS = {
     "street_furniture": {"max_zoom": 18, "simplification": 10},
     "buildings":        {"max_zoom": 18, "simplification": 2, "detail_from": 13},
     "building_parts":   {"min_zoom": 13, "max_zoom": 18, "simplification": 2},
+    "indoor":           {"min_zoom": 15, "max_zoom": 18, "simplification": 2},
 }
 
 

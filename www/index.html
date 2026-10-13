@@ -62,6 +62,14 @@
     .data-popup th, .data-popup td { text-align: left; padding: 2px 4px; border-bottom: 1px solid #eee; word-break: break-all; }
     .data-popup th { color: #666; font-weight: bold; width: 35%; vertical-align: top; }
     .data-popup .layer-info { border-bottom: 1px solid #ccc; margin-bottom: 5px; padding-bottom: 5px; font-weight: bold; color: #734a08; }
+    .panel[hidden] { display: none; }
+    .levels { top: 52px; right: 16px; left: auto; width: 190px; max-height: 60vh; }
+    .levels h2 { font-size: 13px; font-weight: bold; color: #222; }
+    .levels fieldset { border: 0; display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: #444; }
+    .levels label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .levels-list { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; margin-top: 8px; font-size: 11px; color: #444; }
+    .levels-list.disabled { opacity: 0.4; pointer-events: none; }
+    .levels-note { font-size: 10px; color: #666; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -82,6 +90,23 @@
   </div>
 </div>
 
+<div class="levels panel" id="levels-panel" hidden>
+  <div class="panel-header" onclick="window._togglePanel('levels-panel')">
+    <h2>Niveaux</h2>
+    <span class="toggle-icon">v</span>
+  </div>
+  <div class="panel-content">
+    <fieldset id="levels-mode">
+      <label><input type="radio" name="indoor-mode" value="off" checked /> Désactivé</label>
+      <label><input type="radio" name="indoor-mode" value="above" /> Au-dessus du sol (≥ 0)</label>
+      <label><input type="radio" name="indoor-mode" value="below" /> Souterrain (&lt; 0)</label>
+      <label><input type="radio" name="indoor-mode" value="select" /> Sélection</label>
+    </fieldset>
+    <div class="levels-list disabled" id="levels-list"></div>
+    <p class="levels-note" id="levels-note"></p>
+  </div>
+</div>
+
 <div class="legend panel" id="legend-panel">
   <div class="panel-header" onclick="window._togglePanel('legend-panel')">
     <h2>Légende</h2>
@@ -94,15 +119,16 @@
 import { togglePanel, updateOsmLink, buildDataPopupHtml, buildAttribution } from './map_ui.js';
 import { loadAllPoiIcons } from './poi_icons.js';
 import { loadPatterns } from './patterns.js';
+import {
+  levelValues, levelWindow, levelFilter, indoorPaint, indoorNote,
+  buildingsState, ensureLazyGroup, lazyLayersOf, DIMMED_OPACITY,
+} from './indoor.js';
 
-// Exposer pour les onclick inline
 window._togglePanel = togglePanel;
 
-/* ── PMTiles ── */
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
 
-/* ── Charger le style ── */
 const dataInfoPromise = fetch('./data-info.json')
   .then(r => (r.ok ? r.json() : null))
   .catch(() => null);
@@ -124,24 +150,24 @@ fetch('./style.json')
   });
 
 function initMap(style, dataInfo) {
+  const lazy = (style.metadata || {})['brussels:lazy'] || null;
   const poiIconLayer = style.layers.find(l => l.id === 'poi-icon');
   const leisureIconLayer = style.layers.find(l => l.id === 'leisure-icon');
   const streetFurnitureIconLayer = style.layers.find(l => l.id === 'street-furniture-icon');
-  if (leisureIconLayer) {
-    leisureIconLayer.layout = leisureIconLayer.layout || {};
-    leisureIconLayer.layout.visibility = 'none';
-    delete leisureIconLayer.layout['icon-image'];
+  for (const layer of [leisureIconLayer, poiIconLayer, streetFurnitureIconLayer]) {
+    if (!layer) continue;
+    layer.layout = layer.layout || {};
+    layer.layout.visibility = 'none';
+    delete layer.layout['icon-image'];
   }
-  if (poiIconLayer) {
-    poiIconLayer.layout = poiIconLayer.layout || {};
-    poiIconLayer.layout.visibility = 'none';
-    delete poiIconLayer.layout['icon-image'];
+
+  const baseOpacity = {};
+  for (const layer of [...style.layers, ...((lazy && lazy.layers) || [])]) {
+    if (layer.type === 'fill-extrusion') {
+      baseOpacity[layer.id] = (layer.paint || {})['fill-extrusion-opacity'] ?? 1;
+    }
   }
-  if (streetFurnitureIconLayer) {
-    streetFurnitureIconLayer.layout = streetFurnitureIconLayer.layout || {};
-    streetFurnitureIconLayer.layout.visibility = 'none';
-    delete streetFurnitureIconLayer.layout['icon-image'];
-  }
+  const indoorLayers = lazyLayersOf(lazy, 'indoor');
 
   const map = new maplibregl.Map({
     container: 'map', style,
@@ -162,6 +188,92 @@ function initMap(style, dataInfo) {
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 100, unit: 'metric' }), 'bottom-right');
   map.addControl(new maplibregl.NavigationControl(), 'bottom-right');
 
+  const state = {
+    loaded: false,
+    is3d: false,
+    buildingsOn: true,
+    indoorMode: 'off',
+    selected: new Set(),
+    levels: null,
+  };
+
+  const toggleBtn = document.getElementById('toggle-3d');
+  const levelsPanel = document.getElementById('levels-panel');
+  const levelsList = document.getElementById('levels-list');
+  const levelsNote = document.getElementById('levels-note');
+
+  const setVisibility = (id, v) => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v); };
+
+  function currentWindow() {
+    if (!state.is3d || state.indoorMode === 'off') return null;
+    return levelWindow(state.indoorMode, state.selected, state.levels || []);
+  }
+
+  function applyBuildings() {
+    const { visibility, dimmed } = buildingsState({
+      is3d: state.is3d, buildingsOn: state.buildingsOn, window: currentWindow(),
+    });
+    for (const [id, v] of Object.entries(visibility)) setVisibility(id, v);
+    for (const id of ['buildings-3d', 'building-parts-3d']) {
+      if (!map.getLayer(id)) continue;
+      const base = baseOpacity[id] ?? 1;
+      map.setPaintProperty(id, 'fill-extrusion-opacity', dimmed ? Math.min(base, DIMMED_OPACITY) : base);
+    }
+  }
+
+  function applyIndoor() {
+    const win = currentWindow();
+    if (win && lazy) ensureLazyGroup(map, lazy, 'indoor', location.href);
+    for (const layer of indoorLayers) {
+      if (!map.getLayer(layer.id)) continue;
+      if (!win) { setVisibility(layer.id, 'none'); continue; }
+      const extrusion = (layer.metadata || {})['brussels:extrusion'] || 'slab';
+      map.setFilter(layer.id, ['all', layer.filter, levelFilter(state.indoorMode, state.selected)]);
+      for (const [prop, value] of Object.entries(indoorPaint(extrusion, win, lazy))) {
+        map.setPaintProperty(layer.id, prop, value);
+      }
+      setVisibility(layer.id, 'visible');
+    }
+    levelsNote.textContent = state.is3d ? indoorNote(state.indoorMode, win) : '';
+    applyBuildings();
+  }
+
+  async function loadLevels() {
+    if (state.levels) return state.levels;
+    try {
+      const r = await fetch('./indoor-levels.json');
+      state.levels = r.ok ? levelValues(await r.json()) : [];
+    } catch (err) {
+      console.warn('indoor-levels.json indisponible :', err);
+      state.levels = [];
+    }
+    levelsList.innerHTML = '';
+    for (const value of state.levels) {
+      const label = document.createElement('label');
+      const box = document.createElement('input');
+      box.type = 'checkbox';
+      box.value = String(value);
+      box.checked = state.selected.has(value);
+      box.addEventListener('change', () => {
+        if (box.checked) state.selected.add(value); else state.selected.delete(value);
+        applyIndoor();
+      });
+      label.append(box, document.createTextNode(` ${value}`));
+      levelsList.appendChild(label);
+    }
+    return state.levels;
+  }
+
+  document.querySelectorAll('input[name="indoor-mode"]').forEach(radio => {
+    radio.addEventListener('change', async () => {
+      if (!radio.checked) return;
+      state.indoorMode = radio.value;
+      levelsList.classList.toggle('disabled', state.indoorMode !== 'select');
+      if (state.indoorMode !== 'off') await loadLevels();
+      applyIndoor();
+    });
+  });
+
   map.on('load', async () => {
     await Promise.all([
       loadPatterns(map, (style.metadata || {})['brussels:patterns']),
@@ -172,8 +284,8 @@ function initMap(style, dataInfo) {
     if (map.getLayer('street-furniture-icon')) map.setLayoutProperty('street-furniture-icon', 'visibility', 'visible');
   });
 
-  /* ── Légende dynamique ── */
   map.on('load', () => {
+    state.loaded = true;
     const layers = map.getStyle().layers;
     const el = document.getElementById('legend-content');
     const extractColor = (v) => {
@@ -193,7 +305,7 @@ function initMap(style, dataInfo) {
       { label: 'Pelouse', pattern: 'green-grass', type: 'fill' },
       { label: 'Broussailles', pattern: 'green-scrub', type: 'fill' },
       { label: 'Eau', pattern: 'water-', type: 'fill' },
-      { label: 'Bâtiments', pattern: 'buildings', type: 'fill' },
+      { label: 'Bâtiments', pattern: 'buildings-fill', type: 'fill', onToggle: (on) => { state.buildingsOn = on; applyBuildings(); } },
       { label: 'Arbres et haies', pattern: 'trees-', type: 'dot', color: '#6cae50' },
       { label: 'Rail', pattern: 'railway-rail', type: 'line', extraPatterns: ['railway-tunnel-rail', 'railway-bridge-rail'] },
       { label: 'Tram', pattern: 'railway-tram', type: 'line', extraPatterns: ['railway-tunnel-tram', 'railway-bridge-tram'] },
@@ -225,7 +337,7 @@ function initMap(style, dataInfo) {
         }
       }
 
-      let allRelatedLayers = matchedLayers.map(l => l.id);
+      const allRelatedLayers = matchedLayers.map(l => l.id);
       if (cat.pattern === 'roads-') allRelatedLayers.push('road-labels');
       if (cat.pattern === 'railway-rail') {
         const bc = layers.find(l => l.id === 'railway-bridge-casing');
@@ -242,8 +354,9 @@ function initMap(style, dataInfo) {
       row.onclick = () => {
         on = !on;
         row.classList.toggle('off', !on);
+        if (cat.onToggle) { cat.onToggle(on); return; }
         const v = on ? 'visible' : 'none';
-        allRelatedLayers.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v); });
+        allRelatedLayers.forEach(id => setVisibility(id, v));
       };
       el.appendChild(row);
     });
@@ -252,70 +365,25 @@ function initMap(style, dataInfo) {
   map.on('moveend', () => updateOsmLink(map));
   map.on('zoomend', () => updateOsmLink(map));
 
-  /* ── Building parts (issue #40) : ajoutés à la carte SEULEMENT à la
-     première activation du mode 3D — aucune requête réseau pour les
-     visiteurs qui restent en 2D, car ni le source ni le layer ne sont
-     déclarés dans style.json. Pas de rendu de la FORME du toit
-     (gabled/hipped/pyramidal…) : fill-extrusion ne sait dessiner qu'un
-     prisme à toit plat — limite MapLibre, pas traitée ici. ── */
-  function ensureBuildingPartsLayer() {
-    if (map.getSource('building_parts')) return;
-    map.addSource('building_parts', {
-      type: 'vector',
-      url: 'pmtiles://' + new URL('./building_parts.pmtiles.gz', location.href).href,
-      attribution: '© OpenStreetMap contributors',
-    });
-    map.addLayer({
-      id: 'building-parts-3d',
-      type: 'fill-extrusion',
-      source: 'building_parts',
-      'source-layer': 'building_parts',
-      minzoom: 13,
-      paint: {
-        'fill-extrusion-color': ['coalesce', ['get', 'building:colour'], '#fce1c5'],
-        'fill-extrusion-base': ['case',
-          ['has', 'min_height'], ['to-number', ['get', 'min_height'], 0],
-          ['has', 'building:min_level'], ['*', ['to-number', ['get', 'building:min_level'], 0], 3],
-          0],
-        'fill-extrusion-height': ['case',
-          ['has', 'height'], ['to-number', ['get', 'height'], 9],
-          ['has', 'building:levels'], ['+',
-            ['case',
-              ['has', 'min_height'], ['to-number', ['get', 'min_height'], 0],
-              ['has', 'building:min_level'], ['*', ['to-number', ['get', 'building:min_level'], 0], 3],
-              0],
-            ['*', ['to-number', ['get', 'building:levels'], 3], 3]],
-          9],
-        'fill-extrusion-opacity': 0.85,
-      },
-    });
+  function set3d(enabled) {
+    state.is3d = enabled;
+    toggleBtn.textContent = enabled ? 'MODE 2D' : 'MODE 3D';
+    levelsPanel.hidden = !enabled;
+    if (enabled && lazy) ensureLazyGroup(map, lazy, 'building_parts', location.href);
+    applyIndoor();
+    map.easeTo({ pitch: enabled ? 45 : 0, duration: 800 });
   }
 
-  /* ── Toggle 2D/3D ── */
-  const toggleBtn = document.getElementById('toggle-3d');
-  let is3d = false;
   toggleBtn.onclick = () => {
-    is3d = !is3d;
-    toggleBtn.textContent = is3d ? 'MODE 2D' : 'MODE 3D';
-    if (is3d) {
-      if (map.getLayer('buildings-fill')) map.setLayoutProperty('buildings-fill', 'visibility', 'none');
-      if (map.getLayer('buildings-outline')) map.setLayoutProperty('buildings-outline', 'visibility', 'none');
-      if (map.getLayer('buildings-3d')) map.setLayoutProperty('buildings-3d', 'visibility', 'visible');
-      ensureBuildingPartsLayer();
-      map.setLayoutProperty('building-parts-3d', 'visibility', 'visible');
-      map.easeTo({ pitch: 45, duration: 800 });
-    } else {
-      if (map.getLayer('buildings-fill')) map.setLayoutProperty('buildings-fill', 'visibility', 'visible');
-      if (map.getLayer('buildings-outline')) map.setLayoutProperty('buildings-outline', 'visibility', 'visible');
-      if (map.getLayer('buildings-3d')) map.setLayoutProperty('buildings-3d', 'visibility', 'none');
-      if (map.getLayer('building-parts-3d')) map.setLayoutProperty('building-parts-3d', 'visibility', 'none');
-      map.easeTo({ pitch: 0, duration: 800 });
+    if (!state.loaded) {
+      map.once('load', () => set3d(!state.is3d));
+      return;
     }
+    set3d(!state.is3d);
   };
 
   updateOsmLink(map);
 
-  /* ── Mode DATA (avec échappement XSS) ── */
   const toggleDataBtn = document.getElementById('toggle-data');
   let isDataMode = false;
   const dataPopup = new maplibregl.Popup({
