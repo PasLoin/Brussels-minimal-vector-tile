@@ -29,7 +29,7 @@ export function levelWindow(mode, selected, available) {
     const values = [...(selected || [])].map(Number).filter(Number.isFinite);
     if (!values.length) return null;
     const lo = Math.min(...values);
-    return { lo, hi: Math.max(...values), offset: Math.min(0, lo) };
+    return { lo, hi: Math.max(...values), offset: lo };
   }
   return null;
 }
@@ -61,20 +61,21 @@ export function indoorPaint(extrusion, win, settings) {
   };
 }
 
-export function buildingsState({ is3d, buildingsOn, window: win }) {
-  const exploded = !!win && win.offset < 0;
-  const flat = buildingsOn && !is3d;
-  const extruded = buildingsOn && is3d && !exploded;
+export function buildingsState({ is3d, buildingsOn, window: win, isolated = false }) {
+  const exploded = !!win && win.offset !== 0;
+  const flat = buildingsOn && (!is3d || isolated);
+  const extruded = buildingsOn && is3d && !exploded && !isolated;
   const visibility = {};
   for (const id of BUILDING_LAYERS.flat) visibility[id] = flat ? 'visible' : 'none';
   for (const id of BUILDING_LAYERS.extruded) visibility[id] = extruded ? 'visible' : 'none';
   return { visibility, dimmed: extruded && !!win };
 }
 
-export function indoorNote(mode, win) {
+export function indoorNote(mode, win, isolated = false) {
   if (mode === 'off') return '';
   if (!win) return mode === 'select' ? 'Cochez un ou plusieurs niveaux.' : 'Aucun niveau dans cette vue.';
-  if (win.offset < 0) return `Vue éclatée : le niveau ${win.lo} est posé au sol, bâtiments 3D masqués.`;
+  if (isolated) return `Vue isolée : le niveau ${win.lo} est posé au sol, seule l\u2019emprise des bâtiments reste affichée.`;
+  if (win.offset !== 0) return `Vue éclatée : le niveau ${win.lo} est posé au sol, bâtiments 3D masqués.`;
   return 'Bâtiments 3D atténués pour voir l\u2019intérieur.';
 }
 
@@ -181,4 +182,21 @@ export function levelAwareFilter(current, memo, extra) {
   const unchanged = memo && JSON.stringify(current ?? null) === JSON.stringify(memo.applied ?? null);
   const base = unchanged ? memo.base : (current ?? null);
   return { base, applied: combineFilters(base, extra) };
+}
+
+export const ISOLATION_KEEP = new Set(['background', ...BUILDING_LAYERS.flat, ...BUILDING_LAYERS.extruded]);
+
+export function isIsolated(mode, selected, win) {
+  if (!win) return false;
+  if (mode === 'below') return true;
+  if (mode === 'select') return ![...(selected || [])].map(Number).includes(0);
+  return false;
+}
+
+export function keepsInIsolation(layer) {
+  if (!layer) return false;
+  if (ISOLATION_KEEP.has(layer.id)) return true;
+  if (LEVEL_AWARE_SOURCES.includes(layer.source)) return true;
+  const group = (layer.metadata || {})['brussels:group'];
+  return group === 'indoor' || group === 'building_parts';
 }
