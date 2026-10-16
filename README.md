@@ -1,6 +1,8 @@
-# Brussels minimal vector tile
+# ZinnekeTiles
 
 Is it possible to run Brussels on a minimal vector tile on github page ?
+
+*Anciennement « Brussels minimal vector tile ».*
 
 Prototype de carte MapLibre pour la Région de Bruxelles-Capitale, générée à partir d'un extrait OpenStreetMap PBF local et publiée comme fichiers PMTiles statiques dans `www/`.
 
@@ -298,9 +300,9 @@ Ajouter une couche implique de modifier les trois parties du pipeline : extracti
    - Ajoutez un appel `extract nouvelle_couche ...` pour un filtrage simple.
    - Pour une extraction relationnelle ou une transformation avancée, suivez le modèle de `public_transport` ou ajoutez un script Python dédié.
 2. **Déclarer la couche dans `map.config.yaml`** avec ses couleurs et zooms, puis régénérez :
-   ```bash
+```bash
    python3 build_map.py
-   ```
+```
 3. **Appliquer la granulométrie** (optionnel) : les règles LOD sont auto-générées par `build_map.py`. Vérifiez `granulometry.json` puis relancez `apply_granulometry.py`.
 4. **Générer le PMTiles** dans `generate_pmtiles.bash`.
    - Ajoutez la couche aux tableaux `MAX_ZOOM` et `SIMPLIFICATION`.
