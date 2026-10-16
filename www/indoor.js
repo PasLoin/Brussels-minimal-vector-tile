@@ -73,7 +73,7 @@ export function buildingsState({ is3d, buildingsOn, window: win }) {
 
 export function indoorNote(mode, win) {
   if (mode === 'off') return '';
-  if (!win) return mode === 'select' ? 'Cochez un ou plusieurs niveaux.' : 'Aucun niveau disponible.';
+  if (!win) return mode === 'select' ? 'Cochez un ou plusieurs niveaux.' : 'Aucun niveau dans cette vue.';
   if (win.offset < 0) return `Vue éclatée : le niveau ${win.lo} est posé au sol, bâtiments 3D masqués.`;
   return 'Bâtiments 3D atténués pour voir l\u2019intérieur.';
 }
@@ -97,4 +97,63 @@ export function ensureLazyGroup(map, lazy, group, baseHref) {
     map.addLayer(JSON.parse(JSON.stringify(layer)), before);
   }
   return true;
+}
+
+export function featureLevels(props) {
+  const lo = Number((props || {}).level_min);
+  const hi = Number((props || {}).level_max ?? lo);
+  if (!Number.isFinite(lo) || !Number.isFinite(hi)) return [];
+  const a = Math.min(lo, hi);
+  const b = Math.max(lo, hi);
+  const out = new Set([a, b]);
+  for (let z = Math.ceil(a); z <= Math.floor(b); z += 1) out.add(z);
+  return [...out];
+}
+
+function eachCoord(coords, fn) {
+  if (!Array.isArray(coords)) return;
+  if (typeof coords[0] === 'number') { fn(coords); return; }
+  for (const c of coords) eachCoord(c, fn);
+}
+
+export function geometryBbox(geometry) {
+  let w = Infinity; let s = Infinity; let e = -Infinity; let n = -Infinity;
+  eachCoord(geometry && geometry.coordinates, ([x, y]) => {
+    if (x < w) w = x;
+    if (x > e) e = x;
+    if (y < s) s = y;
+    if (y > n) n = y;
+  });
+  return Number.isFinite(w) ? [w, s, e, n] : null;
+}
+
+export function bboxIntersects(a, b) {
+  return !!a && !!b && a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+}
+
+export function visibleLevels(features, bounds) {
+  const out = new Set();
+  for (const f of features || []) {
+    if (bounds && !bboxIntersects(geometryBbox(f.geometry), bounds)) continue;
+    for (const v of featureLevels(f.properties)) out.add(v);
+  }
+  return [...out].sort((a, b) => a - b);
+}
+
+export function sameLevels(a, b) {
+  if (!a || !b || a.length !== b.length) return false;
+  return a.every((v, i) => v === b[i]);
+}
+
+export function panelLevels(available, selected) {
+  const present = new Set(available || []);
+  const all = new Set([...present, ...[...(selected || [])].map(Number).filter(Number.isFinite)]);
+  return [...all]
+    .sort((a, b) => b - a)
+    .map((level) => ({ level, present: present.has(level) }));
+}
+
+export function levelLabel(value) {
+  if (value === 0) return '0 · rez-de-chaussée';
+  return value > 0 ? `+${value}` : `${value}`;
 }
