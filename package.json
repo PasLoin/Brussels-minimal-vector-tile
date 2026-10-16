@@ -1,5 +1,5 @@
 {
-  "name": "brussels-map",
+  "name": "zinneketiles",
   "private": true,
   "scripts": {
     "test": "vitest run",
