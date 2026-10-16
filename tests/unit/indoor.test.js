@@ -6,6 +6,7 @@ import {
   indoorNote, lazyLayersOf, ensureLazyGroup,
   featureLevels, geometryBbox, bboxIntersects, visibleLevels, sameLevels,
   panelLevels, levelLabel,
+  LEVEL_AWARE_SOURCES, poiLevelFilter, combineFilters, levelAwareFilter,
 } from '../../www/indoor.js';
 
 const style = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../www/style.json'), 'utf8'));
@@ -190,5 +191,92 @@ describe('niveaux dynamiques (issue #67)', () => {
     expect(levelLabel(0)).toContain('rez');
     expect(levelLabel(2)).toBe('+2');
     expect(levelLabel(-1.5)).toBe('-1.5');
+  });
+});
+
+function evaluate(expr, props) {
+  if (!Array.isArray(expr)) return expr;
+  const [op, ...args] = expr;
+  const ev = (e) => evaluate(e, props);
+  switch (op) {
+    case 'all': return args.every((a) => ev(a));
+    case 'any': return args.some((a) => ev(a));
+    case 'get': return props[args[0]] ?? null;
+    case 'to-number': {
+      const v = ev(args[0]);
+      const n = Number(v);
+      return v === null || v === undefined || !Number.isFinite(n) ? ev(args[1]) : n;
+    }
+    case '==': return ev(args[0]) === ev(args[1]);
+    case '!=': return ev(args[0]) !== ev(args[1]);
+    case '<': return ev(args[0]) < ev(args[1]);
+    case '<=': return ev(args[0]) <= ev(args[1]);
+    case '>': return ev(args[0]) > ev(args[1]);
+    case '>=': return ev(args[0]) >= ev(args[1]);
+    default: throw new Error(`opérateur non géré : ${op}`);
+  }
+}
+
+describe('niveaux des POI et du mobilier urbain', () => {
+  const shown = (mode, selected, props) => {
+    const f = poiLevelFilter(mode, new Set(selected));
+    return f === null ? true : evaluate(f, props);
+  };
+  const rdc = {};
+  const shop1 = { level_min: 1, level_max: 1 };
+  const metro = { level_min: -2, level_max: -2 };
+  const span = { level_min: -1, level_max: 1 };
+  const roof = { level_hint: 'roof' };
+
+  it('les sources filtrées sont poi et street_furniture', () => {
+    expect(LEVEL_AWARE_SOURCES).toEqual(['poi', 'street_furniture']);
+    const sources = new Set(style.layers.map((l) => l.source));
+    for (const src of LEVEL_AWARE_SOURCES) expect(sources.has(src)).toBe(true);
+  });
+
+  it('un POI sans level est au rez-de-chaussée', () => {
+    expect(shown('select', [0], rdc)).toBe(true);
+    expect(shown('select', [1], rdc)).toBe(false);
+    expect(shown('select', [-1], rdc)).toBe(false);
+    expect(shown('above', [], rdc)).toBe(true);
+    expect(shown('below', [], rdc)).toBe(false);
+  });
+
+  it('un POI avec level n\u2019apparaît qu\u2019à son niveau', () => {
+    expect(shown('select', [1], shop1)).toBe(true);
+    expect(shown('select', [0], shop1)).toBe(false);
+    expect(shown('select', [-2, 1], metro)).toBe(true);
+    expect(shown('below', [], metro)).toBe(true);
+    expect(shown('above', [], metro)).toBe(false);
+    expect(shown('select', [0], span)).toBe(true);
+  });
+
+  it('un POI sur le toit n\u2019apparaît qu\u2019au-dessus du sol', () => {
+    expect(shown('above', [], roof)).toBe(true);
+    expect(shown('select', [0], roof)).toBe(false);
+    expect(shown('below', [], roof)).toBe(false);
+  });
+
+  it('désactivé ou sélection vide : aucun filtre ajouté', () => {
+    expect(poiLevelFilter('off', new Set([1]))).toBeNull();
+    expect(poiLevelFilter('select', new Set())).toBeNull();
+  });
+
+  it('combineFilters', () => {
+    expect(combineFilters(null, null)).toBeNull();
+    expect(combineFilters(['==', 1, 1], null)).toEqual(['==', 1, 1]);
+    expect(combineFilters(null, ['==', 1, 1])).toEqual(['==', 1, 1]);
+    expect(combineFilters(['==', 1, 1], ['==', 2, 2])).toEqual(['all', ['==', 1, 1], ['==', 2, 2]]);
+  });
+
+  it('levelAwareFilter retrouve le filtre de base et suit un changement externe', () => {
+    const base = ['==', ['get', 'amenity'], 'bench'];
+    const extra = ['>=', 1, 0];
+    const first = levelAwareFilter(base, undefined, extra);
+    expect(first).toEqual({ base, applied: ['all', base, extra] });
+    const again = levelAwareFilter(first.applied, first, null);
+    expect(again).toEqual({ base, applied: base });
+    const external = ['==', ['get', 'amenity'], 'cafe'];
+    expect(levelAwareFilter(external, again, extra)).toEqual({ base: external, applied: ['all', external, extra] });
   });
 });
