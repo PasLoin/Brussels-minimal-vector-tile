@@ -157,3 +157,28 @@ export function levelLabel(value) {
   if (value === 0) return '0 · rez-de-chaussée';
   return value > 0 ? `+${value}` : `${value}`;
 }
+
+export const LEVEL_AWARE_SOURCES = ['poi', 'street_furniture'];
+
+export function poiLevelFilter(mode, selected) {
+  if (mode === 'above') return ['>=', NUM('level_max'), 0];
+  if (mode === 'below') return ['<', NUM('level_min'), 0];
+  if (mode === 'select') {
+    const values = [...(selected || [])].map(Number).filter(Number.isFinite);
+    if (!values.length) return null;
+    return ['all', ['!=', ['get', 'level_hint'], 'roof'], levelFilter('select', values)];
+  }
+  return null;
+}
+
+export function combineFilters(base, extra) {
+  if (!extra) return base ?? null;
+  if (!base) return extra;
+  return ['all', base, extra];
+}
+
+export function levelAwareFilter(current, memo, extra) {
+  const unchanged = memo && JSON.stringify(current ?? null) === JSON.stringify(memo.applied ?? null);
+  const base = unchanged ? memo.base : (current ?? null);
+  return { base, applied: combineFilters(base, extra) };
+}
