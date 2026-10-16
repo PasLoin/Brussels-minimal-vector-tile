@@ -126,6 +126,7 @@ import {
   levelWindow, levelFilter, indoorPaint, indoorNote,
   buildingsState, ensureLazyGroup, lazyLayersOf, DIMMED_OPACITY,
   visibleLevels, sameLevels, panelLevels, levelLabel,
+  LEVEL_AWARE_SOURCES, poiLevelFilter, levelAwareFilter,
 } from './indoor.js';
 
 window._togglePanel = togglePanel;
@@ -172,6 +173,10 @@ function initMap(style, dataInfo) {
     }
   }
   const indoorLayers = lazyLayersOf(lazy, 'indoor');
+  const levelAwareLayerIds = style.layers
+    .filter(l => LEVEL_AWARE_SOURCES.includes(l.source))
+    .map(l => l.id);
+  const levelAwareMemo = {};
 
   const map = new maplibregl.Map({
     container: 'map', style,
@@ -246,8 +251,19 @@ function initMap(style, dataInfo) {
       }
       setVisibility(layer.id, 'visible');
     }
+    applyLevelAwareLayers(active);
     levelsNote.textContent = state.is3d ? indoorNote(state.indoorMode, win) : '';
     applyBuildings();
+  }
+
+  function applyLevelAwareLayers(active) {
+    const extra = active ? poiLevelFilter(state.indoorMode, state.selected) : null;
+    for (const id of levelAwareLayerIds) {
+      if (!map.getLayer(id)) continue;
+      const memo = levelAwareFilter(map.getFilter(id), levelAwareMemo[id], extra);
+      levelAwareMemo[id] = memo;
+      map.setFilter(id, memo.applied);
+    }
   }
 
   function renderLevels() {
@@ -318,6 +334,7 @@ function initMap(style, dataInfo) {
     map.setLayoutProperty('poi-icon', 'visibility', 'visible');
     if (map.getLayer('leisure-icon')) map.setLayoutProperty('leisure-icon', 'visibility', 'visible');
     if (map.getLayer('street-furniture-icon')) map.setLayoutProperty('street-furniture-icon', 'visibility', 'visible');
+    applyIndoor();
   });
 
   map.on('load', () => {
