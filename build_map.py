@@ -343,7 +343,6 @@ def building_parts_layers(cfg):
                        "fill-extrusion-height": top,
                        "fill-extrusion-opacity": 0.85}}]
 
-
 INDOOR_DEFAULTS = {
     "appear_at": 15,
     "level_height": 3.0,
@@ -353,10 +352,12 @@ INDOOR_DEFAULTS = {
     "volume_opacity": 0.35,
     "colors": {
         "platform": "#b7a4e3", "footway": "#f2c38c", "corridor": "#f2c38c",
-        "pedestrian": "#e9dcc2", "steps": "#d9822b", "room": "#efe6d2",
-        "area": "#e6dfcb", "wall": "#7a7a7a", "elevator": "#3d7cc9",
+        "pedestrian": "#e9dcc2", "steps": "#d9822b", "room": "#c98f5a",
+        "area": "#d8bf8f", "wall": "#5f5f5f", "elevator": "#3d7cc9",
     },
 }
+
+
 INDOOR_VOLUME_KINDS = ["room", "wall", "elevator"]
 INDOOR_FLOOR_KINDS = ["platform", "footway", "corridor", "pedestrian", "steps", "room", "area"]
 INDOOR_DEFAULT_WINDOW = {"lo": 0, "hi": 99, "offset": 0}
