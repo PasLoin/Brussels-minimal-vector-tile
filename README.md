@@ -1,6 +1,6 @@
 # ZinnekeTiles
 
-Is it possible to run Brussels on a minimal vector tile on github page ?
+Is it possible to run Brussels on a mini maximal vector tile on github page ?
 
 *Anciennement « Brussels minimal vector tile ».*
 
