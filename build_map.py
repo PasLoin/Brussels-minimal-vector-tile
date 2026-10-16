@@ -1250,7 +1250,8 @@ SUBTYPE_ONLY_LAYERS = {"landuse", "trees", "railway", "pedestrian"}
 
 POI_PROPS = ["amenity","shop","tourism","craft","office","healthcare","leisure","historic",
              "name","name:fr","name:nl",
-             "cuisine","opening_hours","addr:street","addr:housenumber","website","religion"]
+             "cuisine","opening_hours","addr:street","addr:housenumber","website","religion",
+             "level","level_min","level_max","level_approx","level_hint"]
 
 def build_granulometry(config):
     config = with_default_subtypes(config)
