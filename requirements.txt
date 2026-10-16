@@ -1,4 +1,4 @@
-# Dépendances Python — Brussels minimal vector tile
+# Dépendances Python — ZinnekeTiles
 #
 # Installation :
 #   pip install -r requirements.txt
