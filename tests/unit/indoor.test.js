@@ -7,6 +7,7 @@ import {
   featureLevels, geometryBbox, bboxIntersects, visibleLevels, sameLevels,
   panelLevels, levelLabel,
   LEVEL_AWARE_SOURCES, poiLevelFilter, combineFilters, levelAwareFilter,
+  isIsolated, keepsInIsolation,
 } from '../../www/indoor.js';
 
 const style = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../www/style.json'), 'utf8'));
@@ -32,8 +33,9 @@ describe('levelWindow', () => {
     expect(levelWindow('below', [], [0, 1])).toBeNull();
   });
 
-  it('sélection : décalage seulement si un niveau négatif est choisi', () => {
-    expect(levelWindow('select', new Set([1, 2]), available)).toEqual({ lo: 1, hi: 2, offset: 0 });
+  it('sélection : le niveau le plus bas choisi est posé au sol', () => {
+    expect(levelWindow('select', new Set([1, 2]), available)).toEqual({ lo: 1, hi: 2, offset: 1 });
+    expect(levelWindow('select', new Set([0, 2]), available)).toEqual({ lo: 0, hi: 2, offset: 0 });
     expect(levelWindow('select', new Set([-2, 1]), available)).toEqual({ lo: -2, hi: 1, offset: -2 });
     expect(levelWindow('select', new Set(), available)).toBeNull();
   });
@@ -278,5 +280,49 @@ describe('niveaux des POI et du mobilier urbain', () => {
     expect(again).toEqual({ base, applied: base });
     const external = ['==', ['get', 'amenity'], 'cafe'];
     expect(levelAwareFilter(external, again, extra)).toEqual({ base: external, applied: ['all', external, extra] });
+  });
+});
+
+describe('vue isolée (niveau 0 non affiché)', () => {
+  it('isIsolated', () => {
+    const win = { lo: 1, hi: 1, offset: 1 };
+    expect(isIsolated('select', new Set([1]), win)).toBe(true);
+    expect(isIsolated('select', new Set([-1]), win)).toBe(true);
+    expect(isIsolated('select', new Set([0, 1]), win)).toBe(false);
+    expect(isIsolated('select', new Set(), null)).toBe(false);
+    expect(isIsolated('below', new Set(), { lo: -2, hi: -1, offset: -2 })).toBe(true);
+    expect(isIsolated('below', new Set(), null)).toBe(false);
+    expect(isIsolated('above', new Set(), { lo: 0, hi: 99, offset: 0 })).toBe(false);
+    expect(isIsolated('off', new Set([1]), win)).toBe(false);
+  });
+
+  it('keepsInIsolation ne garde que le fond, les bâtiments, l\u2019intérieur et les POI', () => {
+    const kept = style.layers.filter((l) => keepsInIsolation(l)).map((l) => l.id);
+    expect(kept).toContain('background');
+    expect(kept).toContain('buildings-fill');
+    expect(kept).toContain('buildings-outline');
+    expect(kept).toContain('poi-icon');
+    expect(kept).toContain('street-furniture-icon');
+    for (const id of ['trees-tree', 'green-park', 'pitch-sport-fill', 'roads-surface-fill-primary', 'road-labels', 'leisure-icon']) {
+      expect(kept).not.toContain(id);
+    }
+    for (const layer of lazyLayersOf(lazy, 'indoor')) expect(keepsInIsolation(layer)).toBe(true);
+    expect(keepsInIsolation(null)).toBe(false);
+  });
+
+  it('buildingsState : vue isolée = emprises au sol, sans 3D', () => {
+    const { visibility, dimmed } = buildingsState({ is3d: true, buildingsOn: true, window: { lo: 1, hi: 1, offset: 1 }, isolated: true });
+    expect(visibility['buildings-fill']).toBe('visible');
+    expect(visibility['buildings-outline']).toBe('visible');
+    expect(visibility['buildings-3d']).toBe('none');
+    expect(visibility['building-parts-3d']).toBe('none');
+    expect(dimmed).toBe(false);
+    const off = buildingsState({ is3d: true, buildingsOn: false, window: { lo: 1, hi: 1, offset: 1 }, isolated: true });
+    expect(Object.values(off.visibility).every((v) => v === 'none')).toBe(true);
+  });
+
+  it('indoorNote annonce la vue isolée', () => {
+    expect(indoorNote('select', { lo: 1, hi: 1, offset: 1 }, true)).toContain('Vue isolée');
+    expect(indoorNote('select', { lo: 1, hi: 1, offset: 1 }, true)).toContain('1');
   });
 });
