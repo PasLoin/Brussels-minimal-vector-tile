@@ -277,10 +277,6 @@ before = len(features)
 seen_ids = set()
 kept = []
 stats = {'pt': 0, 'conv': 0, 'dup': 0, 'skip': 0}
-normalized = 0
-
-MULTI_VALUE_KEYS = ('cuisine', 'religion', 'vending', 'door')
-
 for feat in features:
     geom = feat.get('geometry') or {}
     pt = to_point(geom)
@@ -298,13 +294,6 @@ for feat in features:
     was_point = geom.get('type') == 'Point'
     feat['geometry'] = {'type': 'Point', 'coordinates': pt}
 
-    props = feat.get('properties') or {}
-    for _key in MULTI_VALUE_KEYS:
-        _val = props.get(_key)
-        if _val and isinstance(_val, str) and ';' in _val:
-            props[_key] = _val.split(';')[0].strip()
-            normalized += 1
-
     kept.append(feat)
     stats['pt' if was_point else 'conv'] += 1
 
@@ -315,9 +304,11 @@ with open('poi.json', 'w') as out:
 
 print(f"  {before} → {len(kept)} POI "
       f"({stats['pt']} points, {stats['conv']} surfaces→centroïde, "
-      f"{stats['dup']} doublons, {stats['skip']} ignorés, "
-      f"{normalized} valeurs multi-cuisine/religion/vending/door normalisées)")
+      f"{stats['dup']} doublons, {stats['skip']} ignorés)")
 POI_POINTS
+
+echo "  → valeurs multiples cuisine/religion/vending/door (issue #56)"
+python3 normalize_multi_values.py poi.json street_furniture.json
 
 extract leisure \
   nwr/leisure=playground,pitch,fitness_station,dog_park,outdoor_seating
