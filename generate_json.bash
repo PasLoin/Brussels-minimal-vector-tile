@@ -307,8 +307,12 @@ print(f"  {before} → {len(kept)} POI "
       f"{stats['dup']} doublons, {stats['skip']} ignorés)")
 POI_POINTS
 
-echo "  → valeurs multiples cuisine/religion/vending/door (issue #56)"
+echo "  → valeurs multiples cuisine/religion/vending/door"
 python3 normalize_multi_values.py poi.json street_furniture.json
+
+
+echo "  → niveaux POI / mobilier urbain (level, repeat_on, location)"
+python3 assign_levels.py poi.json street_furniture.json
 
 extract leisure \
   nwr/leisure=playground,pitch,fitness_station,dog_park,outdoor_seating
