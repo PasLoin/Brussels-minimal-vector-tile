@@ -60,6 +60,7 @@ def test_levels_from_tag_or_underground_hint():
     assert ei.resolve_levels({"layer": "-1", "tunnel": "building_passage"}, "footway") == (None, False)
     assert ei.resolve_levels({}, "footway") == (None, False)
     assert ei.resolve_levels({"indoor": "room"}, "room") == ([0.0], True)
+    assert ei.resolve_levels({"location": "underground"}, "footway") == ([-1.0], True)
 
 
 def test_outdoor_platform_without_level_is_skipped():
