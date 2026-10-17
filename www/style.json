@@ -14,7 +14,7 @@
       "font": "#734a08",
       "glyphs": "https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf"
     },
-    "brussels:config_hash": "b5e4e66c5b37",
+    "brussels:config_hash": "a312ca9ffd84",
     "brussels:patterns": {
       "grave_yard_christian": {
         "file": "assets/patterns/grave_yard_christian.svg",
@@ -44,6 +44,1468 @@
         "size": 20
       }
     },
+    "brussels:legend": [
+      {
+        "id": "landuse",
+        "label": "Occupation du sol",
+        "color": "#e0dfdf",
+        "swatch": "fill",
+        "visible": true,
+        "layers": [],
+        "items": [
+          {
+            "id": "allotments",
+            "label": "Jardins familiaux",
+            "color": "#9cad95",
+            "swatch": "fill",
+            "layers": [
+              "landuse-allotments"
+            ]
+          },
+          {
+            "id": "brownfield",
+            "label": "Friche",
+            "color": "#b3a392",
+            "swatch": "fill",
+            "layers": [
+              "landuse-brownfield"
+            ]
+          },
+          {
+            "id": "cemetery",
+            "label": "Cimetière",
+            "color": "#aacbaf",
+            "swatch": "fill",
+            "layers": [
+              "landuse-cemetery",
+              "landuse-cemetery-hatch"
+            ]
+          },
+          {
+            "id": "commercial",
+            "label": "Commercial",
+            "color": "#f2dad9",
+            "swatch": "fill",
+            "layers": [
+              "landuse-commercial"
+            ]
+          },
+          {
+            "id": "construction",
+            "label": "Chantier",
+            "color": "#b3a392",
+            "swatch": "fill",
+            "layers": [
+              "landuse-construction"
+            ]
+          },
+          {
+            "id": "depot",
+            "label": "Dépôt",
+            "color": "#ebdbe8",
+            "swatch": "fill",
+            "layers": [
+              "landuse-depot"
+            ]
+          },
+          {
+            "id": "education",
+            "label": "Éducation",
+            "color": "#ffe894",
+            "swatch": "fill",
+            "layers": [
+              "landuse-education"
+            ]
+          },
+          {
+            "id": "farmland",
+            "label": "Terres agricoles",
+            "color": "#add15a",
+            "swatch": "fill",
+            "layers": [
+              "landuse-farmland"
+            ]
+          },
+          {
+            "id": "farmyard",
+            "label": "Cour de ferme",
+            "color": "#f0d3ad",
+            "swatch": "fill",
+            "layers": [
+              "landuse-farmyard"
+            ]
+          },
+          {
+            "id": "garages",
+            "label": "Garages",
+            "color": "#dfddce",
+            "swatch": "fill",
+            "layers": [
+              "landuse-garages"
+            ]
+          },
+          {
+            "id": "greenfield",
+            "label": "Terrain non bâti",
+            "color": "#cfeca8",
+            "swatch": "fill",
+            "layers": [
+              "landuse-greenfield"
+            ]
+          },
+          {
+            "id": "industrial",
+            "label": "Industriel",
+            "color": "#ebdbe8",
+            "swatch": "fill",
+            "layers": [
+              "landuse-industrial"
+            ]
+          },
+          {
+            "id": "landfill",
+            "label": "Décharge",
+            "color": "#b3a392",
+            "swatch": "fill",
+            "layers": [
+              "landuse-landfill"
+            ]
+          },
+          {
+            "id": "military",
+            "label": "Militaire",
+            "color": "#bd4a72",
+            "swatch": "fill",
+            "layers": [
+              "landuse-military",
+              "landuse-military-hatch"
+            ]
+          },
+          {
+            "id": "quarry",
+            "label": "Carrière",
+            "color": "#c5c3c3",
+            "swatch": "fill",
+            "layers": [
+              "landuse-quarry",
+              "landuse-quarry-outline"
+            ]
+          },
+          {
+            "id": "railway",
+            "label": "Emprise ferroviaire",
+            "color": "#ebdbe8",
+            "swatch": "fill",
+            "layers": [
+              "landuse-railway"
+            ]
+          },
+          {
+            "id": "recreation_ground",
+            "label": "Terrain de loisirs",
+            "color": "#c8facc",
+            "swatch": "fill",
+            "layers": [
+              "landuse-recreation_ground"
+            ]
+          },
+          {
+            "id": "religious",
+            "label": "Religieux",
+            "color": "#d0d0d0",
+            "swatch": "fill",
+            "layers": [
+              "landuse-religious",
+              "landuse-religious-outline"
+            ]
+          },
+          {
+            "id": "residential",
+            "label": "Résidentiel",
+            "color": "#e0dfdf",
+            "swatch": "fill",
+            "layers": [
+              "landuse-residential"
+            ]
+          },
+          {
+            "id": "retail",
+            "label": "Commerces",
+            "color": "#ffd6d1",
+            "swatch": "fill",
+            "layers": [
+              "landuse-retail"
+            ]
+          },
+          {
+            "id": "village_green",
+            "label": "Pelouse communale",
+            "color": "#cdebb0",
+            "swatch": "fill",
+            "layers": [
+              "landuse-village_green"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "green",
+        "label": "Espaces verts",
+        "color": "#add19e",
+        "swatch": "fill",
+        "visible": true,
+        "layers": [
+          "green-hatch-green_hatch"
+        ],
+        "items": [
+          {
+            "id": "flowerbed",
+            "label": "Parterres",
+            "color": "#e6f2c1",
+            "swatch": "fill",
+            "layers": [
+              "green-flowerbed"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "landuse"
+              ],
+              "flowerbed"
+            ]
+          },
+          {
+            "id": "forest",
+            "label": "Forêt",
+            "color": "#add19e",
+            "swatch": "fill",
+            "layers": [
+              "green-forest"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "landuse"
+              ],
+              "forest"
+            ]
+          },
+          {
+            "id": "garden",
+            "label": "Jardins",
+            "color": "#cfeca8",
+            "swatch": "fill",
+            "layers": [
+              "green-garden"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "leisure"
+              ],
+              "garden"
+            ]
+          },
+          {
+            "id": "grass",
+            "label": "Pelouse",
+            "color": "#cdebb0",
+            "swatch": "fill",
+            "layers": [
+              "green-grass"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "landuse"
+              ],
+              "grass"
+            ]
+          },
+          {
+            "id": "grassland",
+            "label": "Prairie",
+            "color": "#cdebb0",
+            "swatch": "fill",
+            "layers": [
+              "green-grassland"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "natural"
+              ],
+              "grassland"
+            ]
+          },
+          {
+            "id": "heath",
+            "label": "Lande",
+            "color": "#d6d99f",
+            "swatch": "fill",
+            "layers": [
+              "green-heath"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "natural"
+              ],
+              "heath"
+            ]
+          },
+          {
+            "id": "meadow",
+            "label": "Pré",
+            "color": "#cdebb0",
+            "swatch": "fill",
+            "layers": [
+              "green-meadow"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "landuse"
+              ],
+              "meadow"
+            ]
+          },
+          {
+            "id": "park",
+            "label": "Parcs",
+            "color": "#a9ccac",
+            "swatch": "fill",
+            "layers": [
+              "green-park"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "leisure"
+              ],
+              "park"
+            ]
+          },
+          {
+            "id": "scrub",
+            "label": "Broussailles",
+            "color": "#d6e6b8",
+            "swatch": "fill",
+            "layers": [
+              "green-scrub"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "natural"
+              ],
+              "scrub"
+            ]
+          },
+          {
+            "id": "shrubbery",
+            "label": "Massifs arbustifs",
+            "color": "#6b9943",
+            "swatch": "fill",
+            "layers": [
+              "green-shrubbery"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "natural"
+              ],
+              "shrubbery"
+            ]
+          },
+          {
+            "id": "wood",
+            "label": "Bois",
+            "color": "#add19e",
+            "swatch": "fill",
+            "layers": [
+              "green-wood"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "natural"
+              ],
+              "wood"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "leisure",
+        "label": "Loisirs",
+        "color": "#def3c0",
+        "swatch": "fill",
+        "visible": true,
+        "layers": [
+          "leisure-fill",
+          "leisure-outline",
+          "leisure-icon"
+        ],
+        "items": [
+          {
+            "id": "dog_park",
+            "label": "Parc à chiens",
+            "color": "#def3c0",
+            "swatch": "fill",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "leisure"
+              ],
+              "dog_park"
+            ]
+          },
+          {
+            "id": "fitness_station",
+            "label": "Fitness extérieur",
+            "color": "#def3c0",
+            "swatch": "fill",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "leisure"
+              ],
+              "fitness_station"
+            ]
+          },
+          {
+            "id": "outdoor_seating",
+            "label": "Terrasses",
+            "color": "#e6e1d9",
+            "swatch": "fill",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "leisure"
+              ],
+              "outdoor_seating"
+            ]
+          },
+          {
+            "id": "pitch",
+            "label": "Terrains de sport",
+            "color": "#6fb792",
+            "swatch": "fill",
+            "layers": [
+              "pitch-sport-fill",
+              "pitch-sport-outline",
+              "pitch-markings"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "leisure"
+              ],
+              "pitch"
+            ]
+          },
+          {
+            "id": "playground",
+            "label": "Aires de jeux",
+            "color": "#c2e1c2",
+            "swatch": "fill",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "leisure"
+              ],
+              "playground"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "water",
+        "label": "Eau",
+        "color": "#aad3df",
+        "swatch": "fill",
+        "visible": true,
+        "layers": [
+          "water-fill",
+          "water-line",
+          "water-tunnel-casing",
+          "water-tunnel-core"
+        ],
+        "items": [
+          {
+            "id": "canal",
+            "label": "Canal",
+            "color": "#aad3df",
+            "swatch": "line",
+            "layers": [
+              "waterway-canal"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "waterway"
+              ],
+              "canal"
+            ]
+          },
+          {
+            "id": "ditch",
+            "label": "Fossé",
+            "color": "#aad3df",
+            "swatch": "line",
+            "layers": [
+              "waterway-ditch"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "waterway"
+              ],
+              "ditch"
+            ]
+          },
+          {
+            "id": "river",
+            "label": "Rivière",
+            "color": "#aad3df",
+            "swatch": "line",
+            "layers": [
+              "waterway-river"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "waterway"
+              ],
+              "river"
+            ]
+          },
+          {
+            "id": "stream",
+            "label": "Ruisseau",
+            "color": "#aad3df",
+            "swatch": "line",
+            "layers": [
+              "waterway-stream"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "waterway"
+              ],
+              "stream"
+            ]
+          },
+          {
+            "id": "wetland",
+            "label": "Zone humide",
+            "color": "#d4e2c6",
+            "swatch": "fill",
+            "layers": [
+              "water-wetland"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "natural"
+              ],
+              "wetland"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "trees",
+        "label": "Arbres et haies",
+        "color": "#6ba048",
+        "swatch": "dot",
+        "visible": true,
+        "layers": [],
+        "items": [
+          {
+            "id": "hedge",
+            "label": "Haies",
+            "color": "#6ba048",
+            "swatch": "line",
+            "layers": [
+              "trees-hedge"
+            ]
+          },
+          {
+            "id": "tree",
+            "label": "Arbres",
+            "color": "#7eb36a",
+            "swatch": "dot",
+            "layers": [
+              "trees-tree"
+            ]
+          },
+          {
+            "id": "tree_row",
+            "label": "Alignements d’arbres",
+            "color": "#8fbc77",
+            "swatch": "line",
+            "layers": [
+              "trees-row-line",
+              "trees-row-symbols"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "buildings",
+        "label": "Bâtiments",
+        "color": "#fce1c5",
+        "swatch": "fill",
+        "visible": true,
+        "layers": [
+          "buildings-fill",
+          "buildings-outline",
+          "buildings-3d"
+        ],
+        "items": []
+      },
+      {
+        "id": "roads",
+        "label": "Routes",
+        "color": "#e892a2",
+        "swatch": "line",
+        "visible": true,
+        "layers": [
+          "man_made-tunnel-fill",
+          "man_made-tunnel-outline",
+          "man_made-tunnel-line-fill",
+          "man_made-bridge-fill",
+          "man_made-bridge-outline",
+          "road-labels",
+          "road-oneway-arrows"
+        ],
+        "items": [
+          {
+            "id": "motorway",
+            "label": "Autoroute",
+            "color": "#e892a2",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-motorway",
+              "roads-tunnel-fill-motorway",
+              "roads-surface-casing-motorway",
+              "roads-surface-fill-motorway",
+              "roads-bridge-casing-motorway",
+              "roads-bridge-fill-motorway"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "motorway"
+            ]
+          },
+          {
+            "id": "motorway_link",
+            "label": "Bretelle d’autoroute",
+            "color": "#e892a2",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-motorway_link",
+              "roads-tunnel-fill-motorway_link",
+              "roads-surface-casing-motorway_link",
+              "roads-surface-fill-motorway_link",
+              "roads-bridge-casing-motorway_link",
+              "roads-bridge-fill-motorway_link"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "motorway_link"
+            ]
+          },
+          {
+            "id": "trunk",
+            "label": "Voie rapide",
+            "color": "#f9b29c",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-trunk",
+              "roads-tunnel-fill-trunk",
+              "roads-surface-casing-trunk",
+              "roads-surface-fill-trunk",
+              "roads-bridge-casing-trunk",
+              "roads-bridge-fill-trunk"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "trunk"
+            ]
+          },
+          {
+            "id": "trunk_link",
+            "label": "Bretelle de voie rapide",
+            "color": "#f9b29c",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-trunk_link",
+              "roads-tunnel-fill-trunk_link",
+              "roads-surface-casing-trunk_link",
+              "roads-surface-fill-trunk_link",
+              "roads-bridge-casing-trunk_link",
+              "roads-bridge-fill-trunk_link"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "trunk_link"
+            ]
+          },
+          {
+            "id": "primary",
+            "label": "Route principale",
+            "color": "#fcd6a4",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-primary",
+              "roads-tunnel-fill-primary",
+              "roads-surface-casing-primary",
+              "roads-surface-fill-primary",
+              "roads-bridge-casing-primary",
+              "roads-bridge-fill-primary"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "primary"
+            ]
+          },
+          {
+            "id": "primary_link",
+            "label": "Bretelle principale",
+            "color": "#fcd6a4",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-primary_link",
+              "roads-tunnel-fill-primary_link",
+              "roads-surface-casing-primary_link",
+              "roads-surface-fill-primary_link",
+              "roads-bridge-casing-primary_link",
+              "roads-bridge-fill-primary_link"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "primary_link"
+            ]
+          },
+          {
+            "id": "secondary",
+            "label": "Route secondaire",
+            "color": "#f7fabf",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-secondary",
+              "roads-tunnel-fill-secondary",
+              "roads-surface-casing-secondary",
+              "roads-surface-fill-secondary",
+              "roads-bridge-casing-secondary",
+              "roads-bridge-fill-secondary"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "secondary"
+            ]
+          },
+          {
+            "id": "secondary_link",
+            "label": "Bretelle secondaire",
+            "color": "#f7fabf",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-secondary_link",
+              "roads-tunnel-fill-secondary_link",
+              "roads-surface-casing-secondary_link",
+              "roads-surface-fill-secondary_link",
+              "roads-bridge-casing-secondary_link",
+              "roads-bridge-fill-secondary_link"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "secondary_link"
+            ]
+          },
+          {
+            "id": "tertiary",
+            "label": "Route tertiaire",
+            "color": "#ffffff",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-tertiary",
+              "roads-tunnel-fill-tertiary",
+              "roads-surface-casing-tertiary",
+              "roads-surface-fill-tertiary",
+              "roads-bridge-casing-tertiary",
+              "roads-bridge-fill-tertiary"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "tertiary"
+            ]
+          },
+          {
+            "id": "tertiary_link",
+            "label": "Bretelle tertiaire",
+            "color": "#ffffff",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-tertiary_link",
+              "roads-tunnel-fill-tertiary_link",
+              "roads-surface-casing-tertiary_link",
+              "roads-surface-fill-tertiary_link",
+              "roads-bridge-casing-tertiary_link",
+              "roads-bridge-fill-tertiary_link"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "tertiary_link"
+            ]
+          },
+          {
+            "id": "residential",
+            "label": "Rue résidentielle",
+            "color": "#ffffff",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-residential",
+              "roads-tunnel-fill-residential",
+              "roads-surface-casing-residential",
+              "roads-surface-fill-residential",
+              "roads-bridge-casing-residential",
+              "roads-bridge-fill-residential"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "residential"
+            ]
+          },
+          {
+            "id": "unclassified",
+            "label": "Route non classée",
+            "color": "#ffffff",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-unclassified",
+              "roads-tunnel-fill-unclassified",
+              "roads-surface-casing-unclassified",
+              "roads-surface-fill-unclassified",
+              "roads-bridge-casing-unclassified",
+              "roads-bridge-fill-unclassified"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "unclassified"
+            ]
+          },
+          {
+            "id": "living_street",
+            "label": "Zone de rencontre",
+            "color": "#ededed",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-living_street",
+              "roads-tunnel-fill-living_street",
+              "roads-surface-casing-living_street",
+              "roads-surface-fill-living_street",
+              "roads-bridge-casing-living_street",
+              "roads-bridge-fill-living_street"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "living_street"
+            ]
+          },
+          {
+            "id": "service",
+            "label": "Voie de service",
+            "color": "#ffffff",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-service",
+              "roads-tunnel-fill-service",
+              "roads-surface-casing-service",
+              "roads-surface-fill-service",
+              "roads-bridge-casing-service",
+              "roads-bridge-fill-service"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "service"
+            ]
+          },
+          {
+            "id": "busway",
+            "label": "Site propre bus",
+            "color": "#ffffff",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-casing-busway",
+              "roads-tunnel-fill-busway",
+              "roads-surface-casing-busway",
+              "roads-surface-fill-busway",
+              "roads-center-busway",
+              "roads-bridge-casing-busway",
+              "roads-bridge-fill-busway"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "busway"
+            ]
+          },
+          {
+            "id": "track",
+            "label": "Chemin agricole",
+            "color": "#996600",
+            "swatch": "line",
+            "layers": [
+              "roads-tunnel-fill-track",
+              "roads-surface-fill-track",
+              "roads-bridge-fill-track"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "track"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pedestrian",
+        "label": "Piétons",
+        "color": "#999",
+        "swatch": "line",
+        "visible": true,
+        "layers": [],
+        "items": [
+          {
+            "id": "footway",
+            "label": "Chemins piétons",
+            "color": "#fa8072",
+            "swatch": "line",
+            "layers": [
+              "pedestrian-footway-casing",
+              "pedestrian-footway-paved",
+              "pedestrian-footway-unpaved",
+              "pedestrian-footway-unknown"
+            ]
+          },
+          {
+            "id": "path",
+            "label": "Sentiers",
+            "color": "#fa8072",
+            "swatch": "line",
+            "layers": [
+              "pedestrian-path-casing",
+              "pedestrian-path-paved",
+              "pedestrian-path-unpaved",
+              "pedestrian-path-unknown"
+            ]
+          },
+          {
+            "id": "pedestrian",
+            "label": "Rues piétonnes",
+            "color": "#ededed",
+            "swatch": "line",
+            "layers": [
+              "pedestrian-street-casing",
+              "pedestrian-street-fill"
+            ]
+          },
+          {
+            "id": "steps",
+            "label": "Escaliers",
+            "color": "#97644c",
+            "swatch": "line",
+            "layers": [
+              "pedestrian-steps"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cycleway",
+        "label": "Cyclable",
+        "color": "#0000ff",
+        "swatch": "line",
+        "visible": true,
+        "layers": [
+          "cycleway",
+          "cycleway-oneway-arrows"
+        ],
+        "items": []
+      },
+      {
+        "id": "railway",
+        "label": "Ferroviaire",
+        "color": "#c0c0c0",
+        "swatch": "line",
+        "visible": true,
+        "layers": [
+          "railway-bridge-casing"
+        ],
+        "items": [
+          {
+            "id": "miniature",
+            "label": "Miniature",
+            "color": "#999999",
+            "swatch": "line",
+            "layers": [
+              "railway-miniature",
+              "railway-miniature-bridge"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "railway"
+              ],
+              "miniature"
+            ]
+          },
+          {
+            "id": "rail",
+            "label": "Rail",
+            "color": "#787878",
+            "swatch": "line",
+            "layers": [
+              "railway-tunnel-rail-casing",
+              "railway-tunnel-rail-core",
+              "railway-rail-ties",
+              "railway-rail-core",
+              "railway-rail-bridge-ties",
+              "railway-rail-bridge-core"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "railway"
+              ],
+              "rail"
+            ]
+          },
+          {
+            "id": "subway",
+            "label": "Métro",
+            "color": "#999999",
+            "swatch": "line",
+            "layers": [
+              "railway-tunnel-subway",
+              "railway-subway",
+              "railway-subway-bridge"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "railway"
+              ],
+              "subway"
+            ]
+          },
+          {
+            "id": "tram",
+            "label": "Tram",
+            "color": "#444444",
+            "swatch": "line",
+            "layers": [
+              "railway-tunnel-tram",
+              "railway-tram",
+              "railway-tram-bridge"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "railway"
+              ],
+              "tram"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "public_transport",
+        "label": "Transport STIB",
+        "color": "#007cc2",
+        "swatch": "fill",
+        "visible": true,
+        "layers": [
+          "public_transport-casing",
+          "public_transport-line",
+          "public_transport-label"
+        ],
+        "items": [
+          {
+            "id": "tram",
+            "label": "Tram",
+            "color": "#c8102e",
+            "swatch": "line",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "route"
+              ],
+              "tram"
+            ]
+          },
+          {
+            "id": "subway",
+            "label": "Métro",
+            "color": "#1f4e9d",
+            "swatch": "line",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "route"
+              ],
+              "subway"
+            ]
+          },
+          {
+            "id": "bus",
+            "label": "Bus",
+            "color": "#f39200",
+            "swatch": "line",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "route"
+              ],
+              "bus"
+            ]
+          }
+        ],
+        "colors": [
+          "#007cc2",
+          "#ef3e42"
+        ]
+      },
+      {
+        "id": "poi",
+        "label": "POI",
+        "color": "#734a08",
+        "swatch": "dot",
+        "visible": true,
+        "layers": [
+          "poi-circle",
+          "poi-icon"
+        ],
+        "items": []
+      },
+      {
+        "id": "street_furniture",
+        "label": "Mobilier urbain",
+        "color": "#555555",
+        "swatch": "dot",
+        "visible": true,
+        "layers": [
+          "street-furniture-icon"
+        ],
+        "items": [
+          {
+            "id": "bench",
+            "label": "Bancs",
+            "color": "#555555",
+            "swatch": "dot",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "amenity"
+              ],
+              "bench"
+            ]
+          },
+          {
+            "id": "lounger",
+            "label": "Transats",
+            "color": "#555555",
+            "swatch": "dot",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "amenity"
+              ],
+              "lounger"
+            ]
+          },
+          {
+            "id": "waste_basket",
+            "label": "Poubelles",
+            "color": "#555555",
+            "swatch": "dot",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "amenity"
+              ],
+              "waste_basket"
+            ]
+          },
+          {
+            "id": "vending_machine",
+            "label": "Distributeurs",
+            "color": "#555555",
+            "swatch": "dot",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "amenity"
+              ],
+              "vending_machine"
+            ]
+          },
+          {
+            "id": "bollard",
+            "label": "Potelets",
+            "color": "#555555",
+            "swatch": "dot",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "barrier"
+              ],
+              "bollard"
+            ]
+          },
+          {
+            "id": "gate",
+            "label": "Portails",
+            "color": "#555555",
+            "swatch": "dot",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "barrier"
+              ],
+              "gate"
+            ]
+          },
+          {
+            "id": "bus_trap",
+            "label": "Sas Bus",
+            "color": "#555555",
+            "swatch": "dot",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "barrier"
+              ],
+              "bus_trap"
+            ]
+          },
+          {
+            "id": "cycle_barrier",
+            "label": "Chicanes vélo",
+            "color": "#555555",
+            "swatch": "dot",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "barrier"
+              ],
+              "cycle_barrier"
+            ]
+          },
+          {
+            "id": "lift_gate",
+            "label": "Barrières levantes",
+            "color": "#555555",
+            "swatch": "dot",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "barrier"
+              ],
+              "lift_gate"
+            ]
+          },
+          {
+            "id": "planter",
+            "label": "Bacs à plantes",
+            "color": "#555555",
+            "swatch": "dot",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "barrier"
+              ],
+              "planter"
+            ]
+          },
+          {
+            "id": "fence",
+            "label": "Clôtures",
+            "color": "#9c9c9c",
+            "swatch": "line",
+            "layers": [
+              "street-furniture-fence"
+            ],
+            "filter": [
+              "==",
+              [
+                "get",
+                "barrier"
+              ],
+              "fence"
+            ]
+          },
+          {
+            "id": "street_lamp",
+            "label": "Lampadaires",
+            "color": "#555555",
+            "swatch": "dot",
+            "layers": [],
+            "filter": [
+              "==",
+              [
+                "get",
+                "highway"
+              ],
+              "street_lamp"
+            ]
+          },
+          {
+            "id": "entrance",
+            "label": "Entrées",
+            "color": "#555555",
+            "swatch": "dot",
+            "layers": [],
+            "filter": [
+              "has",
+              "entrance"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "boundaries",
+        "label": "Limites administratives",
+        "color": "#ac46ac",
+        "swatch": "line",
+        "visible": true,
+        "layers": [
+          "boundaries"
+        ],
+        "items": []
+      }
+    ],
     "brussels:lazy": {
       "before": "public_transport-label",
       "level_height": 3.0,
@@ -3318,7 +4780,20 @@
             "get",
             "colour"
           ],
-          "#ffffff"
+          [
+            "match",
+            [
+              "get",
+              "route"
+            ],
+            "tram",
+            "#c8102e",
+            "subway",
+            "#1f4e9d",
+            "bus",
+            "#f39200",
+            "#007cc2"
+          ]
         ],
         "line-width": [
           "interpolate",
