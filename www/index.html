@@ -193,7 +193,9 @@ function initMap(style, dataInfo) {
   const levelAwareLayerIds = style.layers
     .filter(l => LEVEL_AWARE_SOURCES.includes(l.source))
     .map(l => l.id);
-  const levelAwareMemo = {};
+  const filterMemo = {};
+  const legendFilters = {};
+  let levelExtra = null;
 
   const map = new maplibregl.Map({
     container: 'map', style,
@@ -310,14 +312,23 @@ function initMap(style, dataInfo) {
     applyBuildings();
   }
 
+  function refreshFilter(id) {
+    if (!map.getLayer(id)) return;
+    const extras = [legendFilters[id], levelAwareLayerIds.includes(id) ? levelExtra : null].filter(Boolean);
+    const extra = extras.length > 1 ? ['all', ...extras] : (extras[0] || null);
+    const memo = levelAwareFilter(map.getFilter(id), filterMemo[id], extra);
+    filterMemo[id] = memo;
+    map.setFilter(id, memo.applied);
+  }
+
+  function applyLegendFilter(id, expr) {
+    legendFilters[id] = expr;
+    refreshFilter(id);
+  }
+
   function applyLevelAwareLayers(active) {
-    const extra = active ? poiLevelFilter(state.indoorMode, state.selected) : null;
-    for (const id of levelAwareLayerIds) {
-      if (!map.getLayer(id)) continue;
-      const memo = levelAwareFilter(map.getFilter(id), levelAwareMemo[id], extra);
-      levelAwareMemo[id] = memo;
-      map.setFilter(id, memo.applied);
-    }
+    levelExtra = active ? poiLevelFilter(state.indoorMode, state.selected) : null;
+    for (const id of levelAwareLayerIds) refreshFilter(id);
   }
 
   function renderLevels() {
@@ -395,6 +406,7 @@ function initMap(style, dataInfo) {
     state.loaded = true;
     legend = createLegend(document.getElementById('legend-content'), legendGroups(map.getStyle()), {
       onChange: applyLegend,
+      onFilter: applyLegendFilter,
     });
   });
 
