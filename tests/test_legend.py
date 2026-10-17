@@ -122,3 +122,27 @@ def test_retro_preserves_custom_legend(tmp_path):
                    cwd=ROOT, check=True, capture_output=True)
     back = build_style(yaml.safe_load(out.read_text()))
     assert back["metadata"]["brussels:legend"] == style["metadata"]["brussels:legend"]
+
+
+def test_every_configured_subtype_is_listed():
+    legend = {g["id"]: g for g in legend_of(CONFIG)}
+    missing = {name: [k for k in (layer.get("subtypes") or {})
+                      if k not in [i["id"] for i in legend[name]["items"]]]
+               for name, layer in CONFIG["layers"].items() if name in legend}
+    assert {k: v for k, v in missing.items() if v} == {}
+
+
+def test_shared_layer_subtypes_are_filters():
+    furniture = group(legend_of(CONFIG), "street_furniture")
+    bench = next(i for i in furniture["items"] if i["id"] == "bench")
+    assert bench["layers"] == []
+    assert bench["filter"] == ["==", ["get", "amenity"], "bench"]
+    entrance = next(i for i in furniture["items"] if i["id"] == "entrance")
+    assert entrance["filter"] == ["has", "entrance"]
+    playground = next(i for i in group(legend_of(CONFIG), "leisure")["items"] if i["id"] == "playground")
+    assert playground["filter"] == ["==", ["get", "leisure"], "playground"]
+
+
+def test_groups_without_shared_layers_have_no_filters():
+    for gid in ("landuse", "trees", "pedestrian"):
+        assert all("filter" not in i for i in group(legend_of(CONFIG), gid)["items"]), gid
