@@ -983,6 +983,12 @@ def public_transport(cfg):
     col = cfg["color"] or "#e3004f"
     ap  = cfg["appear_at"]
     la  = cfg["labels_at"]
+    by_route = ["match", ["get", "route"]]
+    for key in cfg["subtypes"]:
+        s = sc(cfg, key)
+        if (s["tag"] or "route") == "route" and s["color"]:
+            by_route += [key, s["color"]]
+    fallback = by_route + [col] if len(by_route) > 2 else col
     return [
         {"id":"public_transport-casing","type":"line",
          "source":"public_transport","source-layer":"public_transport","minzoom":ap,
@@ -991,7 +997,7 @@ def public_transport(cfg):
         {"id":"public_transport-line","type":"line",
          "source":"public_transport","source-layer":"public_transport","minzoom":ap,
          "layout":{"line-join":"round","line-cap":"round"},
-         "paint":{"line-color":["coalesce",["get","colour"],col],
+         "paint":{"line-color":["coalesce",["get","colour"],fallback],
                   "line-width":zoom([(ap,1.5),(18,5)]),"line-opacity":.85}},
         {"id":"public_transport-label","type":"symbol",
          "source":"public_transport","source-layer":"public_transport","minzoom":la,
@@ -1294,6 +1300,7 @@ SUBTYPE_LABELS = {
         "steps": "Escaliers",
     },
     "railway": {"miniature": "Miniature", "rail": "Rail", "subway": "Métro", "tram": "Tram"},
+    "public_transport": {"tram": "Tram", "subway": "Métro", "bus": "Bus"},
     "street_furniture": {
         "bench": "Bancs", "bollard": "Potelets", "bus_trap": "Sas Bus",
         "cycle_barrier": "Chicanes vélo", "entrance": "Entrées", "fence": "Clôtures",
@@ -1366,7 +1373,7 @@ def legend_subtype(group, layer_id, keys):
 
 
 LEGEND_GROUP_TAGS = {"landuse": "landuse", "leisure": "leisure", "roads": "highway",
-                     "pedestrian": "highway", "railway": "railway"}
+                     "pedestrian": "highway", "railway": "railway", "public_transport": "route"}
 LEGEND_SUBTYPE_TAGS = {"water": {"wetland": "natural"}}
 
 
@@ -1424,9 +1431,13 @@ def build_legend(config, layers):
         swatch = (L.get(name) or {}).get("swatch")
         if swatch not in SWATCH_TYPES:
             swatch = swatch_type(group_layers)
-        legend.append({"id": name, "label": cfg["label"], "color": color,
-                       "swatch": swatch, "visible": bool(cfg["visible"]),
-                       "layers": [l["id"] for l in own], "items": items})
+        entry = {"id": name, "label": cfg["label"], "color": color,
+                 "swatch": swatch, "visible": bool(cfg["visible"]),
+                 "layers": [l["id"] for l in own], "items": items}
+        colors = [c(v) for v in (L.get(name) or {}).get("swatch_colors") or [] if v]
+        if len(colors) > 1:
+            entry["colors"] = colors
+        legend.append(entry)
     return legend
 
 
