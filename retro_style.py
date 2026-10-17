@@ -140,6 +140,10 @@ def parse_match_subtypes(expr, tag):
     Retourne un dict vide si le format ne correspond pas.
     """
     out = {}
+    if isinstance(expr, list) and expr and expr[0] == "coalesce":
+        for item in expr[1:]:
+            out.update(parse_match_subtypes(item, tag))
+        return out
     if not isinstance(expr, list) or len(expr) < 4:
         return out
     if expr[0] != "match":
@@ -560,6 +564,8 @@ def apply_legend(name, info, group, style_layers):
     own = [l for l in style_layers if l.get("source") == name]
     if group.get("swatch") in SWATCH_TYPES and own and group["swatch"] != swatch_type(own):
         info["swatch"] = group["swatch"]
+    if isinstance(group.get("colors"), list) and len(group["colors"]) > 1:
+        info["swatch_colors"] = list(group["colors"])
     order = []
     for item in group.get("items") or []:
         key = item.get("id")
@@ -594,6 +600,8 @@ def dump_layer(name, info):
         lines.append(f'    border_color: "{bc}"')
     if info.get("swatch"):
         lines.append(f"    swatch: {info['swatch']}")
+    if info.get("swatch_colors"):
+        lines.append("    swatch_colors: [" + ", ".join(json.dumps(v) for v in info["swatch_colors"]) + "]")
     if not info["visible"]:
         lines.append(f"    visible: false")
     if info["extrusion_3d"]:
@@ -687,6 +695,7 @@ def main():
         "#   labels_at      zoom minimum des étiquettes (défaut: appear_at+3)",
         "#   opacity        opacité globale (0.0–1.0)",
         "#   swatch         pastille de légende : fill, line ou dot (défaut: type majoritaire)",
+        "#   swatch_colors  pastille de légende multicolore (ex: [\"#007cc2\", \"#ef3e42\"])",
         "#   tiles          paramètres PMTiles (min_zoom, max_zoom, simplification,",
         "#                  detail_from pour buildings)",
         "#   sports         leisure uniquement : rendu des terrains par sport_render",
