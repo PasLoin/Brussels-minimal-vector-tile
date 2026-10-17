@@ -56,7 +56,9 @@ function resolveEntry(entry, byId, inheritedColor) {
   const layers = ids.map((id) => byId.get(id));
   const color = (isColor(entry.color) && entry.color) || paintColor(layers) || inheritedColor || FALLBACK_COLOR;
   const swatch = SWATCHES.includes(entry.swatch) ? entry.swatch : swatchType(layers);
-  return { id: String(entry.id), label: String(entry.label || entry.id), color, swatch, layers: ids };
+  const out = { id: String(entry.id), label: String(entry.label || entry.id), color, swatch, layers: ids };
+  if (Array.isArray(entry.filter) && entry.filter.length) out.filter = entry.filter;
+  return out;
 }
 
 function groupsFromMetadata(meta, byId) {
@@ -67,7 +69,7 @@ function groupsFromMetadata(meta, byId) {
     const items = (Array.isArray(raw.items) ? raw.items : [])
       .filter((item) => item && item.id != null)
       .map((item) => resolveEntry(item, byId, base.color))
-      .filter((item) => item.layers.length);
+      .filter((item) => item.layers.length || (item.filter && base.layers.length));
     if (!base.layers.length && !items.length) continue;
     if (!isColor(raw.color) && !base.layers.length && items.length) base.color = items[0].color;
     groups.push({ ...base, visible: raw.visible !== false, items });
@@ -134,7 +136,13 @@ function onActivate(el, fn) {
   });
 }
 
-export function createLegend(root, groups, { onChange = () => {} } = {}) {
+export function exclusionFilter(group, isItemOn) {
+  const hidden = group.items.filter((item) => item.filter && !isItemOn(item.id)).map((item) => item.filter);
+  if (!hidden.length) return null;
+  return ['!', hidden.length === 1 ? hidden[0] : ['any', ...hidden]];
+}
+
+export function createLegend(root, groups, { onChange = () => {}, onFilter = () => {} } = {}) {
   const state = new Map();
   const owner = new Map();
   for (const group of groups) {
@@ -174,6 +182,17 @@ export function createLegend(root, groups, { onChange = () => {} } = {}) {
     }
   }
 
+  const appliedFilters = new Map();
+
+  function emitFilter(group) {
+    if (!group.layers.length || !group.items.some((item) => item.filter)) return;
+    const expr = exclusionFilter(group, (iid) => state.get(group.id).items.get(iid));
+    const key = JSON.stringify(expr);
+    if ((appliedFilters.get(group.id) ?? 'null') === key) return;
+    appliedFilters.set(group.id, key);
+    for (const id of group.layers) onFilter(id, expr);
+  }
+
   function emit(ids) {
     const visible = ids.filter(isOn);
     const hidden = ids.filter((id) => !isOn(id));
@@ -186,7 +205,9 @@ export function createLegend(root, groups, { onChange = () => {} } = {}) {
     s.on = on;
     for (const iid of s.items.keys()) s.items.set(iid, on);
     render(gid);
-    emit(allLayerIds(groups.find((g) => g.id === gid)));
+    const group = groups.find((g) => g.id === gid);
+    emitFilter(group);
+    emit(allLayerIds(group));
   }
 
   function setItem(gid, iid, on) {
@@ -195,6 +216,7 @@ export function createLegend(root, groups, { onChange = () => {} } = {}) {
     s.on = groupOn(gid);
     render(gid);
     const group = groups.find((g) => g.id === gid);
+    emitFilter(group);
     emit([...group.layers, ...group.items.find((i) => i.id === iid).layers]);
   }
 
@@ -258,6 +280,7 @@ export function createLegend(root, groups, { onChange = () => {} } = {}) {
     render(group.id);
   }
 
+  for (const group of groups) emitFilter(group);
   const initiallyHidden = groups.flatMap(allLayerIds).filter((id) => !isOn(id));
   if (initiallyHidden.length) onChange(initiallyHidden, false);
 
