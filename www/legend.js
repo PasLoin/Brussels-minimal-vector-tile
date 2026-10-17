@@ -58,6 +58,8 @@ function resolveEntry(entry, byId, inheritedColor) {
   const swatch = SWATCHES.includes(entry.swatch) ? entry.swatch : swatchType(layers);
   const out = { id: String(entry.id), label: String(entry.label || entry.id), color, swatch, layers: ids };
   if (Array.isArray(entry.filter) && entry.filter.length) out.filter = entry.filter;
+  const colors = (Array.isArray(entry.colors) ? entry.colors : []).filter(isColor);
+  if (colors.length > 1) out.colors = colors;
   return out;
 }
 
@@ -110,10 +112,18 @@ export function allLayerIds(group) {
   return [...group.layers, ...group.items.flatMap((item) => item.layers)];
 }
 
+export function swatchBackground(entry) {
+  const colors = entry.colors || [];
+  if (colors.length < 2) return entry.color;
+  const step = 100 / colors.length;
+  const stops = colors.map((c, i) => `${c} ${(i * step).toFixed(2)}% ${((i + 1) * step).toFixed(2)}%`);
+  return `linear-gradient(170deg, ${stops.join(', ')})`;
+}
+
 function swatchEl(entry) {
   const el = document.createElement('div');
   el.className = entry.swatch === 'line' ? 'swatch' : `swatch ${entry.swatch}`;
-  el.style.background = entry.color;
+  el.style.background = swatchBackground(entry);
   return el;
 }
 
