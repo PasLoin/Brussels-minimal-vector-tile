@@ -67,7 +67,10 @@
     .levels h2 { font-size: 13px; font-weight: bold; color: #222; }
     .levels fieldset { border: 0; display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: #444; }
     .levels label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
-    .levels-list { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; margin-top: 8px; font-size: 11px; color: #444; }
+    .levels-list { display: flex; flex-direction: column; gap: 2px; margin-top: 8px; max-height: 32vh; overflow-y: auto; font-size: 11px; color: #444; }
+    .levels-list label.absent { color: #999; font-style: italic; }
+    .levels-list label.below { color: #2f5d8a; }
+    .levels-ground { border-top: 1px dashed #b9a98a; margin: 3px 0; font-size: 9px; color: #8a7a5a; text-align: right; line-height: 1.6; }
     .levels-list.disabled { opacity: 0.4; pointer-events: none; }
     .levels-note { font-size: 10px; color: #666; margin-top: 8px; }
   </style>
@@ -120,8 +123,11 @@ import { togglePanel, updateOsmLink, buildDataPopupHtml, buildAttribution } from
 import { loadAllPoiIcons } from './poi_icons.js';
 import { loadPatterns } from './patterns.js';
 import {
-  levelValues, levelWindow, levelFilter, indoorPaint, indoorNote,
+  levelWindow, levelFilter, indoorPaint, indoorNote,
   buildingsState, ensureLazyGroup, lazyLayersOf, DIMMED_OPACITY,
+  visibleLevels, sameLevels, panelLevels, levelLabel,
+  LEVEL_AWARE_SOURCES, poiLevelFilter, levelAwareFilter,
+  isIsolated, keepsInIsolation,
 } from './indoor.js';
 
 window._togglePanel = togglePanel;
@@ -168,6 +174,10 @@ function initMap(style, dataInfo) {
     }
   }
   const indoorLayers = lazyLayersOf(lazy, 'indoor');
+  const levelAwareLayerIds = style.layers
+    .filter(l => LEVEL_AWARE_SOURCES.includes(l.source))
+    .map(l => l.id);
+  const levelAwareMemo = {};
 
   const map = new maplibregl.Map({
     container: 'map', style,
@@ -194,15 +204,35 @@ function initMap(style, dataInfo) {
     buildingsOn: true,
     indoorMode: 'off',
     selected: new Set(),
-    levels: null,
+    levels: [],
+    isolated: false,
   };
+  const requestedVisibility = {};
 
   const toggleBtn = document.getElementById('toggle-3d');
   const levelsPanel = document.getElementById('levels-panel');
   const levelsList = document.getElementById('levels-list');
   const levelsNote = document.getElementById('levels-note');
 
-  const setVisibility = (id, v) => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v); };
+  const hiddenByIsolation = (id) => state.isolated && !keepsInIsolation(map.getLayer(id));
+
+  function setVisibility(id, v) {
+    requestedVisibility[id] = v;
+    if (!map.getLayer(id)) return;
+    map.setLayoutProperty(id, 'visibility', hiddenByIsolation(id) ? 'none' : v);
+  }
+
+  function applyIsolation(isolated) {
+    if (isolated === state.isolated) return;
+    state.isolated = isolated;
+    for (const layer of map.getStyle().layers) {
+      if (keepsInIsolation(layer)) continue;
+      if (!(layer.id in requestedVisibility)) {
+        requestedVisibility[layer.id] = (layer.layout || {}).visibility || 'visible';
+      }
+      map.setLayoutProperty(layer.id, 'visibility', isolated ? 'none' : requestedVisibility[layer.id]);
+    }
+  }
 
   function currentWindow() {
     if (!state.is3d || state.indoorMode === 'off') return null;
@@ -211,7 +241,7 @@ function initMap(style, dataInfo) {
 
   function applyBuildings() {
     const { visibility, dimmed } = buildingsState({
-      is3d: state.is3d, buildingsOn: state.buildingsOn, window: currentWindow(),
+      is3d: state.is3d, buildingsOn: state.buildingsOn, window: currentWindow(), isolated: state.isolated,
     });
     for (const [id, v] of Object.entries(visibility)) setVisibility(id, v);
     for (const id of ['buildings-3d', 'building-parts-3d']) {
@@ -221,12 +251,25 @@ function initMap(style, dataInfo) {
     }
   }
 
+  const indoorActive = () => state.is3d && state.indoorMode !== 'off';
+
   function applyIndoor() {
+    const active = indoorActive();
     const win = currentWindow();
-    if (win && lazy) ensureLazyGroup(map, lazy, 'indoor', location.href);
+    applyIsolation(active && isIsolated(state.indoorMode, state.selected, win));
+    if (active && lazy && ensureLazyGroup(map, lazy, 'indoor', location.href)) {
+      for (const layer of indoorLayers) {
+        if (map.getLayer(layer.id) && map.getLayer('buildings-3d')) map.moveLayer(layer.id, 'buildings-3d');
+      }
+    }
     for (const layer of indoorLayers) {
       if (!map.getLayer(layer.id)) continue;
-      if (!win) { setVisibility(layer.id, 'none'); continue; }
+      if (!active) { setVisibility(layer.id, 'none'); continue; }
+      if (!win) {
+        map.setFilter(layer.id, ['==', 1, 0]);
+        setVisibility(layer.id, 'visible');
+        continue;
+      }
       const extrusion = (layer.metadata || {})['brussels:extrusion'] || 'slab';
       map.setFilter(layer.id, ['all', layer.filter, levelFilter(state.indoorMode, state.selected)]);
       for (const [prop, value] of Object.entries(indoorPaint(extrusion, win, lazy))) {
@@ -234,42 +277,77 @@ function initMap(style, dataInfo) {
       }
       setVisibility(layer.id, 'visible');
     }
-    levelsNote.textContent = state.is3d ? indoorNote(state.indoorMode, win) : '';
+    applyLevelAwareLayers(active);
+    levelsNote.textContent = state.is3d ? indoorNote(state.indoorMode, win, state.isolated) : '';
     applyBuildings();
   }
 
-  async function loadLevels() {
-    if (state.levels) return state.levels;
-    try {
-      const r = await fetch('./indoor-levels.json');
-      state.levels = r.ok ? levelValues(await r.json()) : [];
-    } catch (err) {
-      console.warn('indoor-levels.json indisponible :', err);
-      state.levels = [];
+  function applyLevelAwareLayers(active) {
+    const extra = active ? poiLevelFilter(state.indoorMode, state.selected) : null;
+    for (const id of levelAwareLayerIds) {
+      if (!map.getLayer(id)) continue;
+      const memo = levelAwareFilter(map.getFilter(id), levelAwareMemo[id], extra);
+      levelAwareMemo[id] = memo;
+      map.setFilter(id, memo.applied);
     }
-    levelsList.innerHTML = '';
-    for (const value of state.levels) {
-      const label = document.createElement('label');
-      const box = document.createElement('input');
-      box.type = 'checkbox';
-      box.value = String(value);
-      box.checked = state.selected.has(value);
-      box.addEventListener('change', () => {
-        if (box.checked) state.selected.add(value); else state.selected.delete(value);
-        applyIndoor();
-      });
-      label.append(box, document.createTextNode(` ${value}`));
-      levelsList.appendChild(label);
-    }
-    return state.levels;
   }
 
+  function renderLevels() {
+    levelsList.innerHTML = '';
+    if (state.indoorMode === 'off') return;
+    const entries = panelLevels(state.levels, state.selected);
+    if (!entries.length) {
+      if (state.indoorMode === 'select') levelsList.textContent = 'Aucun niveau intérieur dans cette vue.';
+      return;
+    }
+    let groundDrawn = false;
+    for (const { level, present } of entries) {
+      if (!groundDrawn && level < 0) {
+        const ground = document.createElement('div');
+        ground.className = 'levels-ground';
+        ground.textContent = 'sol';
+        levelsList.appendChild(ground);
+        groundDrawn = true;
+      }
+      const label = document.createElement('label');
+      label.classList.toggle('below', level < 0);
+      label.classList.toggle('absent', !present);
+      if (!present) label.title = 'Aucun élément à ce niveau dans la vue actuelle';
+      const box = document.createElement('input');
+      box.type = 'checkbox';
+      box.value = String(level);
+      box.checked = state.selected.has(level);
+      box.addEventListener('change', () => {
+        if (box.checked) state.selected.add(level); else state.selected.delete(level);
+        if (!box.checked && !present) renderLevels();
+        applyIndoor();
+      });
+      label.append(box, document.createTextNode(` ${levelLabel(level)}`));
+      levelsList.appendChild(label);
+    }
+  }
+
+  function refreshLevels() {
+    if (!indoorActive() || !map.getSource('indoor')) return;
+    const b = map.getBounds();
+    const levels = visibleLevels(
+      map.querySourceFeatures('indoor', { sourceLayer: 'indoor' }),
+      [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()],
+    );
+    if (sameLevels(levels, state.levels)) return;
+    state.levels = levels;
+    renderLevels();
+    applyIndoor();
+  }
+
+  map.on('idle', refreshLevels);
+
   document.querySelectorAll('input[name="indoor-mode"]').forEach(radio => {
-    radio.addEventListener('change', async () => {
+    radio.addEventListener('change', () => {
       if (!radio.checked) return;
       state.indoorMode = radio.value;
       levelsList.classList.toggle('disabled', state.indoorMode !== 'select');
-      if (state.indoorMode !== 'off') await loadLevels();
+      renderLevels();
       applyIndoor();
     });
   });
@@ -279,9 +357,10 @@ function initMap(style, dataInfo) {
       loadPatterns(map, (style.metadata || {})['brussels:patterns']),
       loadAllPoiIcons(map),
     ]);
-    map.setLayoutProperty('poi-icon', 'visibility', 'visible');
-    if (map.getLayer('leisure-icon')) map.setLayoutProperty('leisure-icon', 'visibility', 'visible');
-    if (map.getLayer('street-furniture-icon')) map.setLayoutProperty('street-furniture-icon', 'visibility', 'visible');
+    setVisibility('poi-icon', 'visible');
+    setVisibility('leisure-icon', 'visible');
+    setVisibility('street-furniture-icon', 'visible');
+    applyIndoor();
   });
 
   map.on('load', () => {
