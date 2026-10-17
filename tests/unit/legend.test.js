@@ -10,6 +10,7 @@ import {
   allLayerIds,
   createLegend,
   exclusionFilter,
+  swatchBackground,
 } from '../../www/legend.js';
 
 const line = (id, color, source = 'roads') => ({ id, type: 'line', source, paint: { 'line-color': color } });
@@ -309,5 +310,25 @@ describe('sous-entrées par filtre', () => {
     const group = { items: [{ id: 'a', filter: ['has', 'a'] }, { id: 'b' }] };
     expect(exclusionFilter(group, () => true)).toBeNull();
     expect(exclusionFilter(group, () => false)).toEqual(['!', ['has', 'a']]);
+  });
+});
+
+describe('pastille multicolore', () => {
+  it('garde la couleur simple avec moins de deux couleurs', () => {
+    expect(swatchBackground({ color: '#007cc2' })).toBe('#007cc2');
+    expect(swatchBackground({ color: '#007cc2', colors: ['#007cc2'] })).toBe('#007cc2');
+  });
+
+  it('découpe la pastille en bandes nettes', () => {
+    expect(swatchBackground({ color: '#007cc2', colors: ['#007cc2', '#ef3e42'] }))
+      .toBe('linear-gradient(170deg, #007cc2 0.00% 50.00%, #ef3e42 50.00% 100.00%)');
+  });
+
+  it('legendGroups transmet les couleurs valides', () => {
+    const style = {
+      layers: [{ id: 'pt', type: 'line', source: 'public_transport', paint: { 'line-color': '#fff' } }],
+      metadata: { 'brussels:legend': [{ id: 'public_transport', label: 'STIB', layers: ['pt'], items: [], colors: ['#007cc2', 'nope', '#ef3e42'] }] },
+    };
+    expect(legendGroups(style)[0].colors).toEqual(['#007cc2', '#ef3e42']);
   });
 });
