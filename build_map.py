@@ -1295,7 +1295,7 @@ SUBTYPE_LABELS = {
     },
     "railway": {"miniature": "Miniature", "rail": "Rail", "subway": "Métro", "tram": "Tram"},
     "street_furniture": {
-        "bench": "Bancs", "bollard": "Potelets", "bus_trap": "Pièges à voitures",
+        "bench": "Bancs", "bollard": "Potelets", "bus_trap": "Sas Bus",
         "cycle_barrier": "Chicanes vélo", "entrance": "Entrées", "fence": "Clôtures",
         "gate": "Portails", "lift_gate": "Barrières levantes", "lounger": "Transats",
         "planter": "Bacs à plantes", "street_lamp": "Lampadaires",
