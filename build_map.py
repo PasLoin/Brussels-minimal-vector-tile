@@ -1365,6 +1365,23 @@ def legend_subtype(group, layer_id, keys):
     return head if head in keys and head != group else None
 
 
+LEGEND_GROUP_TAGS = {"landuse": "landuse", "leisure": "leisure", "roads": "highway",
+                     "pedestrian": "highway", "railway": "railway"}
+LEGEND_SUBTYPE_TAGS = {"water": {"wetland": "natural"}}
+
+
+def subtype_filter(group, key, raw):
+    tag = ((raw or {}).get("tag")
+           or (DEFAULT_SUBTYPES.get(group, {}).get(key) or {}).get("tag")
+           or LEGEND_SUBTYPE_TAGS.get(group, {}).get(key)
+           or LEGEND_GROUP_TAGS.get(group))
+    if not tag:
+        return None
+    if key == tag:
+        return ["has", tag]
+    return ["==", ["get", tag], key]
+
+
 def build_legend(config, layers):
     L = config.get("layers") or {}
     by_source = {}
@@ -1383,19 +1400,25 @@ def build_legend(config, layers):
         for l in group_layers:
             key = legend_subtype(name, l["id"], known)
             assigned.setdefault(key, []).append(l)
-        keys = [k for k in cfg["subtypes"] if k in assigned]
+        own = assigned.get(None, [])
+        keys = [k for k in cfg["subtypes"]
+                if k in assigned or (own and subtype_filter(name, k, cfg["subtypes"].get(k)))]
         keys += [k for k in assigned if k is not None and k not in keys]
         items = []
         for key in keys:
             raw = cfg["subtypes"].get(key) or {}
-            item_layers = assigned[key]
-            color = c(raw.get("color")) or paint_color(item_layers) or cfg["color"] or LEGEND_FALLBACK_COLOR
-            items.append({"id": key,
-                          "label": raw.get("label") or default_subtype_label(name, key),
-                          "color": color,
-                          "swatch": swatch_type(item_layers),
-                          "layers": [l["id"] for l in item_layers]})
-        own = assigned.get(None, [])
+            item_layers = assigned.get(key, [])
+            color = (c(raw.get("color")) or paint_color(item_layers) or cfg["color"]
+                     or paint_color(own) or LEGEND_FALLBACK_COLOR)
+            item = {"id": key,
+                    "label": raw.get("label") or default_subtype_label(name, key),
+                    "color": color,
+                    "swatch": swatch_type(item_layers or own),
+                    "layers": [l["id"] for l in item_layers]}
+            filt = subtype_filter(name, key, raw) if own else None
+            if filt:
+                item["filter"] = filt
+            items.append(item)
         color = (cfg["color"] or (items[0]["color"] if items else None)
                  or paint_color(own) or LEGEND_FALLBACK_COLOR)
         swatch = (L.get(name) or {}).get("swatch")
