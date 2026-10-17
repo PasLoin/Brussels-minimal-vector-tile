@@ -9,6 +9,7 @@ import {
   legendGroups,
   allLayerIds,
   createLegend,
+  exclusionFilter,
 } from '../../www/legend.js';
 
 const line = (id, color, source = 'roads') => ({ id, type: 'line', source, paint: { 'line-color': color } });
@@ -229,5 +230,84 @@ describe('createLegend', () => {
     const swatch = groupRow('landuse').querySelector('.swatch');
     expect(swatch.classList.contains('fill')).toBe(true);
     expect(swatch.style.background).not.toBe('');
+  });
+});
+
+const furnitureStyle = () => ({
+  layers: [
+    { id: 'street-furniture-fence', type: 'line', source: 'street_furniture', paint: { 'line-color': '#9c9c9c' } },
+    { id: 'street-furniture-icon', type: 'symbol', source: 'street_furniture', paint: {} },
+  ],
+  metadata: {
+    'brussels:legend': [
+      {
+        id: 'street_furniture', label: 'Mobilier urbain', color: '#555555', swatch: 'dot',
+        layers: ['street-furniture-icon'],
+        items: [
+          { id: 'bench', label: 'Bancs', layers: [], filter: ['==', ['get', 'amenity'], 'bench'] },
+          { id: 'waste_basket', label: 'Poubelles', layers: [], filter: ['==', ['get', 'amenity'], 'waste_basket'] },
+          { id: 'fence', label: 'Clôtures', layers: ['street-furniture-fence'], filter: ['==', ['get', 'barrier'], 'fence'] },
+        ],
+      },
+      {
+        id: 'orphan', label: 'Orphelin', layers: [],
+        items: [{ id: 'x', label: 'X', layers: [], filter: ['has', 'x'] }],
+      },
+    ],
+  },
+});
+
+describe('sous-entrées par filtre', () => {
+  let root;
+  let onFilter;
+  let onChange;
+  let legend;
+
+  beforeEach(() => {
+    document.body.innerHTML = '<div id="legend-content"></div>';
+    root = document.getElementById('legend-content');
+    onFilter = vi.fn();
+    onChange = vi.fn();
+    legend = createLegend(root, legendGroups(furnitureStyle()), { onChange, onFilter });
+  });
+
+  const item = (iid) => root.querySelector(`.legend-item[data-id="${iid}"]`);
+
+  it('garde les sous-entrées sans couche propre quand le groupe a des couches communes', () => {
+    const groups = legendGroups(furnitureStyle());
+    expect(groups.map((g) => g.id)).toEqual(['street_furniture']);
+    expect(groups[0].items.map((i) => i.id)).toEqual(['bench', 'waste_basket', 'fence']);
+  });
+
+  it('n’émet aucun filtre au départ', () => {
+    expect(onFilter).not.toHaveBeenCalled();
+  });
+
+  it('masquer une sous-entrée exclut ses objets des couches communes', () => {
+    item('bench').click();
+    expect(onFilter).toHaveBeenLastCalledWith('street-furniture-icon', ['!', ['==', ['get', 'amenity'], 'bench']]);
+    expect(legend.isOn('street-furniture-icon')).toBe(true);
+  });
+
+  it('cumule les exclusions', () => {
+    item('bench').click();
+    item('fence').click();
+    expect(onFilter).toHaveBeenLastCalledWith('street-furniture-icon', ['!', ['any',
+      ['==', ['get', 'amenity'], 'bench'],
+      ['==', ['get', 'barrier'], 'fence'],
+    ]]);
+    expect(onChange).toHaveBeenCalledWith(['street-furniture-fence'], false);
+  });
+
+  it('réafficher retire le filtre', () => {
+    item('bench').click();
+    item('bench').click();
+    expect(onFilter).toHaveBeenLastCalledWith('street-furniture-icon', null);
+  });
+
+  it('exclusionFilter ignore les sous-entrées visibles ou sans filtre', () => {
+    const group = { items: [{ id: 'a', filter: ['has', 'a'] }, { id: 'b' }] };
+    expect(exclusionFilter(group, () => true)).toBeNull();
+    expect(exclusionFilter(group, () => false)).toEqual(['!', ['has', 'a']]);
   });
 });
