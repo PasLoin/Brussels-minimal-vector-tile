@@ -9,6 +9,12 @@ export const DIMMED_OPACITY = 0.25;
 
 const NUM = (field) => ['to-number', ['get', field], 0];
 
+export const ARROW_THICKNESS = 0.12;
+
+const VALUE = (field) => (field === 'top'
+  ? ['to-number', ['coalesce', ['get', 'z_top'], ['get', 'level_max']], 0]
+  : NUM(field));
+
 export function levelValues(levelsDoc) {
   const levels = (levelsDoc && Array.isArray(levelsDoc.levels)) ? levelsDoc.levels : [];
   return levels
@@ -46,18 +52,26 @@ export function levelFilter(mode, selected) {
 }
 
 export function levelExpr(field, win, levelHeight) {
-  const clamped = ['max', win.lo, ['min', win.hi, NUM(field)]];
+  const clamped = ['max', win.lo, ['min', win.hi, VALUE(field)]];
   return ['*', ['-', clamped, win.offset], levelHeight];
 }
 
 export function indoorPaint(extrusion, win, settings) {
   const h = settings.level_height;
+  const top = levelExpr('top', win, h);
+  if (extrusion === 'arrow') {
+    const lifted = ['+', top, settings.slab];
+    return {
+      'fill-extrusion-base': lifted,
+      'fill-extrusion-height': ['+', lifted, ARROW_THICKNESS],
+    };
+  }
   const extra = extrusion === 'slab'
     ? settings.slab
     : Math.round(h * settings.volume_ratio * 1000) / 1000;
   return {
     'fill-extrusion-base': levelExpr('level_min', win, h),
-    'fill-extrusion-height': ['+', levelExpr('level_max', win, h), extra],
+    'fill-extrusion-height': ['+', top, extra],
   };
 }
 

@@ -143,7 +143,7 @@ describe('ensureLazyGroup', () => {
     expect(ensureLazyGroup(map, lazy, 'indoor', 'https://example.org/map/')).toBe(false);
     expect(map.addSource).toHaveBeenCalledTimes(1);
     expect(sources.indoor.url).toBe('pmtiles://https://example.org/map/indoor.pmtiles.gz');
-    expect(map.addLayer.mock.calls.map(c => c[0].id)).toEqual(['indoor-3d-floor', 'indoor-3d-volume']);
+    expect(map.addLayer.mock.calls.map(c => c[0].id)).toEqual(['indoor-3d-floor', 'indoor-3d-volume', 'indoor-3d-arrows']);
     expect(map.addLayer.mock.calls.every(c => c[1] === lazy.before)).toBe(true);
   });
 });
@@ -204,6 +204,15 @@ function evaluate(expr, props) {
     case 'all': return args.every((a) => ev(a));
     case 'any': return args.some((a) => ev(a));
     case 'get': return props[args[0]] ?? null;
+    case 'coalesce': {
+      for (const a of args) { const v = ev(a); if (v !== null && v !== undefined) return v; }
+      return null;
+    }
+    case '+': return args.reduce((acc, a) => acc + ev(a), 0);
+    case '*': return args.reduce((acc, a) => acc * ev(a), 1);
+    case '-': return ev(args[0]) - ev(args[1]);
+    case 'max': return Math.max(...args.map(ev));
+    case 'min': return Math.min(...args.map(ev));
     case 'to-number': {
       const v = ev(args[0]);
       const n = Number(v);
@@ -324,5 +333,31 @@ describe('vue isolée (niveau 0 non affiché)', () => {
   it('indoorNote annonce la vue isolée', () => {
     expect(indoorNote('select', { lo: 1, hi: 1, offset: 1 }, true)).toContain('Vue isolée');
     expect(indoorNote('select', { lo: 1, hi: 1, offset: 1 }, true)).toContain('1');
+  });
+});
+
+describe('escaliers inclinés et flèches des escalators', () => {
+  const settings = { level_height: 3, slab: 0.3, volume_ratio: 0.9 };
+  const win = { lo: -2, hi: 0, offset: -2 };
+
+  it('le dessus suit z_top quand il existe, sinon level_max', () => {
+    const paint = indoorPaint('slab', win, settings);
+    const height = (props) => evaluate(paint['fill-extrusion-height'], props);
+    expect(height({ level_min: -2, level_max: 0 })).toBeCloseTo(6.3);
+    expect(height({ level_min: -2, level_max: 0, z_top: -1.5 })).toBeCloseTo(1.8);
+    expect(evaluate(paint['fill-extrusion-base'], { level_min: -2, level_max: 0, z_top: -1.5 })).toBeCloseTo(0);
+  });
+
+  it('les flèches sont posées juste au-dessus de la marche', () => {
+    const paint = indoorPaint('arrow', win, settings);
+    const props = { level_min: -2, level_max: 0, z_top: -1 };
+    expect(evaluate(paint['fill-extrusion-base'], props)).toBeCloseTo(3.3);
+    expect(evaluate(paint['fill-extrusion-height'], props)).toBeCloseTo(3.42);
+  });
+
+  it('la couche des flèches existe et ne montre que les flèches', () => {
+    const arrows = lazyLayersOf(lazy, 'indoor').find((l) => l.id === 'indoor-3d-arrows');
+    expect(arrows.metadata['brussels:extrusion']).toBe('arrow');
+    expect(JSON.stringify(arrows.filter)).toContain('arrow');
   });
 });
