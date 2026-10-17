@@ -268,7 +268,7 @@
                 "kind"
               ],
               "area",
-              "#e6dfcb",
+              "#d8bf8f",
               "corridor",
               "#f2c38c",
               "elevator",
@@ -280,12 +280,12 @@
               "platform",
               "#b7a4e3",
               "room",
-              "#efe6d2",
+              "#c98f5a",
               "steps",
               "#d9822b",
               "wall",
-              "#7a7a7a",
-              "#e6dfcb"
+              "#5f5f5f",
+              "#d8bf8f"
             ],
             "fill-extrusion-opacity": 0.9,
             "fill-extrusion-base": [
@@ -378,7 +378,7 @@
                 "kind"
               ],
               "area",
-              "#e6dfcb",
+              "#d8bf8f",
               "corridor",
               "#f2c38c",
               "elevator",
@@ -390,12 +390,12 @@
               "platform",
               "#b7a4e3",
               "room",
-              "#efe6d2",
+              "#c98f5a",
               "steps",
               "#d9822b",
               "wall",
-              "#7a7a7a",
-              "#e6dfcb"
+              "#5f5f5f",
+              "#d8bf8f"
             ],
             "fill-extrusion-opacity": 0.35,
             "fill-extrusion-base": [
