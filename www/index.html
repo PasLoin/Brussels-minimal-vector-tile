@@ -48,8 +48,23 @@
     .legend-row.off { opacity: 0.3; }
     .legend-row .swatch { width: 16px; height: 4px; border-radius: 1px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.1); }
     .legend-row .swatch.fill { height: 12px; width: 12px; border-radius: 2px; }
-    .legend-row .swatch.dot { height: 8px; width: 8px; border-radius: 50%; }
-    .legend-row span { font-size: 11px; color: #444; }
+    .legend-row .swatch.dot { height: 8px; width: 8px; border-radius: 50%; margin: 0 4px; }
+    .legend-row .swatch.fill { margin: 0 2px; }
+    .legend-row span, .legend-item span { font-size: 11px; color: #444; }
+    .legend-row.mixed .swatch, .legend-row.mixed span { opacity: 0.55; }
+    .legend-row .legend-expand { margin-left: auto; background: none; border: 0; padding: 0 4px; font-size: 11px; color: #666; cursor: pointer; transition: transform 0.15s; }
+    .legend-row .legend-expand[aria-expanded="true"] { transform: rotate(90deg); }
+    .legend-items { padding: 0 0 4px 14px; border-left: 1px solid rgba(0,0,0,0.08); margin-left: 7px; }
+    .legend-items[hidden] { display: none; }
+    .legend-item { display: flex; align-items: center; gap: 8px; padding: 3px 0; cursor: pointer; user-select: none; transition: opacity 0.15s; }
+    .legend-item.off { opacity: 0.3; }
+    .legend-item .swatch { width: 14px; height: 4px; border-radius: 1px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.1); }
+    .legend-item .swatch.fill { height: 10px; width: 10px; border-radius: 2px; }
+    .legend-item .swatch.dot { height: 8px; width: 8px; border-radius: 50%; margin: 0 3px; }
+    .legend-item .swatch.fill { margin: 0 2px; }
+    .legend-actions { display: flex; gap: 6px; padding: 2px 0 6px; position: sticky; top: 0; background: rgba(242, 239, 233, 0.96); z-index: 1; }
+    .legend-actions button { flex: 1; font-size: 10px; padding: 3px 6px; border: 1px solid rgba(0,0,0,0.12); border-radius: 3px; background: #fff; color: #444; cursor: pointer; }
+    .legend-actions button:hover { background: #f7f4ee; }
 
     .maplibregl-ctrl-group { border-radius: 4px !important; border: 1px solid rgba(0,0,0,0.1) !important; box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; }
     .maplibregl-ctrl-attrib { font-size: 10px !important; background: rgba(255,255,255,0.7) !important; }
@@ -122,12 +137,13 @@
 import { togglePanel, updateOsmLink, buildDataPopupHtml, buildAttribution } from './map_ui.js';
 import { loadAllPoiIcons } from './poi_icons.js';
 import { loadPatterns } from './patterns.js';
+import { legendGroups, createLegend } from './legend.js';
 import {
   levelWindow, levelFilter, indoorPaint, indoorNote,
   buildingsState, ensureLazyGroup, lazyLayersOf, DIMMED_OPACITY,
   visibleLevels, sameLevels, panelLevels, levelLabel,
   LEVEL_AWARE_SOURCES, poiLevelFilter, levelAwareFilter,
-  isIsolated, keepsInIsolation,
+  isIsolated, keepsInIsolation, BUILDING_LAYERS,
 } from './indoor.js';
 
 window._togglePanel = togglePanel;
@@ -208,6 +224,18 @@ function initMap(style, dataInfo) {
     isolated: false,
   };
   const requestedVisibility = {};
+  const buildingLayerIds = new Set([...BUILDING_LAYERS.flat, ...BUILDING_LAYERS.extruded]);
+  let legend = null;
+  const legendVisibility = (id) => (!legend || legend.isOn(id) ? 'visible' : 'none');
+
+  function applyLegend(ids, on) {
+    const plain = ids.filter((id) => !buildingLayerIds.has(id));
+    for (const id of plain) setVisibility(id, on ? 'visible' : 'none');
+    if (plain.length !== ids.length) {
+      state.buildingsOn = on;
+      applyBuildings();
+    }
+  }
 
   const toggleBtn = document.getElementById('toggle-3d');
   const levelsPanel = document.getElementById('levels-panel');
@@ -357,87 +385,16 @@ function initMap(style, dataInfo) {
       loadPatterns(map, (style.metadata || {})['brussels:patterns']),
       loadAllPoiIcons(map),
     ]);
-    setVisibility('poi-icon', 'visible');
-    setVisibility('leisure-icon', 'visible');
-    setVisibility('street-furniture-icon', 'visible');
+    for (const id of ['poi-icon', 'leisure-icon', 'street-furniture-icon']) {
+      setVisibility(id, legendVisibility(id));
+    }
     applyIndoor();
   });
 
   map.on('load', () => {
     state.loaded = true;
-    const layers = map.getStyle().layers;
-    const el = document.getElementById('legend-content');
-    const extractColor = (v) => {
-      if (typeof v === 'string') return v;
-      if (Array.isArray(v) && v.length > 1) return extractColor(v[v.length - 1]);
-      return null;
-    };
-
-    const categories = [
-      { label: 'Résidentiel', pattern: 'landuse-residential', type: 'fill' },
-      { label: 'Industriel', pattern: 'landuse-industrial', type: 'fill' },
-      { label: 'Commercial', pattern: 'landuse-commercial', type: 'fill' },
-      { label: 'Retail', pattern: 'landuse-retail', type: 'fill' },
-      { label: 'Éducation', pattern: 'landuse-education', type: 'fill' },
-      { label: 'Forêt', pattern: 'green-forest', type: 'fill' },
-      { label: 'Parcs', pattern: 'green-park', type: 'fill' },
-      { label: 'Pelouse', pattern: 'green-grass', type: 'fill' },
-      { label: 'Broussailles', pattern: 'green-scrub', type: 'fill' },
-      { label: 'Eau', pattern: 'water-', type: 'fill' },
-      { label: 'Bâtiments', pattern: 'buildings-fill', type: 'fill', onToggle: (on) => { state.buildingsOn = on; applyBuildings(); } },
-      { label: 'Arbres et haies', pattern: 'trees-', type: 'dot', color: '#6cae50' },
-      { label: 'Rail', pattern: 'railway-rail', type: 'line', extraPatterns: ['railway-tunnel-rail', 'railway-bridge-rail'] },
-      { label: 'Tram', pattern: 'railway-tram', type: 'line', extraPatterns: ['railway-tunnel-tram', 'railway-bridge-tram'] },
-      { label: 'Métro', pattern: 'railway-subway', type: 'line', extraPatterns: ['railway-tunnel-subway', 'railway-bridge-subway'] },
-      { label: 'Miniature', pattern: 'railway-miniature', type: 'line' },
-      { label: 'Transport STIB', pattern: 'public_transport-', type: 'line', color: '#e3004f' },
-      { label: 'Routes', pattern: 'roads-', type: 'line' },
-      { label: 'Piétons', pattern: 'pedestrian-', type: 'line' },
-      { label: 'Cyclable', pattern: 'cycleway', type: 'line' },
-      { label: 'POI', pattern: 'poi-', type: 'dot' },
-      { label: 'Limites', pattern: 'boundaries', type: 'line' },
-      { label: 'Mobilier urbain', pattern: 'street-furniture-', type: 'dot' },
-    ];
-
-    categories.forEach(cat => {
-      let matchedLayers = layers.filter(l => l.id.startsWith(cat.pattern));
-      if (cat.extraPatterns) cat.extraPatterns.forEach(ep => {
-        matchedLayers = matchedLayers.concat(layers.filter(l => l.id.startsWith(ep)));
-      });
-      if (matchedLayers.length === 0) return;
-
-      let color = cat.color || '#ccc';
-      if (!cat.color) {
-        for (const layer of matchedLayers) {
-          const p = layer.paint; if (!p) continue;
-          const rawColor = p['fill-color'] || p['line-color'] || p['circle-color'] || p['text-color'];
-          const c = extractColor(rawColor);
-          if (c) { color = c; break; }
-        }
-      }
-
-      const allRelatedLayers = matchedLayers.map(l => l.id);
-      if (cat.pattern === 'roads-') allRelatedLayers.push('road-labels');
-      if (cat.pattern === 'railway-rail') {
-        const bc = layers.find(l => l.id === 'railway-bridge-casing');
-        if (bc) allRelatedLayers.push('railway-bridge-casing');
-      }
-
-      const row = document.createElement('div');
-      row.className = 'legend-row';
-      let cls = 'swatch';
-      if (cat.type === 'fill') cls = 'swatch fill';
-      else if (cat.type === 'dot') cls = 'swatch dot';
-      row.innerHTML = `<div class="${cls}" style="background:${color}"></div><span>${cat.label}</span>`;
-      let on = true;
-      row.onclick = () => {
-        on = !on;
-        row.classList.toggle('off', !on);
-        if (cat.onToggle) { cat.onToggle(on); return; }
-        const v = on ? 'visible' : 'none';
-        allRelatedLayers.forEach(id => setVisibility(id, v));
-      };
-      el.appendChild(row);
+    legend = createLegend(document.getElementById('legend-content'), legendGroups(map.getStyle()), {
+      onChange: applyLegend,
     });
   });
 
