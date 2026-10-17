@@ -11,6 +11,7 @@
 #   labels_at      zoom minimum des étiquettes (défaut: appear_at+3)
 #   opacity        opacité globale (0.0–1.0)
 #   swatch         pastille de légende : fill, line ou dot (défaut: type majoritaire)
+#   swatch_colors  pastille de légende multicolore (ex: ["#007cc2", "#ef3e42"])
 #   tiles          paramètres PMTiles (min_zoom, max_zoom, simplification,
 #                  detail_from pour buildings)
 #   sports         leisure uniquement : rendu des terrains par sport_render
@@ -204,8 +205,14 @@ layers:
 
   public_transport:
     label: Transport STIB
-    color: "#ffffff"
+    color: "#007cc2"
+    swatch: fill
+    swatch_colors: ["#007cc2", "#ef3e42"]
     appear_at: 10
+    subtypes:
+      tram: { tag: route, color: "#c8102e" }
+      subway: { tag: route, color: "#1f4e9d" }
+      bus: { tag: route, color: "#f39200" }
 
   poi:
     label: POI
