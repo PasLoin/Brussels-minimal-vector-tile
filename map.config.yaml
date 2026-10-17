@@ -5,11 +5,13 @@
 #   label          nom lisible
 #   color          couleur principale (fill ou line)
 #   border_color   couleur du contour (buildings...)
-#   visible        false pour masquer la couche
+#   visible        false pour masquer la couche au chargement
 #   extrusion_3d   true pour activer le rendu 3D buildings
 #   appear_at      zoom minimum d'apparition
 #   labels_at      zoom minimum des étiquettes (défaut: appear_at+3)
 #   opacity        opacité globale (0.0–1.0)
+#   swatch         pastille de légende : fill, line ou dot (défaut: type majoritaire)
+#   swatch_colors  pastille de légende multicolore (ex: ["#007cc2", "#ef3e42"])
 #   tiles          paramètres PMTiles (min_zoom, max_zoom, simplification,
 #                  detail_from pour buildings)
 #   sports         leisure uniquement : rendu des terrains par sport_render
@@ -17,6 +19,7 @@
 #
 # Champs disponibles par sous-type :
 #   tag            tag OSM du filtre (landuse, leisure, natural, highway...)
+#   label          nom affiché dans la légende (défaut: libellé intégré)
 #   color          couleur principale
 #   color_private  couleur si access=private
 #   pattern        fill-pattern (ex: military-hatch)
@@ -29,6 +32,8 @@
 #   by_color       couleur par valeur de la clé "by" (défaut: color)
 #   by_pattern     motif par valeur de la clé "by" (défaut: pattern)
 #   tunnel_color   couleur des tronçons en tunnel (défaut: color éclaircie)
+#
+# L'ordre des couches et des sous-types est celui de la légende.
 #
 # Section patterns : motifs SVG chargés par la carte
 #   file, size (px), replace (substitution de couleurs dans le SVG)
@@ -84,17 +89,6 @@ layers:
       retail: { tag: landuse, color: "#ffd6d1" }
       village_green: { tag: landuse, color: "#cdebb0" }
 
-  water:
-    label: Eau
-    color: "#aad3df"
-    appear_at: 10
-    subtypes:
-      canal: { tag: waterway }
-      ditch: { tag: waterway, appear_at: 14 }
-      river: { tag: waterway }
-      stream: { tag: waterway, appear_at: 13 }
-      wetland: { tag: natural, color: "#d4e2c6", opacity: 0.5 }
-
   green:
     label: Espaces verts
     color: "#add19e"
@@ -111,23 +105,6 @@ layers:
       scrub: { tag: natural, color: "#d6e6b8", opacity: 0.9 }
       shrubbery: { tag: natural, color: "#6b9943", color_private: "#8cb36d", opacity: 0.5 }
       wood: { tag: natural, color_private: "#d9ecd2" }
-
-  trees:
-    label: Arbres et haies
-    color: "#6ba048"
-    appear_at: 14
-    labels_at: 16
-    subtypes:
-      hedge: { tag: barrier, color: "#6ba048", opacity: 0.85 }
-      tree: { tag: natural, color: "#7eb36a", appear_at: 17, by: leaf_type, by_color: { broadleaved: "#6cae50", needleleaved: "#5f9f50" } }
-      tree_row: { tag: natural, color: "#8fbc77", appear_at: 16, opacity: 0.55 }
-
-  buildings:
-    label: Bâtiments
-    color: "#fce1c5"
-    border_color: "#d4a574"
-    extrusion_3d: true
-    appear_at: 13
 
   leisure:
     label: Loisirs
@@ -148,6 +125,36 @@ layers:
         boules: { color: "#c4a86a", outline_color: "#9e8a4e", length: 15 }
         soccer: { color: "#5a9e4b", outline_color: "#3d7a32", length: 105 }
         tennis: { color: "#4a7c3f", outline_color: "#3a6530", length: 24 }
+
+  water:
+    label: Eau
+    color: "#aad3df"
+    swatch: fill
+    appear_at: 10
+    subtypes:
+      canal: { tag: waterway }
+      ditch: { tag: waterway, appear_at: 14 }
+      river: { tag: waterway }
+      stream: { tag: waterway, appear_at: 13 }
+      wetland: { tag: natural, color: "#d4e2c6", opacity: 0.5 }
+
+  trees:
+    label: Arbres et haies
+    color: "#6ba048"
+    swatch: dot
+    appear_at: 14
+    labels_at: 16
+    subtypes:
+      hedge: { tag: barrier, color: "#6ba048", opacity: 0.85 }
+      tree: { tag: natural, color: "#7eb36a", appear_at: 17, by: leaf_type, by_color: { broadleaved: "#6cae50", needleleaved: "#5f9f50" } }
+      tree_row: { tag: natural, color: "#8fbc77", appear_at: 16, opacity: 0.55 }
+
+  buildings:
+    label: Bâtiments
+    color: "#fce1c5"
+    border_color: "#d4a574"
+    extrusion_3d: true
+    appear_at: 13
 
   roads:
     label: Routes
@@ -198,13 +205,14 @@ layers:
 
   public_transport:
     label: Transport STIB
-    color: "#ffffff"
+    color: "#007cc2"
+    swatch: fill
+    swatch_colors: ["#007cc2", "#ef3e42"]
     appear_at: 10
-
-  boundaries:
-    label: Limites administratives
-    color: "#ac46ac"
-    appear_at: 10
+    subtypes:
+      tram: { tag: route, color: "#c8102e" }
+      subway: { tag: route, color: "#1f4e9d" }
+      bus: { tag: route, color: "#f39200" }
 
   poi:
     label: POI
@@ -212,10 +220,10 @@ layers:
     appear_at: 14
     labels_at: 15
 
-
   street_furniture:
     label: Mobilier urbain
     color: "#555555"
+    swatch: dot
     appear_at: 17
     subtypes:
       # amenity
@@ -237,3 +245,8 @@ layers:
       # build_map.py — door=* affine seulement l'icône (comme
       # cuisine=*/religion=* pour les POI), pas une couche à part.
       entrance: { tag: entrance }
+
+  boundaries:
+    label: Limites administratives
+    color: "#ac46ac"
+    appear_at: 10

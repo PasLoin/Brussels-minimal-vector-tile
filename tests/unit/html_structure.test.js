@@ -100,20 +100,38 @@ describe('Architecture modulaire', () => {
     expect(fs.existsSync(path.resolve(__dirname, '../../www/map_ui.js'))).toBe(true);
     expect(fs.existsSync(path.resolve(__dirname, '../../www/poi_icons.js'))).toBe(true);
     expect(fs.existsSync(path.resolve(__dirname, '../../www/load_sport_markings.js'))).toBe(true);
+    expect(fs.existsSync(path.resolve(__dirname, '../../www/legend.js'))).toBe(true);
   });
 });
 
 describe('Catégories de la légende', () => {
-  it('déclare les catégories attendues dans le script', () => {
+  const legend = JSON.parse(
+    fs.readFileSync(path.resolve(__dirname, '../../www/style.json'), 'utf-8'),
+  ).metadata['brussels:legend'];
+  const labels = legend.flatMap((g) => [g.label, ...g.items.map((i) => i.label)]);
+
+  it('construit la légende depuis les données du style', () => {
+    expect(html).toContain("from './legend.js'");
+    expect(html).toContain('legendGroups(map.getStyle())');
+    expect(html).not.toContain('const categories = [');
+  });
+
+  it('déclare les catégories attendues dans style.json', () => {
     const expectedLabels = [
       'Résidentiel', 'Industriel', 'Commercial', 'Éducation',
       'Forêt', 'Parcs', 'Pelouse', 'Eau', 'Bâtiments',
       'Rail', 'Tram', 'Métro', 'Routes', 'Piétons', 'Cyclable',
-      'POI', 'Limites',
+      'POI', 'Limites', 'Loisirs', 'Mobilier urbain',
     ];
     for (const label of expectedLabels) {
-      expect(html).toContain(label);
+      expect(labels.some((l) => l.startsWith(label)), label).toBe(true);
     }
+  });
+
+  it('propose Tout afficher / Tout masquer', () => {
+    const js = fs.readFileSync(path.resolve(__dirname, '../../www/legend.js'), 'utf-8');
+    expect(js).toContain('Tout afficher');
+    expect(js).toContain('Tout masquer');
   });
 });
 
