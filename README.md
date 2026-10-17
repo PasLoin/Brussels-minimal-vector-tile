@@ -78,13 +78,14 @@ python3 build_map.py
 
 | Champ | Description |
 | :--- | :--- |
-| `label` | Nom lisible de la couche |
+| `label` | Nom lisible de la couche (titre du groupe dans la légende) |
 | `color` | Couleur principale (fill ou line) |
 | `border_color` | Couleur du contour (ex : buildings) |
 | `appear_at` | Zoom minimum d'apparition |
 | `labels_at` | Zoom minimum des étiquettes (défaut : `appear_at + 3`) |
 | `opacity` | Opacité globale (0.0–1.0) |
-| `visible` | `false` pour masquer la couche |
+| `visible` | `false` pour masquer la couche au chargement (décochée dans la légende) |
+| `swatch` | Pastille de légende : `fill`, `line` ou `dot` (défaut : type de layer majoritaire) |
 | `extrusion_3d` | `true` pour activer le rendu 3D des bâtiments |
 
 **Niveau sous-type (`subtypes`) :**
@@ -92,6 +93,7 @@ python3 build_map.py
 | Champ | Description |
 | :--- | :--- |
 | `tag` | Tag OSM du filtre (`landuse`, `leisure`, `highway`…) |
+| `label` | Nom affiché dans la légende (défaut : libellé intégré à `build_map.py`) |
 | `color` | Couleur principale du sous-type |
 | `color_private` | Couleur si `access=private` |
 | `pattern` | `fill-pattern` (ex : `military-hatch`) |
@@ -99,6 +101,16 @@ python3 build_map.py
 | `outline_color` | Couleur du contour |
 | `appear_at` | Zoom minimum pour ce sous-type |
 | `opacity` | Opacité fill (0.0–1.0) |
+
+### Légende
+
+La légende n'est plus écrite à la main dans `index.html` : `build_map.py` la génère dans `style.json` (`metadata["brussels:legend"]`) et `www/legend.js` la construit au chargement.
+
+- Un groupe par couche de `map.config.yaml`, dans l'ordre du fichier ; une sous-entrée par sous-type qui possède ses propres layers, dans l'ordre des `subtypes`.
+- Chaque layer sourcé du style est rattaché à un groupe : une couche ajoutée plus tard apparaît donc automatiquement dans la légende.
+- Les layers sans sous-type (étiquettes, flèches, ouvrages d'art…) suivent le groupe : ils restent visibles tant qu'au moins une sous-entrée est cochée.
+- Couleur : `color` de la config, sinon couleur lue dans la peinture des layers (hors casing, tunnel et pont), sinon `#cccccc`.
+- Boutons « Tout afficher » / « Tout masquer », groupes repliables, état mixte quand seule une partie des sous-entrées est cochée.
 
 ### Importer un style externe (bootstrap `retro_style.py`)
 
