@@ -252,6 +252,7 @@
                 "corridor",
                 "pedestrian",
                 "steps",
+                "escalator",
                 "room",
                 "area"
               ]
@@ -269,10 +270,14 @@
               ],
               "area",
               "#d8bf8f",
+              "arrow",
+              "#fffaf0",
               "corridor",
               "#f2c38c",
               "elevator",
               "#3d7cc9",
+              "escalator",
+              "#b8542a",
               "footway",
               "#f2c38c",
               "pedestrian",
@@ -327,8 +332,15 @@
                       [
                         "to-number",
                         [
-                          "get",
-                          "level_max"
+                          "coalesce",
+                          [
+                            "get",
+                            "z_top"
+                          ],
+                          [
+                            "get",
+                            "level_max"
+                          ]
                         ],
                         0
                       ]
@@ -379,10 +391,14 @@
               ],
               "area",
               "#d8bf8f",
+              "arrow",
+              "#fffaf0",
               "corridor",
               "#f2c38c",
               "elevator",
               "#3d7cc9",
+              "escalator",
+              "#b8542a",
               "footway",
               "#f2c38c",
               "pedestrian",
@@ -437,8 +453,15 @@
                       [
                         "to-number",
                         [
-                          "get",
-                          "level_max"
+                          "coalesce",
+                          [
+                            "get",
+                            "z_top"
+                          ],
+                          [
+                            "get",
+                            "level_max"
+                          ]
                         ],
                         0
                       ]
@@ -449,6 +472,140 @@
                 3.0
               ],
               2.7
+            ]
+          }
+        },
+        {
+          "id": "indoor-3d-arrows",
+          "type": "fill-extrusion",
+          "source": "indoor",
+          "source-layer": "indoor",
+          "minzoom": 15,
+          "metadata": {
+            "brussels:group": "indoor",
+            "brussels:extrusion": "arrow"
+          },
+          "filter": [
+            "in",
+            [
+              "get",
+              "kind"
+            ],
+            [
+              "literal",
+              [
+                "arrow"
+              ]
+            ]
+          ],
+          "layout": {
+            "visibility": "none"
+          },
+          "paint": {
+            "fill-extrusion-color": [
+              "match",
+              [
+                "get",
+                "kind"
+              ],
+              "area",
+              "#d8bf8f",
+              "arrow",
+              "#fffaf0",
+              "corridor",
+              "#f2c38c",
+              "elevator",
+              "#3d7cc9",
+              "escalator",
+              "#b8542a",
+              "footway",
+              "#f2c38c",
+              "pedestrian",
+              "#e9dcc2",
+              "platform",
+              "#b7a4e3",
+              "room",
+              "#c98f5a",
+              "steps",
+              "#d9822b",
+              "wall",
+              "#5f5f5f",
+              "#d8bf8f"
+            ],
+            "fill-extrusion-opacity": 1.0,
+            "fill-extrusion-base": [
+              "+",
+              [
+                "*",
+                [
+                  "-",
+                  [
+                    "max",
+                    0,
+                    [
+                      "min",
+                      99,
+                      [
+                        "to-number",
+                        [
+                          "coalesce",
+                          [
+                            "get",
+                            "z_top"
+                          ],
+                          [
+                            "get",
+                            "level_max"
+                          ]
+                        ],
+                        0
+                      ]
+                    ]
+                  ],
+                  0
+                ],
+                3.0
+              ],
+              0.3
+            ],
+            "fill-extrusion-height": [
+              "+",
+              [
+                "+",
+                [
+                  "*",
+                  [
+                    "-",
+                    [
+                      "max",
+                      0,
+                      [
+                        "min",
+                        99,
+                        [
+                          "to-number",
+                          [
+                            "coalesce",
+                            [
+                              "get",
+                              "z_top"
+                            ],
+                            [
+                              "get",
+                              "level_max"
+                            ]
+                          ],
+                          0
+                        ]
+                      ]
+                    ],
+                    0
+                  ],
+                  3.0
+                ],
+                0.3
+              ],
+              0.12
             ]
           }
         }
