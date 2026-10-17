@@ -21,7 +21,7 @@ try:
 except ImportError:
     print("✗  pip install pyyaml", file=sys.stderr); sys.exit(1)
 
-from build_map import _lighten
+from build_map import _lighten, default_subtype_label, swatch_type, SWATCH_TYPES
 
 # ── Groupes : préfixes de layer-id → nom de couche ────────────────────────────
 
@@ -469,7 +469,7 @@ def analyse_group(name, style_layers):
 # ── Sérialisation YAML ────────────────────────────────────────────────────────
 
 FIELD_ORDER = [
-    "tag", "color", "color_private", "tunnel_color", "pattern", "pattern_private",
+    "tag", "label", "color", "color_private", "tunnel_color", "pattern", "pattern_private",
     "pattern_at", "outline_color", "appear_at", "labels_at", "opacity",
     "by", "by_color", "by_pattern"
 ]
@@ -550,9 +550,37 @@ def dump_sports(sports):
 NO_LAYER_COLOR = {"roads"}
 
 
+def apply_legend(name, info, group, style_layers):
+    if not group:
+        return info
+    info["label"] = group.get("label")
+    if group.get("color"):
+        info["main_color"] = group["color"]
+    info["visible"] = info["visible"] and group.get("visible", True)
+    own = [l for l in style_layers if l.get("source") == name]
+    if group.get("swatch") in SWATCH_TYPES and own and group["swatch"] != swatch_type(own):
+        info["swatch"] = group["swatch"]
+    order = []
+    for item in group.get("items") or []:
+        key = item.get("id")
+        if key not in info["subtypes"]:
+            continue
+        order.append(key)
+        if item.get("label") and item["label"] != default_subtype_label(name, key):
+            info["subtypes"][key]["label"] = item["label"]
+    info["subtype_order"] = order
+    return info
+
+
+def ordered_subtypes(info):
+    order = [k for k in info.get("subtype_order") or [] if k in info["subtypes"]]
+    order += sorted(k for k in info["subtypes"] if k not in order)
+    return [(k, info["subtypes"][k]) for k in order]
+
+
 def dump_layer(name, info):
     lines = []
-    label  = LABELS.get(name, name.capitalize())
+    label  = info.get("label") or LABELS.get(name, name.capitalize())
     appear = info["appear_at"]
     col    = info["main_color"]
     bc     = info["border_color"]
@@ -564,6 +592,8 @@ def dump_layer(name, info):
         lines.append(f'    color: "{col}"')
     if bc and name not in NO_LAYER_COLOR:
         lines.append(f'    border_color: "{bc}"')
+    if info.get("swatch"):
+        lines.append(f"    swatch: {info['swatch']}")
     if not info["visible"]:
         lines.append(f"    visible: false")
     if info["extrusion_3d"]:
@@ -575,7 +605,7 @@ def dump_layer(name, info):
         lines.append(f"    tiles: {flow_value(info['tiles'])}")
     if info["subtypes"]:
         lines.append(f"    subtypes:")
-        for val, scfg in sorted(info["subtypes"].items()):
+        for val, scfg in ordered_subtypes(info):
             lines.append(f"      {val}: {format_subtype_inline(scfg)}")
     if info.get("sports"):
         lines += dump_sports(info["sports"])
@@ -620,11 +650,13 @@ def main():
     metadata = style.get("metadata") or {}
     meta_tiles = metadata.get("brussels:tiles") or {}
     meta_patterns = metadata.get("brussels:patterns") or {}
+    legend = {g.get("id"): g for g in metadata.get("brussels:legend") or [] if isinstance(g, dict)}
     groups = {}
-    for name in GROUPS:
+    for name in [n for n in legend if n in GROUPS] + [n for n in GROUPS if n not in legend]:
         info = analyse_group(name, style_layers)
         if not info:
             continue
+        apply_legend(name, info, legend.get(name), style_layers)
         if name in meta_tiles:
             info["tiles"] = meta_tiles[name]
         if name == "leisure":
@@ -649,11 +681,12 @@ def main():
         "#   label          nom lisible",
         "#   color          couleur principale (fill ou line)",
         "#   border_color   couleur du contour (buildings...)",
-        "#   visible        false pour masquer la couche",
+        "#   visible        false pour masquer la couche au chargement",
         "#   extrusion_3d   true pour activer le rendu 3D buildings",
         "#   appear_at      zoom minimum d'apparition",
         "#   labels_at      zoom minimum des étiquettes (défaut: appear_at+3)",
         "#   opacity        opacité globale (0.0–1.0)",
+        "#   swatch         pastille de légende : fill, line ou dot (défaut: type majoritaire)",
         "#   tiles          paramètres PMTiles (min_zoom, max_zoom, simplification,",
         "#                  detail_from pour buildings)",
         "#   sports         leisure uniquement : rendu des terrains par sport_render",
@@ -661,6 +694,7 @@ def main():
         "#",
         "# Champs disponibles par sous-type :",
         "#   tag            tag OSM du filtre (landuse, leisure, natural, highway...)",
+        "#   label          nom affiché dans la légende (défaut: libellé intégré)",
         "#   color          couleur principale",
         "#   color_private  couleur si access=private",
         "#   pattern        fill-pattern (ex: military-hatch)",
@@ -673,6 +707,8 @@ def main():
         "#   by_color       couleur par valeur de la clé \"by\" (défaut: color)",
         "#   by_pattern     motif par valeur de la clé \"by\" (défaut: pattern)",
         "#   tunnel_color   couleur des tronçons en tunnel (défaut: color éclaircie)",
+        "#",
+        "# L'ordre des couches et des sous-types est celui de la légende.",
         "#",
         "# Section patterns : motifs SVG chargés par la carte",
         "#   file, size (px), replace (substitution de couleurs dans le SVG)",
